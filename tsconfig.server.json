@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "outDir": "build",
+    "baseUrl": "server",
+    "esModuleInterop": true
+  },
+  "include": [
+    "server"
+  ],
+  "exclude": [
+    "node_modules",
+    "src"
+  ]
+}
