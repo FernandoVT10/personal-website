@@ -1,0 +1,118 @@
+.container {
+  & .profileContainer {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url(/img/main-cover.jpg);
+    background-size: cover;
+    background-attachment: fixed;
+    min-height: 600px;
+    height: 100vh;
+
+    & .header {
+      & .navbar {
+        position: absolute;
+        top: 0;
+        right: 0;
+
+        & .items {
+          margin-right: 10px;
+          display: flex;
+          list-style: none;
+
+          & .item {
+            padding: 15px;
+
+            & .link {
+              transition: .3s;
+
+              &:hover {
+                color: var(--blue);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    & .profile {
+      padding: 20px;
+      text-align: center;
+      max-width: 900px;
+      background-color: var(--black);
+
+      & .picture {
+        position: relative;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 204px;
+        height: 204px;
+
+        &:before {
+          content: '';
+          position: absolute;
+          border-radius: 50%;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          animation: spin 5s linear infinite;
+          background: linear-gradient(45deg, var(--blue), var(--purple));
+        }
+
+        & .image {
+          z-index: 2;
+          border-radius: 50%;
+          width: 200px;
+          height: 200px;
+        }
+      }
+
+      & .fullName {
+        color: var(--blue);
+        font-size: 30px;
+      }
+
+      & .description {
+        padding: 0 20px;
+        font-weight: bold;
+        line-height: 1.5;
+      }
+    }
+  }
+
+  & .subtitle {
+    margin: 20px 0 20px 40px;
+    font-size: 20px;
+  }
+
+  & .projectsContainer {
+    padding: 0 40px;
+
+    & .projectCard {
+      margin-top: 40px;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    & .subtitle {
+      margin-left: 20px;
+    }
+
+    & .projectsContainer {
+      padding: 0;
+    }
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}

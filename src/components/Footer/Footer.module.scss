@@ -1,0 +1,29 @@
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 40px;
+  width: 100%;
+  padding: 20px;
+  background: var(--black);
+
+  & .title {
+    color: var(--blue);
+    font-weight: bold;
+    font-size: 20px;
+    margin: 0;
+  }
+
+  & .socialNetworksContainer {
+    & .socialNetwork {
+      margin: 10px;
+      color: var(--white);
+      font-size: 25px;
+      transition: .3s;
+
+      &:hover {
+        color: var(--blue);
+      }
+    }
+  }
+}

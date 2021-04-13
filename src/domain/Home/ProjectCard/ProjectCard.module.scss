@@ -1,0 +1,53 @@
+.projectCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--black);
+  padding: 20px;
+
+  & .details {
+    width: calc(50% - 20px);
+
+    & .title {
+      font-size: 25px;
+      margin: 0;
+    }
+
+    & .description {
+      margin: 20px 0;
+      line-height: 2;
+    }
+
+    & .seeMore {
+      color: var(--blue);
+      font-weight: bold;
+      font-size: 18px;
+      transition: .3s;
+
+      & i {
+        margin-left: 10px;
+      }
+
+      &:hover {
+        color: var(--white);
+      }
+    }
+  }
+
+  & .carousel {
+    width: calc(50% - 20px);
+  }
+
+  @media screen and (max-width: 1200px) {
+    flex-wrap: wrap-reverse;
+
+    & .details,
+    & .carousel {
+      width: 100%;
+    }
+
+    & .carousel {
+      margin-bottom: 40px;
+    }
+  }
+}
