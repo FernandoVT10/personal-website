@@ -88,6 +88,11 @@
     font-size: 20px;
   }
 
+  & .contactMe {
+    margin-top: 20px;
+    padding: 0 40px;
+  }
+
   & .projectsContainer {
     padding: 0 40px;
 
@@ -101,7 +106,8 @@
       margin-left: 20px;
     }
 
-    & .projectsContainer {
+    & .projectsContainer,
+    & .contactMe {
       padding: 0;
     }
   }

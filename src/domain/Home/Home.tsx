@@ -5,6 +5,7 @@ import Link from "next/link";
 import Footer from "@/components/Footer";
 
 import ProjectCard from "./ProjectCard";
+import ContactMe from "./ContactMe";
 
 import styles from "./Home.module.scss";
 
@@ -86,6 +87,10 @@ const Home = () => {
             </div>
           );
         })}
+      </div>
+
+      <div className={styles.contactMe}>
+        <ContactMe/>
       </div>
 
       <Footer/>

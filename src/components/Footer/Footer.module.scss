@@ -12,6 +12,11 @@
     font-weight: bold;
     font-size: 20px;
     margin: 0;
+    transition: .3s;
+
+    &:hover {
+      color: var(--white);
+    }
   }
 
   & .socialNetworksContainer {

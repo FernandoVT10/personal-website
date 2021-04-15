@@ -1,0 +1,10 @@
+.contactMe {
+  background: var(--black);
+  padding: 20px;
+
+  & .title {
+    color: var(--white);
+    font-size: 25px;
+    margin: 0;
+  }
+}

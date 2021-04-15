@@ -7,7 +7,11 @@ import styles from "./Footer.module.scss";
 const Footer = () => {
   return (
     <footer className={styles.footer}>
-      <h3 className={styles.title}>Fernando Vaca Tamayo</h3>
+      <Link href="/">
+        <a className={styles.title}>
+          Fernando Vaca Tamayo
+        </a>
+      </Link>
 
       <div className={styles.socialNetworksContainer}>
         <a href="https://github.com/FernandoVT10" target="_blank" className={styles.socialNetwork}>
