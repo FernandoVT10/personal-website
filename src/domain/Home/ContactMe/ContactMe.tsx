@@ -12,7 +12,15 @@ const ContactMe = () => {
 
   return (
     <div className={styles.contactMe}>
-      <h3 className={styles.title}>Contact Me</h3>
+      <div className={styles.leftSide}>
+        <h3 className={styles.title}>Contact Me</h3>
+
+        <img
+          src="/img/contact-me.svg"
+          className={styles.image}
+          alt="Envelope"
+        />
+      </div>
 
       <div className={styles.form}>
         <form>
@@ -30,6 +38,8 @@ const ContactMe = () => {
             value={message}
             setValue={setMessage}
           />
+
+          <button type="submit" className={`${styles.submitButton} submit-button`}>Send Message</button>
         </form>
       </div>
     </div>

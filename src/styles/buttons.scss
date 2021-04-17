@@ -1,0 +1,16 @@
+.submit-button {
+  cursor: pointer;
+  background: var(--blue);
+  padding: 10px 30px;
+  color: var(--black);
+  font-weight: bold;
+  font-size: 18px;
+  border: solid 2px var(--blue);
+  border-radius: 5px;
+  transition: .3s;
+
+  &:hover {
+    background: transparent;
+    color: var(--blue);
+  }
+}

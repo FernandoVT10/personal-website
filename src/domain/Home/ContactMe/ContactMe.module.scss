@@ -1,10 +1,32 @@
 .contactMe {
+  display:flex;
+  justify-content: space-between;
   background: var(--black);
   padding: 20px;
 
-  & .title {
-    color: var(--white);
-    font-size: 25px;
-    margin: 0;
+  & .leftSide {
+    width: 50%;
+
+    & .title {
+      color: var(--white);
+      font-size: 25px;
+      margin: 0;
+    }
+
+    & .image {
+      display: block;
+      margin: auto;
+      width: 250px;
+      height: 250px;
+    }
+  }
+
+  & .form {
+    width: 50%;
+
+    & .submitButton {
+      margin-top: 20px;
+      width: 100%;
+    }
   }
 }
