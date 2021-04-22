@@ -3,8 +3,7 @@ import next from "next";
 
 import { ApolloServer } from "apollo-server-express";
 
-import resolvers from "./resolvers";
-import typeDefs from "./schema";
+import schema from "./schema";
 
 const dev = process.env.NODE_ENV !== "production";
 
@@ -13,7 +12,7 @@ const app = express();
 const nextApp = next({ dev });
 const nextHandler = nextApp.getRequestHandler();
 
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({ schema });
 
 export default async function startServer() {
   await nextApp.prepare();
