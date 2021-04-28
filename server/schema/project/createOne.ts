@@ -1,3 +1,7 @@
+import { FileUpload } from "graphql-upload";
+
+import ImageController from "../../utils/controllers/ImageController";
+
 import { Project, Technology } from "../../models";
 
 interface Parameters {
@@ -5,16 +9,29 @@ interface Parameters {
     title: string
     description: string
     technologies: string[]
-    images: string[]
+    images: { promise: Promise<FileUpload> }[]
   }
 }
 
 export default async (_: null, args: Parameters) => {
   const { title, description, technologies, images } = args.project;
 
-  console.log(images);
-  
+  const filesUpload = [];
+
+  if(images) {
+    for(const file of images) {
+      filesUpload.push(await file.promise);
+    }
+  }
+
+  const imagesURL = await ImageController.uploadFileUploadArrayAsImages(filesUpload);
+
   const technologiesDocuments = await Technology.find({ name: { $in: technologies } });
 
-  return await Project.create({ title, description, technologies: technologiesDocuments });
+  return await Project.create({
+    title,
+    description,
+    technologies: technologiesDocuments,
+    images: imagesURL
+  });
 }

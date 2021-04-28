@@ -1,6 +1,7 @@
 import express from "express";
 import next from "next";
 
+import { graphqlUploadExpress } from "graphql-upload";
 import { ApolloServer } from "apollo-server-express";
 
 import schema from "./schema";
@@ -12,7 +13,12 @@ const app = express();
 const nextApp = next({ dev });
 const nextHandler = nextApp.getRequestHandler();
 
-const server = new ApolloServer({ schema });
+const server = new ApolloServer({ schema, uploads: false });
+
+app.use(graphqlUploadExpress({
+  maxFileSize: 10000000,
+  maxFiles: 20
+}));
 
 export default async function startServer() {
   await nextApp.prepare();
