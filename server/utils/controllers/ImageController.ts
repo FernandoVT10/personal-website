@@ -1,15 +1,18 @@
-import { UserInputError } from "apollo-server-errors";
+import fs from "fs";
+
+import { UserInputError } from "apollo-server-express";
 import { FileUpload } from "graphql-upload";
 import { join } from "path";
 
 import { PUBLIC_DIRECTORY, WEBSITE_URL } from "../../config";
 
 import saveFileStream from "../saveFileStream";
+
 import { imageValidator } from "../validators";
 
 const IMAGES_PATH = join(PUBLIC_DIRECTORY, "/img/uploads");
 
-export const uploadFileUploadAsImage = async (file: FileUpload): Promise<string> => {
+const uploadFileUploadAsImage = async (file: FileUpload): Promise<string> => {
   const imageName = Date.now() + file.filename;
   const imagePath = join(IMAGES_PATH, imageName);
   const stream = file.createReadStream();
@@ -25,7 +28,7 @@ export const uploadFileUploadAsImage = async (file: FileUpload): Promise<string>
   }
 }
 
-export const uploadFileUploadArrayAsImages = (filesUpload: FileUpload[]) => {
+const uploadFileUploadArrayAsImages = (filesUpload: FileUpload[]) => {
   filesUpload.forEach(filesUpload => {
     if(!imageValidator(filesUpload.mimetype)) {
       throw new UserInputError("All the files must be a .png, .jpg or .jpeg image");
@@ -37,7 +40,20 @@ export const uploadFileUploadArrayAsImages = (filesUpload: FileUpload[]) => {
   }));
 }
 
+const deleteImage = (fileURL: string) => {
+  const imagePath = fileURL.replace(WEBSITE_URL, "");
+  const imageCompletePath = join(PUBLIC_DIRECTORY, imagePath);
+
+  if(fs.existsSync(imageCompletePath)) fs.unlinkSync(imageCompletePath);
+}
+
+const deleteImageArray = (filesURL: string[]) => {
+  filesURL.forEach(fileURL => deleteImage(fileURL));
+}
+
 export default {
   uploadFileUploadAsImage,
-  uploadFileUploadArrayAsImages
+  uploadFileUploadArrayAsImages,
+  deleteImage,
+  deleteImageArray
 }

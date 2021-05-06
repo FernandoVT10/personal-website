@@ -26,12 +26,18 @@ export default async (_: null, args: Parameters) => {
 
   const imagesURL = await ImageController.uploadFileUploadArrayAsImages(filesUpload);
 
-  const technologiesDocuments = await Technology.find({ name: { $in: technologies } });
+  try {
+    const technologiesDocuments = await Technology.find({ name: { $in: technologies } });
 
-  return await Project.create({
-    title,
-    description,
-    technologies: technologiesDocuments,
-    images: imagesURL
-  });
+    return await Project.create({
+      title,
+      description,
+      technologies: technologiesDocuments,
+      images: imagesURL
+    });   
+  } catch(err) {
+    // delete the images if there is an error
+    ImageController.deleteImageArray(imagesURL);
+    throw err;
+  }
 }
