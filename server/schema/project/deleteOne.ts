@@ -11,7 +11,7 @@ interface Parameters {
 export default async (_: null, args: Parameters) => {
   const { projectId } = args;
 
-  const project = await Project.findOne({ _id: projectId }).populate("technologies");
+  const project = await Project.findById(projectId).populate("technologies");
 
   if(!project) {
     throw new UserInputError(`The project with the ID '${projectId}' doesn't exist.`);
