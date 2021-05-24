@@ -24,5 +24,10 @@ export default async (_: null, args: Parameters) => {
     });
   }
 
-  return await Project.paginate(query, { page, limit, populate: "technologies" });
+  return await Project.paginate(query, {
+    page,
+    limit,
+    populate: "technologies",
+    sort: { createdAt: "desc" }
+  });
 }
