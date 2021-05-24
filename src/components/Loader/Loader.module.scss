@@ -1,0 +1,37 @@
+.loaderContainer {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+
+  & .circle {
+    display: inline-block;
+    width: 8px;
+    height: 16px;
+    margin: 0 5px;
+    // border-radius: 50%;
+
+    @for $i from 1 through 4 {
+      &:nth-child(#{$i}n) {
+        animation: loader infinite 1s;
+        animation-delay: $i * .12s;
+      }
+    }
+  }
+}
+
+@keyframes loader {
+  0% {
+    transform: translateY(-10px);
+    background: var(--blue);
+  }
+
+  50% {
+    transform: translateY(10px);
+    background: var(--blue);
+  }
+
+  100% {
+    transform: translateY(-10px);
+    background: var(--blue);
+  }
+}

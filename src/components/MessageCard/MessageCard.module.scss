@@ -1,0 +1,20 @@
+.messageCard {
+  padding: 20px;
+  font-weight: bold;
+  color: var(--white);
+  background: var(--black);
+  font-size: 16px;
+  border: solid 1px var(--white);
+
+  & .message { margin: 0; }
+
+  &.info {
+    border-color: var(--blue);
+    color: var(--blue);
+  }
+
+  &.error {
+    border-color: var(--red);
+    color: var(--red);
+  }
+}

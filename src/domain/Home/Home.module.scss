@@ -93,21 +93,13 @@
     padding: 0 40px;
   }
 
-  & .projectsContainer {
-    padding: 0 40px;
-
-    & .projectCard {
-      margin-top: 40px;
-    }
-  }
 
   @media screen and (max-width: 768px) {
     & .subtitle {
       margin-left: 20px;
     }
 
-    & .projectsContainer,
-    & .contactMe {
+    & .projectsContainer {
       padding: 0;
     }
   }

@@ -1,36 +1,17 @@
 import React from "react";
 
+import { ApolloQueryResult } from "@apollo/client";
+
 import Link from "next/link";
 
 import Footer from "@/components/Footer";
 
-import ProjectCard from "./ProjectCard";
+import ProjectList, { ProjectsData } from "./ProjectList";
 import ContactMe from "./ContactMe";
 
 import styles from "./Home.module.scss";
 
-const projectCardsMock = [
-  {
-    _id: "testid",
-    title: "test title",
-    description: "Ipsum quasi nobis numquam nesciunt corporis inventore Cum alias sint suscipit consequuntur fugit, dolor Necessitatibus mollitia qui aliquid aspernatur ea placeat similique Quos alias voluptatibus voluptas possimus debitis Dolor officiis officiis cupiditate dignissimos delectus quis, obcaecati Libero incidunt maiores sequi dolores quasi! Quidem vel architecto in delectus alias Quia commodi",
-    images: [
-      "/img/test-image.jpg",
-      "/img/test-image-2.jpg"
-    ]
-  },
-  {
-    _id: "testid",
-    title: "test title",
-    description: "Ipsum quasi nobis numquam nesciunt corporis inventore Cum alias sint suscipit consequuntur fugit, dolor Necessitatibus mollitia qui aliquid aspernatur ea placeat similique Quos alias voluptatibus voluptas possimus debitis Dolor officiis officiis cupiditate dignissimos delectus quis, obcaecati Libero incidunt maiores sequi dolores quasi! Quidem vel architecto in delectus alias Quia commodi",
-    images: [
-      "/img/test-image-2.jpg",
-      "/img/test-image.jpg"
-    ]
-  }
-];
-
-const Home = () => {
+const Home = ({ projectsResult }: { projectsResult: ApolloQueryResult<ProjectsData> }) => {
   return (
     <div className={styles.container}>
       <div className={styles.profileContainer}>
@@ -79,15 +60,7 @@ const Home = () => {
 
       <h2 className={styles.subtitle}>My Projects</h2>
 
-      <div className={styles.projectsContainer}>
-        {projectCardsMock.map((project, index) => {
-          return (
-            <div className={styles.projectCard} key={index}>
-              <ProjectCard project={project} />
-            </div>
-          );
-        })}
-      </div>
+      <ProjectList projectsResult={projectsResult}/>
 
       <div className={styles.contactMe}>
         <ContactMe/>
