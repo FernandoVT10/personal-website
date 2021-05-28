@@ -6,7 +6,10 @@ module.exports = {
       displayName: "server",
       preset: "ts-jest",
       testEnvironment: "node",
-      roots: ["server"]
+      roots: ["server"],
+      setupFilesAfterEnv: [
+        "./server/tests/setupTests.ts"
+      ]
     },
     {
       displayName: "dom",
