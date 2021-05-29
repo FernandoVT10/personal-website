@@ -5,7 +5,7 @@ import mongoosePaginate from "mongoose-paginate-v2";
 import { ITechnology } from "./Technology";
 
 export interface IProject extends Document {
-  Title: String,
+  title: String,
   images: string[],
   description: string,
   technologies: ITechnology["_id"][]
