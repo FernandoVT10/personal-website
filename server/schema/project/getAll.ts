@@ -1,4 +1,6 @@
-import { Project } from "../../models";
+import { PaginateResult } from "mongoose";
+
+import { Project, IProject } from "../../models";
 
 const PROJECTS_PER_PAGE = 6;
 
@@ -8,7 +10,7 @@ interface Parameters {
   limit: number
 }
 
-export default async (_: null, args: Parameters) => {
+export default async (_: null, args: Parameters): Promise<PaginateResult<IProject>> => {
   const page = args.page || 1;
   const limit = args.limit || PROJECTS_PER_PAGE;
 
