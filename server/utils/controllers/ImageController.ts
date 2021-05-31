@@ -28,7 +28,7 @@ const uploadFileUploadAsImage = async (file: FileUpload): Promise<string> => {
   }
 }
 
-const uploadFileUploadArrayAsImages = (filesUpload: FileUpload[]) => {
+const uploadFileUploadArrayAsImages = (filesUpload: FileUpload[]): Promise<string[]> => {
   filesUpload.forEach(filesUpload => {
     if(!imageValidator(filesUpload.mimetype)) {
       throw new UserInputError("All the files must be a .png, .jpg or .jpeg image");
