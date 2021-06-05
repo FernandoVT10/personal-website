@@ -14,7 +14,7 @@ export interface IProject extends Document {
 const projectSchema = new Schema({
   title: {
     type: String,
-    maxLength: [100, "The title must be less than 100 charactes"],
+    maxLength: [100, "The title must be less than 100 characters"],
     required: [true, "The title is required"]
   },
   images: [String],
