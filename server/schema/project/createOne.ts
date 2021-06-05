@@ -2,7 +2,7 @@ import { FileUpload } from "graphql-upload";
 
 import ImageController from "../../utils/controllers/ImageController";
 
-import { Project, Technology } from "../../models";
+import { Project, IProject, Technology } from "../../models";
 
 interface Parameters {
   project: {
@@ -13,7 +13,7 @@ interface Parameters {
   }
 }
 
-export default async (_: null, args: Parameters) => {
+export default async (_: null, args: Parameters): Promise<IProject> => {
   const { title, description, technologies, images } = args.project;
 
   const filesUpload = [];
