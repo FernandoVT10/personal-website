@@ -1,6 +1,6 @@
 import React from "react";
 
-import { gql, useQuery, ApolloQueryResult } from "@apollo/client";
+import { ApolloQueryResult } from "@apollo/client";
 
 import MessageCard from "@/components/MessageCard";
 
