@@ -10,6 +10,6 @@ describe("src/components/MessageCard", () => {
 
     expect(container.children[0].classList.contains("test")).toBeTruthy();
 
-    expect(queryByText("test message")).not.toBeNull();
+    expect(queryByText("test message")).toBeInTheDocument;
   });
 });

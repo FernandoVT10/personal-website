@@ -8,6 +8,6 @@ describe("src/components/Footer", () => {
   it("should render correctly", () => {
     const { queryByText } = render(<Footer/>);
 
-    expect(queryByText("Fernando Vaca Tamayo")).not.toBeNull();
+    expect(queryByText("Fernando Vaca Tamayo")).toBeInTheDocument();
   });
 });

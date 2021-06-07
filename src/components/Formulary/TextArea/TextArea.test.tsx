@@ -10,7 +10,7 @@ describe("src/components/Formulary/TextArea", () => {
       <TextArea prefix="test" label="Test Label" value="test value" setValue={jest.fn()} />
     );
 
-    expect(queryByText("Test Label")).not.toBeNull();
+    expect(queryByText("Test Label")).toBeInTheDocument();
 
     const textarea = getByDisplayValue("test value");
     expect(textarea.id).toBe("test-textarea");
@@ -36,10 +36,10 @@ describe("src/components/Formulary/TextArea", () => {
       <TextArea prefix="test" label="Test Label" value="test value" setValue={jest.fn()} validator={validator} />
     );
 
-    expect(queryByText("test error")).toBeNull();
+    expect(queryByText("test error")).not.toBeInTheDocument();
 
     fireEvent.change(getByDisplayValue("test value"), { target: { value: "updated test value" } });
 
-    expect(queryByText("test error")).not.toBeNull();
+    expect(queryByText("test error")).toBeInTheDocument();
   });
 });
