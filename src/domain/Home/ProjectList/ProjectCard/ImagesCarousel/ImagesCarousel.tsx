@@ -1,15 +1,9 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState } from "react";
 
 import styles from "./ImagesCarousel.module.scss";
 
 const ImagesCarousel = ({ images }: { images: string[] }) => {
   const [activeImage, setActiveImage] = useState(0);
-  const imagesContainer = useRef<HTMLDivElement>();
-
-  useEffect(() => {
-    const imageWidth = imagesContainer.current.clientWidth;
-    // imagesContainer.current.scrollTo(imageWidth * activeImage, 0);
-  }, [activeImage]);
 
   const goToRight = () => {
     if(activeImage === images.length - 1) {
@@ -29,7 +23,7 @@ const ImagesCarousel = ({ images }: { images: string[] }) => {
 
   return (
     <div className={styles.carousel}>
-      <div className={styles.imagescontainer} ref={imagesContainer}>
+      <div className={styles.imagescontainer}>
         {images.map((image, index) => {
           const left = 100 * (index - activeImage);
 
@@ -37,6 +31,7 @@ const ImagesCarousel = ({ images }: { images: string[] }) => {
             <div
               className={styles.image}
               style={{ background: `url(${image})`, left: `${left}%` }}
+              data-testid="image-carousel-image"
               key={index}
             ></div>
           );
@@ -51,6 +46,7 @@ const ImagesCarousel = ({ images }: { images: string[] }) => {
             <span
               className={`${styles.indicator} ${indicatorClass}`}
               onClick={() => setActiveImage(index)}
+              data-testid="image-carousel-indicator"
               key={index}
             ></span>
           );
@@ -60,6 +56,7 @@ const ImagesCarousel = ({ images }: { images: string[] }) => {
       <button
         className={`${styles.control} ${styles.left}`}
         onClick={goToLeft}
+        data-testid="image-carousel-left-button"
       >
         <i className="fas fa-arrow-left" aria-hidden="true"></i>
       </button>
@@ -67,6 +64,7 @@ const ImagesCarousel = ({ images }: { images: string[] }) => {
       <button
         className={`${styles.control} ${styles.right}`}
         onClick={goToRight}
+        data-testid="image-carousel-right-button"
       >
         <i className="fas fa-arrow-right" aria-hidden="true"></i>
       </button>
