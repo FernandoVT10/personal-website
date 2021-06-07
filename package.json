@@ -26,6 +26,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.10",
     "@testing-library/react": "^11.2.6",
+    "@testing-library/react-hooks": "^7.0.0",
     "@types/express": "^4.17.11",
     "@types/graphql-upload": "^8.0.4",
     "@types/jest": "^26.0.22",
