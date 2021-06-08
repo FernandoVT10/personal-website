@@ -20,7 +20,7 @@ const sendMessage = async (_: null, args: Parameters) => {
     from: args.email,
     to: MY_EMAIL,
     subject: `Fernando Vaca Tamayo - A new message from ${args.email}`,
-    html: args.message
+    text: args.message
   });
 
   return true;
