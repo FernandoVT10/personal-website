@@ -18,7 +18,7 @@ const PROJECT_RESULT_MOCK = {
       ]
     }
   }
-} as any
+} as any;
 
 describe("src/domain/Home", () => {
   it("should render correctly", () => {
