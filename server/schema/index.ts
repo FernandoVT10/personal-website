@@ -2,6 +2,7 @@ import { gql, makeExecutableSchema } from "apollo-server-express";
 import { merge } from "lodash";
 
 import { Project, projectResolvers } from "./project";
+import { ContactMe, contactMeResolvers } from "./contactme";
 
 const Query = gql`
   scalar Upload
@@ -27,9 +28,9 @@ const Query = gql`
   }
 `;
 
-const typeDefs = [ Query, Project ];
+const typeDefs = [ Query, Project, ContactMe ];
 
-const resolvers = merge(projectResolvers)
+const resolvers = merge(projectResolvers, contactMeResolvers)
 
 export default makeExecutableSchema({
   typeDefs,
