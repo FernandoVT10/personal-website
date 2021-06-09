@@ -4,16 +4,18 @@
   --purple: #6930C3;
   --blue: #64DFDF;
   --white: #dfdfdf;
-  --black: #151515;
+  --black: #0c0c0c;
   --gray: #b0b0b0;
   --red: #DF6464;
+
+  --black-gray: #292929;
 }
 
 html,
 body {
   padding: 0;
   margin: 0;
-  background-color: #252525;
+  background-color: #151515;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   color: var(--white);
