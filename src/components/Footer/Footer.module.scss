@@ -31,4 +31,15 @@
       }
     }
   }
+
+  @media screen and (max-width: 450px) {
+    & .title { display: none; }
+
+    & .socialNetworksContainer {
+      padding: 0 20px;
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
 }
