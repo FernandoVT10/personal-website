@@ -1,4 +1,5 @@
 import { mocked } from "ts-jest/utils";
+import { UserInputError } from "apollo-server-errors";
 
 import loadMailTemplate from "../../utils/loadMailTemplate";
 import transporter from "../../utils/mailTransporter";
@@ -47,5 +48,18 @@ describe("server/schema/contactme", () => {
       subject: "Fernando Vaca Tamayo - testsubject",
       html: "test template"
     });
+  });
+
+  it("should throw an error when the email is invalid", () => {
+    try {
+      contactMeResolvers.Mutation.sendMessage(null, {
+        name: "testname",
+        email: "test@example.com",
+        subject: "testsubject",
+        message: "test message"
+      });
+    } catch (err) {
+      expect(err).toEqual(new UserInputError("The email is invalid"));
+    }
   });
 });

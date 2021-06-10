@@ -1,9 +1,10 @@
-import { gql } from "apollo-server-express";
+import { gql, UserInputError } from "apollo-server-express";
 
 import { MY_EMAIL, WEBSITE_URL } from "../config";
 
 import loadMailTemplate from "../utils/loadMailTemplate";
 import transporter from "../utils/mailTransporter";
+import { emailValidator } from "../utils/validators";
 
 export const ContactMe = gql`
   extend type Mutation {
@@ -19,6 +20,8 @@ interface Parameters {
 }
 
 const sendMessage = async (_: null, args: Parameters) => {
+  if(!emailValidator(args.email)) throw new UserInputError("The email is invalid");
+
   let mailTemplate = loadMailTemplate("sendMessage", {
     name: args.name,
     websiteURL: WEBSITE_URL,
