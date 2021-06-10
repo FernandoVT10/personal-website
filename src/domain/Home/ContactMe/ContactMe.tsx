@@ -6,12 +6,11 @@ import { Input, TextArea } from "@/components/Formulary";
 
 import { email as emailValidator } from "@/utils/validators";
 
-import MessageCard from "@/components/MessageCard";
 import Loader from "@/components/Loader";
 
 import styles from "./ContactMe.module.scss";
 
-const SEND_MESSAGE = gql`
+export const SEND_MESSAGE = gql`
   mutation SendMessage($name: String!, $email: String!, $subject: String!, $message: String!) {
     sendMessage(name: $name, email: $email, subject: $subject, message: $message)
   }
@@ -39,7 +38,7 @@ const ContactMe = () => {
     <div className={styles.contactMe}>
       <div className={styles.form}>
         { loading &&
-        <div className={styles.loaderContainer}>
+        <div className={styles.loaderContainer} data-testid="contactme-loader">
           <Loader/>
         </div>
         }
@@ -79,7 +78,7 @@ const ContactMe = () => {
           {error && 
           <div className={styles.error}>
             <i className="fas fa-times-circle"></i>
-            { error.message }
+            There was an error trying to send the message. Try it again later.
           </div>
           }
           {data ?
