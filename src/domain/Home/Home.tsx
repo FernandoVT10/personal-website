@@ -53,7 +53,10 @@ const Home = ({ projectsResult }: { projectsResult: ApolloQueryResult<ProjectsDa
           </h1>
 
           <p className={styles.description}>
-            Ipsum beatae illo porro odio voluptatum. Exercitationem temporibus animi cum a similique reprehenderit? Id error odio dolore sapiente quaerat, alias? Incidunt exercitationem eius quibusdam deserunt consectetur Adipisci tenetur earum rem odio maiores Obcaecati voluptatibus maiores minus dignissimos iste Vitae beatae magni alias ad culpa inventore modi Quo ipsum dicta odio
+            I'm a FullStack developer. I love JavaScript.<br/>
+            My main technologies are React Js and Node JS.<br/>
+            I'm learning about Artificial Intelligence (It's a bit difficult).<br/>
+            I like play videogames and listen to music while i read.
           </p>
         </div>
       </div>
