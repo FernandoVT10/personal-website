@@ -3,6 +3,8 @@
 
   & .projectCard {
     margin-top: 40px;
+
+    &:nth-child(1) { margin: 0; }
   }
 }
 

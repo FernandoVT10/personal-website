@@ -1,0 +1,48 @@
+.selectBox {
+  position: relative;
+
+  & .button {
+    position: relative;
+    cursor: pointer;
+    word-wrap: nowrap;
+    background: var(--black);
+    border: solid 1px var(--black);;
+    height: 55px;
+    width: 200px;
+    padding: 0 15px;
+    color: var(--white);
+    font-weight: bold;
+    font-size: 14px;
+    text-align: start;
+    transition: .3s;
+
+    &:hover, &.active { background: var(--black-gray); }
+
+    // &.active { border-color: var(--blue); }
+
+    & i {
+      position: absolute;
+      right: 15px;
+      margin-left: 5px;
+    }
+  }
+
+  & .values {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    border: solid 1px var(--black-gray);
+    border-top: none;
+    background: var(--black);
+
+    & .value {
+      cursor: pointer;
+      padding: 15px;
+      transition: .3s;
+
+      &:hover {
+        background: var(--black-gray);
+      }
+    }
+  }
+}

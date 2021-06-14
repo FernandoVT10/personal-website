@@ -7,6 +7,7 @@ import MessageCard from "@/components/MessageCard";
 import ProjectCard from "./ProjectCard";
 
 import styles from "./ProjectList.module.scss";
+import Loader from "../Loader";
 
 interface Project {
   _id: string
@@ -22,12 +23,20 @@ export interface ProjectsData {
 }
 
 const ProjectList = ({ projectsResult }: { projectsResult: ApolloQueryResult<ProjectsData> }) => {
-  const { error, data } = projectsResult;
+  const { error, data, loading } = projectsResult;
+
+  if(loading) {
+    return (
+      <div className={styles.loaderContainer}>
+        <Loader/>
+      </div>
+    );
+  }
 
   if(error) {
     return (
       <div className={styles.messageCardContainer}>
-        <MessageCard type="error" message={error.graphQLErrors[0].message}/>
+        <MessageCard type="error" message="There was an error trying to display the projects. Try it again later."/>
       </div>
     );
   }
