@@ -25,8 +25,8 @@ const SelectBox = ({ availableValues, currentValue, setValue }: SelectBoxProps) 
         className={`${styles.button} ${buttonClass}`}
         onClick={() => setIsActive(!isActive)}
       >
-        { currentValue }
-        <i className="fas fa-sort-down"></i>
+        { currentValue ? currentValue : "Select an option" }
+        <i className="fas fa-sort-down" aria-hidden="true"></i>
       </button>
 
       { isActive &&

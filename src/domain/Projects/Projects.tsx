@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 
+import { useRouter } from "next/router";
+
 import { gql, useLazyQuery } from "@apollo/client";
 
 import Navbar from "@/components/Navbar";
 import ProjectList from "@/components/ProjectList";
 import { SelectBox } from "@/components/Formulary";
 
-import getQueryParamsFromURL from "@/utils/getQueryParamsFromURL";
-
 import styles from "./Projects.module.scss";
 
 export const GET_PROJECTS = gql`
-  query GetProjects($page: Int) {
-    projects(limit: 1, page: $page) {
+  query GetProjects($page: Int, $search: String) {
+    projects(limit: 1, page: $page, search: $search) {
       docs {
         _id
         title
@@ -23,24 +23,52 @@ export const GET_PROJECTS = gql`
   }
 `;
 
-
 const Projects = () => {
-  const [getProjects, projectsResult] = useLazyQuery(GET_PROJECTS);
   const [search, setSearch] = useState("");
   const [selectedTechnology, setSelectedTechnology] = useState("");
 
+  const [getProjects, projectsResult] = useLazyQuery(GET_PROJECTS);
+
+  const router = useRouter();
+
+  const getVariables = (): { page: number, search: string, technology: string } => {
+    const query = new URLSearchParams(window.location.search);
+
+    const page = query.get("page") ? parseInt(query.get("page")) || 0 : 0;
+    const search = query.get("search") ?? "";
+    const technology = query.get("technology") ?? "";
+
+    return { page, search, technology }
+  }
+
   useEffect(() => {
-    const query = getQueryParamsFromURL(window.location.search);
-
-    const page = query.page ? parseInt(query.page.toString()) || 0 : 0;
-
-    getProjects({ variables: { page } });
+    getProjects({ variables: getVariables() });
   }, []);
+
+  useEffect(() => {
+    const variables = getVariables();
+
+    // if the query has been called and isn't loading, we're going to refetch the data with the new variables
+    if(projectsResult.called && !projectsResult.loading) {
+      projectsResult.refetch(variables);
+    }
+
+    setSearch(variables.search);
+    setSelectedTechnology(variables.technology);
+  }, [router.query]);
 
   const handleOnSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    projectsResult.refetch({ page: 3 });
+    const query: { [key: string]: string } = {}
+
+    if(search) query.search = search;
+    if(selectedTechnology) query.technology = selectedTechnology;
+
+    router.push({
+      pathname: router.pathname,
+      query
+    });
   }
 
   return (
