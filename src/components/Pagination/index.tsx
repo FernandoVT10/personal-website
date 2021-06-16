@@ -1,4 +1,4 @@
-export { PAGINATION_FRAGMENT } from "./Pagination";
+export { PAGINATION_PROPS } from "./Pagination";
 
 import Pagination from "./Pagination";
 

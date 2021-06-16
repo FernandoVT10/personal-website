@@ -1,22 +1,18 @@
 import React from "react";
 
-import { gql } from "@apollo/client";
-
 import { useRouter } from "next/router";
 
 import getPaginationPages from "@/utils/getPaginationPages";
 
 import styles from "./Pagination.module.scss";
 
-export const PAGINATION_FRAGMENT = gql`
-  fragment PaginationProps on PaginateResponse {
-    totalPages
-    page
-    hasPrevPage
-    prevPage
-    hasNextPage
-    nextPage
-  }
+export const PAGINATION_PROPS = `
+  totalPages
+  page
+  hasPrevPage
+  prevPage
+  hasNextPage
+  nextPage
 `;
 
 interface PaginationProps {

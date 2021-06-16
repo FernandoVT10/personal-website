@@ -7,16 +7,15 @@ import { gql, useLazyQuery } from "@apollo/client";
 import Navbar from "@/components/Navbar";
 import { SelectBox } from "@/components/Formulary";
 import ProjectList from "@/components/ProjectList";
-import Pagination, { PAGINATION_FRAGMENT } from "@/components/Pagination";
+import Pagination, { PAGINATION_PROPS } from "@/components/Pagination";
 
 import styles from "./Projects.module.scss";
 
 export const GET_PROJECTS = gql`
-  ${PAGINATION_FRAGMENT}
 
   query GetProjects($page: Int, $search: String) {
     projects(limit: 1, page: $page, search: $search) {
-      ...PaginationProps
+      ${PAGINATION_PROPS}
       docs {
         _id
         title

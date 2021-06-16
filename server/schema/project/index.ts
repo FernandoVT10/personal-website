@@ -18,12 +18,21 @@ export const Project = gql`
     technologies: [Technology]
   }
 
-  extend type PaginateResponse {
+  type ProjectsResponse {
+    totalDocs: Int
+    limit: Int
+    hasPrevPage: Boolean
+    hasNextPage: Boolean
+    page: Int
+    totalPages: Int
+    offset: Int
+    prevPage: Int
+    nextPage: Int
     docs: [Project]
   }
 
   extend type Query {
-    projects(search: String, page: Int, limit: Int): PaginateResponse
+    projects(search: String, page: Int, limit: Int): ProjectsResponse
   }
 
   input ProjectInput {

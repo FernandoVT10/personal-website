@@ -14,18 +14,6 @@ const Query = gql`
   type Mutation {
     _empty: String
   }
-
-  type PaginateResponse {
-    totalDocs: Int
-    limit: Int
-    hasPrevPage: Boolean
-    hasNextPage: Boolean
-    page: Int
-    totalPages: Int
-    offset: Int
-    prevPage: Int
-    nextPage: Int
-  }
 `;
 
 const typeDefs = [ Query, Project, ContactMe ];
