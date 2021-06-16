@@ -1,0 +1,25 @@
+.pagination {
+  display: flex;
+  padding: 20px;
+  width: 100%;
+  background: var(--black);
+  justify-content: center;
+
+  & .button {
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--white);
+    font-size: 20px;
+    font-weight: bold;
+    transition: .3s;
+
+
+    &:hover, &.active{ color: var(--blue) }
+
+    &:disabled {
+      cursor: default;
+      color: var(--black-gray);
+    }
+  }
+}

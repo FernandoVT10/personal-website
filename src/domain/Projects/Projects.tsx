@@ -5,14 +5,18 @@ import { useRouter } from "next/router";
 import { gql, useLazyQuery } from "@apollo/client";
 
 import Navbar from "@/components/Navbar";
-import ProjectList from "@/components/ProjectList";
 import { SelectBox } from "@/components/Formulary";
+import ProjectList from "@/components/ProjectList";
+import Pagination, { PAGINATION_FRAGMENT } from "@/components/Pagination";
 
 import styles from "./Projects.module.scss";
 
 export const GET_PROJECTS = gql`
+  ${PAGINATION_FRAGMENT}
+
   query GetProjects($page: Int, $search: String) {
     projects(limit: 1, page: $page, search: $search) {
+      ...PaginationProps
       docs {
         _id
         title
@@ -99,11 +103,15 @@ const Projects = () => {
         </form>
       </div>
 
-      <div className={styles.projectsContainer}>
-        { projectsResult.called &&
-        <ProjectList projectsResult={projectsResult}/>
-        }
+      { projectsResult.called &&
+      <ProjectList projectsResult={projectsResult}/>
+      }
+
+      { projectsResult.data &&
+      <div className={styles.pagination}>
+        <Pagination data={projectsResult.data.projects}/>
       </div>
+      }
     </div>
   );
 }

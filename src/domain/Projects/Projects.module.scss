@@ -1,6 +1,6 @@
 .projects {
   & .filters {
-    margin-top: 40px;
+    margin: 40px 0;
     padding: 0 40px;
 
     & .searchInputContainer {
@@ -40,6 +40,8 @@
     }
   }
 
-  & .projectsContainer {
+  & .pagination {
+    padding: 0 40px;
+    margin-top: 40px;
   }
 }
