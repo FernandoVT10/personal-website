@@ -5,9 +5,10 @@ import { useRouter } from "next/router";
 import { gql, useLazyQuery } from "@apollo/client";
 
 import Navbar from "@/components/Navbar";
-import { SelectBox } from "@/components/Formulary";
 import ProjectList from "@/components/ProjectList";
 import Pagination, { PAGINATION_PROPS } from "@/components/Pagination";
+
+import Filters from "./Filters";
 
 import styles from "./Projects.module.scss";
 
@@ -33,9 +34,6 @@ export const GET_TECHNOLOGIES = gql`
   }
 `;
 
-interface TechnologiesResult {
-  technologies: { name: string }[]
-}
 
 const getVariables = (): { page: number, search: string, technology: string } => {
   const query = new URLSearchParams(window.location.search);
@@ -52,7 +50,7 @@ const Projects = () => {
   const [selectedTechnology, setSelectedTechnology] = useState("");
 
   const [getProjects, projectsResult] = useLazyQuery(GET_PROJECTS);
-  const [getTechnologies, technologiesResult] = useLazyQuery<TechnologiesResult>(GET_TECHNOLOGIES);
+  const [getTechnologies, technologiesResult] = useLazyQuery(GET_TECHNOLOGIES);
 
   const router = useRouter();
 
@@ -87,37 +85,20 @@ const Projects = () => {
     });
   }
 
-  const technologies = technologiesResult.data
-    ? technologiesResult.data.technologies.map(technology => technology.name)
-    : [];
 
   return (
     <div className={styles.projects}>
       <Navbar/>
 
       <div className={styles.filters}>
-        <form onSubmit={handleOnSubmit}>
-          <div className={styles.searchInputContainer}>
-            <SelectBox
-              label="Select a technology"
-              availableValues={technologies}
-              currentValue={selectedTechnology}
-              setValue={setSelectedTechnology}
-            />
-
-            <input
-              type="search"
-              className={styles.searchInput}
-              placeholder="Search a project"
-              value={search}
-              onChange={({ target: { value } }) => setSearch(value)}
-            />
-
-            <button type="submit" className={styles.submitButton}>
-              <i className="fas fa-search" aria-hidden="true"></i>
-            </button>
-          </div>
-        </form>
+        <Filters
+          technologiesResult={technologiesResult}
+          handleOnSubmit={handleOnSubmit}
+          selectedTechnology={selectedTechnology}
+          setSelectedTechnology={setSelectedTechnology}
+          search={search}
+          setSearch={setSearch}
+        />
       </div>
 
       { projectsResult.called &&
