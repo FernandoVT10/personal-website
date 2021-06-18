@@ -6,10 +6,6 @@ import updateOne from "./updateOne";
 import deleteOne from "./deleteOne";
 
 export const Project = gql`
-  type Technology {
-    name: String
-  }
-
   type Project {
     _id: ID,
     title: String,
