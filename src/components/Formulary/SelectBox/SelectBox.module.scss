@@ -1,5 +1,6 @@
 .selectBox {
   position: relative;
+  width: 100%;
 
   & .button {
     position: relative;
@@ -8,7 +9,7 @@
     background: var(--black);
     border: solid 1px var(--black);;
     height: 55px;
-    width: 200px;
+    width: 100%;
     padding: 0 15px;
     color: var(--white);
     font-weight: bold;

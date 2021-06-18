@@ -44,4 +44,15 @@
     padding: 0 40px;
     margin-top: 40px;
   }
+
+  @media screen and (max-width: 600px) {
+    & .filters {
+      & .searchInputContainer {
+        flex-direction: column;
+
+        & .searchInput { width: 100%; }
+        & .submitButton { width: 100%; }
+      }
+    }
+  }
 }

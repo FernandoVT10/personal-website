@@ -82,9 +82,9 @@ const Projects = () => {
         <form onSubmit={handleOnSubmit}>
           <div className={styles.searchInputContainer}>
             <SelectBox
-              availableValues={["test 1", "test 2"]}
+              availableValues={["test test test test 1", "test 2"]}
               currentValue={selectedTechnology}
-             setValue={setSelectedTechnology}
+              setValue={setSelectedTechnology}
             />
 
             <input

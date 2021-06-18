@@ -52,17 +52,19 @@ const Pagination = ({ data }: PaginationProps) => {
         <i className="fas fa-chevron-left" aria-hidden="true"></i>
       </button>
 
-      {getPaginationPages(data.totalPages, data.page).map(page => {
-        const buttonClass = data.page === page ? styles.active : "";
+      <div className={styles.numbers}>
+        {getPaginationPages(data.totalPages, data.page).map(page => {
+          const buttonClass = data.page === page ? styles.active : "";
 
-        return (
-          <button
-            className={`${styles.button} ${buttonClass}`}
-            onClick={() => changePage(page)}
-            key={page}
-          >{ page }</button>
-        );
-      })}
+          return (
+            <button
+              className={`${styles.button} ${buttonClass}`}
+              onClick={() => changePage(page)}
+              key={page}
+            >{ page }</button>
+          );
+        })}
+      </div>
 
       <button
         className={styles.button}
