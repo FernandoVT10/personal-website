@@ -3,12 +3,18 @@ import React, {useState} from "react";
 import styles from "./SelectBox.module.scss";
 
 interface SelectBoxProps {
+  label: string
   availableValues: string[],
   currentValue: string,
   setValue: React.Dispatch<React.SetStateAction<string>>
 }
 
-const SelectBox = ({ availableValues, currentValue, setValue }: SelectBoxProps) => {
+const SelectBox = ({
+  label,
+  availableValues,
+  currentValue,
+  setValue
+}: SelectBoxProps) => {
   const [isActive, setIsActive] = useState(false);
 
   const handleOnClick = (value: string) => {
@@ -25,12 +31,19 @@ const SelectBox = ({ availableValues, currentValue, setValue }: SelectBoxProps) 
         className={`${styles.button} ${buttonClass}`}
         onClick={() => setIsActive(!isActive)}
       >
-        { currentValue ? currentValue : "Select an option" }
+        { currentValue ? currentValue : label }
         <i className="fas fa-sort-down" aria-hidden="true"></i>
       </button>
 
       { isActive &&
       <div className={styles.values}>
+        <div
+          className={styles.value}
+          onClick={() => handleOnClick("")}
+        >
+          None
+        </div>
+
         {availableValues.map((value, index) => {
           return (
             <div

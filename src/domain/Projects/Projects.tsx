@@ -99,6 +99,7 @@ const Projects = () => {
         <form onSubmit={handleOnSubmit}>
           <div className={styles.searchInputContainer}>
             <SelectBox
+              label="Select a technology"
               availableValues={technologies}
               currentValue={selectedTechnology}
               setValue={setSelectedTechnology}
