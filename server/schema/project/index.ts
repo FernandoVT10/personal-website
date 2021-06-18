@@ -28,7 +28,7 @@ export const Project = gql`
   }
 
   extend type Query {
-    projects(search: String, page: Int, limit: Int): ProjectsResponse
+    projects(search: String, technology: String, page: Int, limit: Int): ProjectsResponse
   }
 
   input ProjectInput {

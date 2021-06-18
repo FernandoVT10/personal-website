@@ -33,9 +33,23 @@
     z-index: 100;
     left: 0;
     width: 100%;
+    max-height: 200px;
     border: solid 1px var(--black-gray);
     border-top: none;
     background: var(--black);
+    overflow: auto;
+
+    &::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: var(--black-gray);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--blue);
+    }
 
     & .value {
       cursor: pointer;

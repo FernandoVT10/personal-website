@@ -1,20 +1,21 @@
 import { PaginateResult } from "mongoose";
 
-import { Project, IProject } from "../../models";
+import { Project, IProject, Technology } from "../../models";
 
 const PROJECTS_PER_PAGE = 6;
 
 interface Parameters {
   search: string
+  technology: string
   page: number
   limit: number
 }
 
 export default async (_: null, args: Parameters): Promise<PaginateResult<IProject>> => {
-  const page = args.page || 1;
-  const limit = args.limit || PROJECTS_PER_PAGE;
+  const page = args.page ?? 1;
+  const limit = args.limit ?? PROJECTS_PER_PAGE;
 
-  const { search } = args;
+  const { search, technology } = args;
 
   const query = {}
 
@@ -23,6 +24,16 @@ export default async (_: null, args: Parameters): Promise<PaginateResult<IProjec
 
     Object.assign(query, {
       title: regex
+    });
+  }
+
+  if(technology) {
+    const technologyDocument = await Technology.findOne({ name: technology });
+
+    console.log(technologyDocument);
+
+    Object.assign(query, {
+      technologies: technologyDocument
     });
   }
 

@@ -12,9 +12,8 @@ import Pagination, { PAGINATION_PROPS } from "@/components/Pagination";
 import styles from "./Projects.module.scss";
 
 export const GET_PROJECTS = gql`
-
-  query GetProjects($page: Int, $search: String) {
-    projects(limit: 1, page: $page, search: $search) {
+  query GetProjects($page: Int, $search: String, $technology: String) {
+    projects(limit: 1, page: $page, search: $search, technology: $technology) {
       ${PAGINATION_PROPS}
       docs {
         _id
@@ -26,26 +25,40 @@ export const GET_PROJECTS = gql`
   }
 `;
 
+export const GET_TECHNOLOGIES = gql`
+  query GetTechnologies {
+    technologies {
+      name
+    }
+  }
+`;
+
+interface TechnologiesResult {
+  technologies: { name: string }[]
+}
+
+const getVariables = (): { page: number, search: string, technology: string } => {
+  const query = new URLSearchParams(window.location.search);
+
+  const page = query.get("page") ? parseInt(query.get("page")) || 0 : 0;
+  const search = query.get("search") ?? "";
+  const technology = query.get("technology") ?? "";
+
+  return { page, search, technology }
+}
+
 const Projects = () => {
   const [search, setSearch] = useState("");
   const [selectedTechnology, setSelectedTechnology] = useState("");
 
   const [getProjects, projectsResult] = useLazyQuery(GET_PROJECTS);
+  const [getTechnologies, technologiesResult] = useLazyQuery<TechnologiesResult>(GET_TECHNOLOGIES);
 
   const router = useRouter();
 
-  const getVariables = (): { page: number, search: string, technology: string } => {
-    const query = new URLSearchParams(window.location.search);
-
-    const page = query.get("page") ? parseInt(query.get("page")) || 0 : 0;
-    const search = query.get("search") ?? "";
-    const technology = query.get("technology") ?? "";
-
-    return { page, search, technology }
-  }
-
   useEffect(() => {
     getProjects({ variables: getVariables() });
+    getTechnologies();
   }, []);
 
   useEffect(() => {
@@ -74,6 +87,10 @@ const Projects = () => {
     });
   }
 
+  const technologies = technologiesResult.data
+    ? technologiesResult.data.technologies.map(technology => technology.name)
+    : [];
+
   return (
     <div className={styles.projects}>
       <Navbar/>
@@ -82,7 +99,7 @@ const Projects = () => {
         <form onSubmit={handleOnSubmit}>
           <div className={styles.searchInputContainer}>
             <SelectBox
-              availableValues={["test test test test 1", "test 2"]}
+              availableValues={technologies}
               currentValue={selectedTechnology}
               setValue={setSelectedTechnology}
             />
