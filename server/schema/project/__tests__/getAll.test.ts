@@ -75,6 +75,22 @@ describe("server/schema/project/getAll", () => {
     expect(docs[0].title).toBe("project 1");
   });
 
+  describe("technology parameter", () => {
+    it("should return only 1 project", async () => {
+      const { docs } = await getAll(null, { technology: "technology 3" } as any);
+
+      expect(docs).toHaveLength(1);
+
+      expect(docs[0].title).toBe("project 3");
+    });
+
+    it("shouldn't return projects when the technology doesn't exist", async () => {
+      const { docs } = await getAll(null, { technology: "technology 20" } as any);
+
+      expect(docs).toHaveLength(0);
+    });
+  });
+
   describe("search parameter", () => {
     it("should return a project", async () => {
       const { docs } = await getAll(null, { search: "PrOjeCT 2" } as any);

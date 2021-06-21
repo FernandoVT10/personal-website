@@ -30,8 +30,6 @@ export default async (_: null, args: Parameters): Promise<PaginateResult<IProjec
   if(technology) {
     const technologyDocument = await Technology.findOne({ name: technology });
 
-    console.log(technologyDocument);
-
     Object.assign(query, {
       technologies: technologyDocument
     });
