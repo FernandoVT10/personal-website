@@ -1,4 +1,4 @@
-export default (totalPages: number, currentPage: number, adjacentLinks: number = 3) => {
+export default (totalPages: number, currentPage: number, adjacentLinks: number = 3): number[] => {
   let minPage = 0, maxPage = 0;
   let remainingLinks = adjacentLinks * 2;
 
