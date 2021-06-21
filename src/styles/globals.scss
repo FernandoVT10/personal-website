@@ -29,3 +29,7 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.body {
+  min-height: calc(100vh - 200px);
+}

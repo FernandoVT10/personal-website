@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { gql, useLazyQuery } from "@apollo/client";
 
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import ProjectList from "@/components/ProjectList";
 import Pagination, { PAGINATION_PROPS } from "@/components/Pagination";
 
@@ -88,28 +89,32 @@ const Projects = () => {
 
   return (
     <div className={styles.projects}>
-      <Navbar/>
+        <Navbar/>
 
-      <div className={styles.filters}>
-        <Filters
-          technologiesResult={technologiesResult}
-          handleOnSubmit={handleOnSubmit}
-          selectedTechnology={selectedTechnology}
-          setSelectedTechnology={setSelectedTechnology}
-          search={search}
-          setSearch={setSearch}
-        />
+      <div className="body">
+        <div className={styles.filters}>
+          <Filters
+            technologiesResult={technologiesResult}
+            handleOnSubmit={handleOnSubmit}
+            selectedTechnology={selectedTechnology}
+            setSelectedTechnology={setSelectedTechnology}
+            search={search}
+            setSearch={setSearch}
+          />
+        </div>
+
+        { projectsResult.called &&
+        <ProjectList projectsResult={projectsResult}/>
+        }
+
+        { projectsResult.data &&
+          <div className={styles.pagination}>
+            <Pagination data={projectsResult.data.projects}/>
+          </div>
+        }
       </div>
 
-      { projectsResult.called &&
-      <ProjectList projectsResult={projectsResult}/>
-      }
-
-      { projectsResult.data &&
-      <div className={styles.pagination}>
-        <Pagination data={projectsResult.data.projects}/>
-      </div>
-      }
+        <Footer/>
     </div>
   );
 }
