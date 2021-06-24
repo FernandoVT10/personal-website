@@ -25,7 +25,7 @@ const Navbar = () => {
         </Link>
       </div>
 
-      <div className={`${styles.menu} ${menuClassName}`}>
+      <div className={`${styles.menu} ${menuClassName}`} data-testid="navbar-menu">
         <ul className={styles.menuItems}>
           <li className={styles.menuItem}>
             <Link href="/">
@@ -50,6 +50,7 @@ const Navbar = () => {
       <button
         className={styles.toggleButton}
         onClick={() => setNavbarActive(!navbarActive)}
+        data-testid="navbar-toggle-button"
       >
         <i className="fas fa-bars" aria-hidden="true"></i>
       </button>
