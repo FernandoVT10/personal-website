@@ -1,4 +1,4 @@
-export default (totalPages: number, currentPage: number, adjacentLinks: number = 3): number[] => {
+const getPaginationPages = (totalPages: number, currentPage: number, adjacentLinks: number = 3): number[] => {
   let minPage = 0, maxPage = 0;
   let remainingLinks = adjacentLinks * 2;
 
@@ -34,3 +34,5 @@ export default (totalPages: number, currentPage: number, adjacentLinks: number =
 
   return result;
 }
+
+export default getPaginationPages;
