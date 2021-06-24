@@ -33,7 +33,7 @@ const Filter = ({
 
   return (
     <div className={styles.filters}>
-      <form onSubmit={handleOnSubmit}>
+      <form onSubmit={handleOnSubmit} data-testid="filters-form">
         <div className={styles.searchInputContainer}>
           <SelectBox
             label="Select a technology"
