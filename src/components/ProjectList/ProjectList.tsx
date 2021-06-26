@@ -6,8 +6,9 @@ import MessageCard from "@/components/MessageCard";
 
 import ProjectCard from "./ProjectCard";
 
-import styles from "./ProjectList.module.scss";
 import Loader from "../Loader";
+
+import styles from "./ProjectList.module.scss";
 
 interface Project {
   _id: string
@@ -44,7 +45,7 @@ const ProjectList = ({ projectsResult }: { projectsResult: ApolloQueryResult<Pro
   if(!data.projects.docs.length) {
     return (
       <div className={styles.messageCardContainer}>
-        <MessageCard type="info" message="There are not projects to display."/>
+        <MessageCard type="info" message="There are no projects to display."/>
       </div>
     );
   }

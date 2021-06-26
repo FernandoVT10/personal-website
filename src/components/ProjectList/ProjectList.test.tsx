@@ -4,6 +4,12 @@ import { render } from "@testing-library/react";
 
 import ProjectList from "./ProjectList";
 
+jest.mock("../Loader", () => () => {
+  return (
+    <div data-testid="loader-component"></div>
+  );
+});
+
 const APOLLO_ERROR_MOCK = {
   graphQLErrors: [{ message: "test error message" }]
 }
@@ -41,29 +47,35 @@ describe("src/domain/Home/ProjectList", () => {
     });
   });
 
-  it("should display a message when there are no projects", () => {
+  it("should display the loading state correctly", () => {
     const projectsResult = {
-      error: APOLLO_ERROR_MOCK,
-      data: null
+      loading: true
     } as any;
 
-    const { queryByText } = render(<ProjectList projectsResult={projectsResult}/>);
+    const { queryByTestId } = render(<ProjectList projectsResult={projectsResult}/>);
 
-    expect(queryByText("test error message")).toBeInTheDocument();
+    expect(queryByTestId("loader-component")).toBeInTheDocument();
   });
 
-  it("should display an error correctly", () => {
+  it("should display a message when there are no projects", () => {
     const projectsResult = {
-      error: null,
       data: {
-        projects: {
-          docs: []
-        }
+        projects: { docs: [] }
       }
     } as any;
 
     const { queryByText } = render(<ProjectList projectsResult={projectsResult}/>);
 
-    expect(queryByText("There are not projects to display.")).toBeInTheDocument();
+    expect(queryByText("There are no projects to display.")).toBeInTheDocument();
+  });
+
+  it("should display a message when there is an error", () => {
+    const projectsResult = {
+      error: APOLLO_ERROR_MOCK,
+    } as any;
+
+    const { queryByText } = render(<ProjectList projectsResult={projectsResult}/>);
+
+    expect(queryByText("There was an error trying to display the projects. Try it again later.")).toBeInTheDocument();
   });
 });
