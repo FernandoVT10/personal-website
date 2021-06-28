@@ -26,8 +26,6 @@ interface PaginationProps {
   }
 }
 
-
-
 const Pagination = ({ data }: PaginationProps) => {
   const router = useRouter();
 
@@ -46,6 +44,7 @@ const Pagination = ({ data }: PaginationProps) => {
       <button
         className={styles.button}
         onClick={() => changePage(data.prevPage)}
+        data-testid="pagination-left-button"
         disabled={!data.hasPrevPage}
 
       >
@@ -69,6 +68,7 @@ const Pagination = ({ data }: PaginationProps) => {
       <button
         className={styles.button}
         onClick={() => changePage(data.nextPage)}
+        data-testid="pagination-right-button"
         disabled={!data.hasNextPage}
 
       >
