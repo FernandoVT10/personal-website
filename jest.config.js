@@ -28,7 +28,7 @@ module.exports = {
       },
       roots: ["src"],
       setupFilesAfterEnv: [
-        "./src/setupTests.ts"
+        "./src/tests/setupTests.ts"
       ]
     }
   ]

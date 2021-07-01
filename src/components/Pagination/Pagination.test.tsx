@@ -1,13 +1,8 @@
 import React from "react";
 
-import { useRouter } from "next/router";
-
 import { render, fireEvent } from "@testing-library/react";
-import { mocked } from "ts-jest/utils";
 
 import Pagination from "./Pagination";
-
-jest.mock("next/router");
 
 const MOCK_DATA = {
   totalPages: 1024,
@@ -26,21 +21,8 @@ const createRange = (start: number, end: number) => {
   return result;
 }
 
-const useRouterMocked = mocked(useRouter);
-
-const changeRouterProperties = ({query, pathname, push }: { query?: object, pathname?: string, push?: Function }) => {
-  useRouterMocked.mockImplementation(() => ({
-    query: query ?? {},
-    pathname: pathname ?? "/test/",
-    push: push ?? jest.fn()
-  } as any));
-}
 
 describe("src/components/Pagination", () => {
-  beforeEach(() => {
-    useRouterMocked.mockReset();
-  });
-
   it("should render correctly", () => {
     const { queryByText, getByTestId } = render(<Pagination data={MOCK_DATA}/>);
 
