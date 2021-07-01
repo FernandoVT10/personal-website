@@ -35,7 +35,6 @@ export const GET_TECHNOLOGIES = gql`
   }
 `;
 
-
 const getVariables = (): { page: number, search: string, technology: string } => {
   const query = new URLSearchParams(window.location.search);
 
@@ -85,7 +84,6 @@ const Projects = () => {
       query
     });
   }
-
 
   return (
     <div className={styles.projects}>

@@ -6,14 +6,17 @@ jest.mock("next/router");
 
 const useRouterMocked = mocked(useRouter);
 
-const changeRouterProperties = ({query, pathname, push }: { query?: object, pathname?: string, push?: Function }) => {
+const changeRouterProperties = ({ query, pathname, push }: { query?: object, pathname?: string, push?: Function }) => {
   useRouterMocked.mockImplementation(() => ({
-    query: query ?? {},
+    query: query ?? null,
     pathname: pathname ?? "/test/",
     push: push ?? jest.fn()
   } as any));
 }
 
-beforeEach(() => useRouterMocked.mockReset());
+beforeEach(() => { 
+  useRouterMocked.mockReset();
+  changeRouterProperties({});
+});
 
 global.changeRouterProperties = changeRouterProperties;
