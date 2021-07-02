@@ -31,7 +31,7 @@ const Home = ({ projectsResult }: { projectsResult: ApolloQueryResult<ProjectsDa
               </li>
 
               <li className={styles.item}>
-                <Link href="/contactme/">
+                <Link href="#contactme">
                   <a className={styles.link}>Contact Me</a>
                 </Link>
               </li>
@@ -56,7 +56,7 @@ const Home = ({ projectsResult }: { projectsResult: ApolloQueryResult<ProjectsDa
             I'm a FullStack developer. I love JavaScript.<br/>
             My main technologies are React Js and Node JS.<br/>
             I'm learning about Artificial Intelligence (It's a bit difficult).<br/>
-            I like play videogames and listen to music while i read.
+            I like to play videogames and listen to music while i read.
           </p>
         </div>
       </div>
@@ -65,7 +65,7 @@ const Home = ({ projectsResult }: { projectsResult: ApolloQueryResult<ProjectsDa
 
       <ProjectList projectsResult={projectsResult}/>
 
-      <div className={styles.contactMe}>
+      <div className={styles.contactMe} id="contactme">
         <ContactMe/>
       </div>
 

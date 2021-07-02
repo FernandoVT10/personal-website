@@ -40,7 +40,7 @@ const Navbar = () => {
           </li>
 
           <li className={styles.menuItem}>
-            <Link href="/contactme/">
+            <Link href="/#contactme">
               <a className={styles.link}>Contact Me</a>
             </Link>
           </li>
