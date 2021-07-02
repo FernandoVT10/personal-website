@@ -8,6 +8,7 @@ export interface IProject extends Document {
   title: String,
   images: string[],
   description: string,
+  content: string,
   technologies: ITechnology["_id"][]
 }
 
@@ -20,7 +21,12 @@ const projectSchema = new Schema({
   images: [String],
   description: {
     type: String,
+    maxLength: [250, "The description must be less than 250 characters"],
     required: [true, "The description is required"]
+  },
+  content: {
+    type: String,
+    required: [true, "The content is required"]
   },
   technologies: [{
     type: Schema.Types.ObjectId,

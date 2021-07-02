@@ -11,6 +11,7 @@ export const Project = gql`
     title: String,
     images: [String]
     description: String
+    content: String
     technologies: [Technology]
   }
 
