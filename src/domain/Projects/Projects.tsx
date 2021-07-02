@@ -15,7 +15,7 @@ import styles from "./Projects.module.scss";
 
 export const GET_PROJECTS = gql`
   query GetProjects($page: Int, $search: String, $technology: String) {
-    projects(limit: 1, page: $page, search: $search, technology: $technology) {
+    projects(limit: 3, page: $page, search: $search, technology: $technology) {
       ${PAGINATION_PROPS}
       docs {
         _id
