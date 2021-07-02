@@ -2,6 +2,7 @@ import React from "react";
 
 import { render } from "@testing-library/react";
 import { mocked } from "ts-jest/utils";
+import { MockedProvider } from "@apollo/client/testing";
 
 import client from "@/config/apolloClient";
 
@@ -10,12 +11,17 @@ import HomePage, { getStaticProps, GET_PROJECTS } from "@/pages/index";
 jest.mock("@/config/apolloClient");
 
 const PROJECT_RESULT_MOCK = {
-  error: {
-    graphQLErrors: [{ message: "test error message" }]
-  },
+  error: null,
   data: {
     projects: {
-      docs: []
+      docs: [
+        {
+          _id: "testid",
+          title: "test title",
+          description: "test description",
+          images: ["test-1.jpg", "test-2.jpg"]
+        }
+      ]
     }
   }
 } as any;
@@ -30,9 +36,14 @@ describe("src/pages/index", () => {
   });
   
   it("should render correctly", () => {
-    const { queryByText } = render(<HomePage projectsResult={PROJECT_RESULT_MOCK}/>);
+    const { queryByText } = render(
+      <MockedProvider>
+        <HomePage projectsResult={PROJECT_RESULT_MOCK}/>
+      </MockedProvider>
+    );
 
-    expect(queryByText("test error message")).toBeInTheDocument();
+    expect(queryByText("test title")).toBeInTheDocument();
+    expect(queryByText("test description")).toBeInTheDocument();
   });
 
   describe("getStaticProps", () => {
