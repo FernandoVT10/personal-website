@@ -1,0 +1,25 @@
+.markdown {
+  & li {
+    margin: 10px 0;
+  }
+
+  & img {
+    width: 100%;
+  }
+
+  & code {
+    font-weight: bold;
+
+    &.codeSpan { color: var(--blue); }
+  }
+
+
+  & a {
+    transition: .3s;
+    text-decoration: underline;
+
+    &:hover {
+      color: var(--blue);
+    }
+  }
+}
