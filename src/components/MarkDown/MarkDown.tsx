@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import DOMPurify from "dompurify";
 import marked from "marked";
@@ -21,8 +21,14 @@ marked.setOptions({
 });
 
 const MarkDown = ({ content }: { content: string }) => {
-  const parsedContent = marked(content);
-  const sanitizedContent = DOMPurify.sanitize(parsedContent);
+  const [sanitizedContent, setSanitizedContent] = useState("");
+
+  useEffect(() => {
+    const parsedContent = marked(content);
+    const sanitizedContent = DOMPurify.sanitize(parsedContent);
+    setSanitizedContent(sanitizedContent);
+  }, [content]);
+
 
   return <div className={styles.markdown} dangerouslySetInnerHTML={{ __html: sanitizedContent }}></div>;
 }
