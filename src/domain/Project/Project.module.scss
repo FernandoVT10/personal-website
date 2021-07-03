@@ -1,11 +1,17 @@
 .container {
   margin-top: 40px;
-  display: flex;
+  display: grid;
+  width: 100%;
+  padding: 0 20px;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: 20px;
+
 
   & .projectContainer {
     padding: 20px;
-    width: 70%;
     background: var(--black);
+    height: fit-content;
+    grid-column: 1 / 4;
 
     & .title {
       font-size: 25px;
@@ -29,7 +35,17 @@
   }
 
   & .relatedProjectsContainer {
-    width: 30%;
-    background: var(--purple);
+    padding: 20px;
+    background: var(--black);
+    grid-column: 4 / 5;
+    height: fit-content;
+
+    & .subtitle {
+      margin: 0;
+    }
+
+    & .relatedProjects {
+      margin-top: 20px;
+    }
   }
 }

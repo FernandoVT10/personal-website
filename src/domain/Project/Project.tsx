@@ -8,21 +8,22 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import Carousel from "@/components/Carousel";
 
+import RelatedProjects, { IRelatedProject } from "./RelatedProjects";
+
 import styles from "./Project.module.scss";
 
-export interface IProject {
-  title: string
-  images: string[]
-  content: string,
-  technologies: { name: string }[]
-}
-
-interface ProjectProps {
-  project: IProject
+export interface ProjectProps {
+  project: {
+    title: string
+    images: string[]
+    content: string,
+    technologies: { name: string }[]
+  },
+  relatedProjects: IRelatedProject[],
   error: boolean
 }
 
-const Project = ({ project, error }: ProjectProps) => {
+const Project = ({ project, relatedProjects, error }: ProjectProps) => {
   if(error && !project) { return null }
 
   return (
@@ -52,7 +53,13 @@ const Project = ({ project, error }: ProjectProps) => {
           </div>
         </div>
 
-        <div className={styles.relatedProjectsContainer}></div>
+        <div className={styles.relatedProjectsContainer}>
+          <h3 className={styles.subtitle}>Related Projects</h3>
+
+          <div className={styles.relatedProjects}>
+            <RelatedProjects relatedProjects={relatedProjects}/>
+          </div>
+        </div>
       </div>
 
       <Footer/>

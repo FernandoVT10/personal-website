@@ -1,4 +1,4 @@
-export type { IProject } from "./Project";
+export type { ProjectProps } from "./Project";
 
 import Project from "./Project";
 
