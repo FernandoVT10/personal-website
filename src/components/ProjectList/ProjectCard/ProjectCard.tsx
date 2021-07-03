@@ -2,7 +2,7 @@ import React from "react";
 
 import Link from "next/link";
 
-import ImagesCarousel from "./ImagesCarousel";
+import ImagesCarousel from "@/components/Carousel";
 
 import styles from "./ProjectCard.module.scss";
 
