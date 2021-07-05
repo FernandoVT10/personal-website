@@ -2,6 +2,7 @@ import { gql } from "apollo-server-express";
 
 import getAll from "./getAll";
 import getOne from "./getOne";
+import getRelatedProjects from "./getRelatedProjects";
 import createOne from "./createOne";
 import updateOne from "./updateOne";
 import deleteOne from "./deleteOne";
@@ -32,6 +33,7 @@ export const Project = gql`
   extend type Query {
     projects(search: String, technology: String, page: Int, limit: Int): ProjectsResponse
     project(projectId: ID!): Project
+    relatedProjects(projectId: ID!, limit: Int): [Project]
   }
 
   input ProjectInput {
@@ -59,7 +61,8 @@ export const Project = gql`
 export const projectResolvers = {
   Query: {
     projects: getAll,
-    project: getOne
+    project: getOne,
+    relatedProjects: getRelatedProjects
   },
   Mutation: {
     createProject: createOne,

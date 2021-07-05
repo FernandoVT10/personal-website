@@ -12,7 +12,7 @@ import Project, { ProjectProps } from "@/domain/Project";
 const RELATED_PROJECTS_LIMIT = 6;
 
 export const GET_PROJECT = gql`
-  query GetProject($projectId: ID!) {
+  query GetProject($projectId: ID!, $limit: Int) {
     project(projectId: $projectId) {
       title
       images
@@ -21,47 +21,38 @@ export const GET_PROJECT = gql`
         name
       }
     }
-  }
-`;
 
-export const GET_RELATED_PROJECTS = gql`
-  query GetRelatedProjects($limit: Int!) {
-    projects(limit: $limit) {
-      docs {
-        _id
-        title
-        images
-      }
+    relatedProjects(projectId: $projectId, limit: $limit) {
+      _id
+      title
+      images
     }
   }
 `;
+
+interface IQueryResult {
+  project: ProjectProps["project"]
+  relatedProjects: ProjectProps["relatedProjects"]
+}
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const { projectId } = ctx.params;
 
   try {
-    const projectResult = await client.query<{ project: ProjectProps["project"] }>({
+    const queryResult = await client.query<IQueryResult>({
       query: GET_PROJECT,
       variables: {
-        projectId
-      }
-    });
-
-    const relatedProjectsResult = await client.query<{
-      projects: {
-        docs: ProjectProps["relatedProjects"]
-      }
-    }>({
-      query: GET_RELATED_PROJECTS,
-      variables: {
+        projectId,
         limit: RELATED_PROJECTS_LIMIT
       }
     });
 
+    const { project, relatedProjects } = queryResult.data;
+
     return {
       props: {
-        project: projectResult.data.project,
-        relatedProjects: relatedProjectsResult.data.projects.docs,
+        project,
+        relatedProjects,
         error: false
       }
     } 
