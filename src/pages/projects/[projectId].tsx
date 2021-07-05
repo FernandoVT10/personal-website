@@ -65,7 +65,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
         error: false
       }
     } 
-  } catch (err) {
+  } catch {
     return {
       props: {
         project: null,

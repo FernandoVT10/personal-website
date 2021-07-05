@@ -48,4 +48,15 @@
       margin-top: 20px;
     }
   }
+
+  @media screen and (max-width: 992px) {
+    & .projectContainer { grid-column: 1 / 5; }
+
+    & .relatedProjectsContainer {
+      padding: 0;
+      grid-column: 1 / 5;
+      margin-top: 40px;
+      background: transparent;
+    }
+  }
 }

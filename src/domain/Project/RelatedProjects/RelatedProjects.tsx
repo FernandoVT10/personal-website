@@ -15,21 +15,23 @@ interface RelatedProjectsProps {
 
 const RelatedProjects = ({ relatedProjects }: RelatedProjectsProps) => {
   return (
-    <div className={styles.relatedProjects}>
-      {relatedProjects.map((relatedProject, index) => {
-        return (
-          <div className={styles.relatedProject} key={index}>
-            <img
-              src={relatedProject.images[0]}
-              className={styles.image}
-              alt="Related Project Image"
-            />
-            <Link href={`/projects/${relatedProject._id}`}>
-              <a className={styles.title}>{ relatedProject.title }</a>
-            </Link>
-          </div>
-        );
-      })}
+    <div className={styles.container}>
+      <div className={styles.relatedProjects}>
+        {relatedProjects.map((relatedProject, index) => {
+          return (
+            <div className={styles.relatedProject} key={index}>
+              <img
+                src={relatedProject.images[0]}
+                className={styles.image}
+                alt="Related Project Image"
+              />
+              <Link href={`/projects/${relatedProject._id}`}>
+                <a className={styles.title}>{ relatedProject.title }</a>
+              </Link>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

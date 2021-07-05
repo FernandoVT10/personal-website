@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import MarkDown from "@/components/MarkDown";
 
+import ErrorPage from "@/components/ErrorPage";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import Carousel from "@/components/Carousel";
@@ -24,7 +25,9 @@ export interface ProjectProps {
 }
 
 const Project = ({ project, relatedProjects, error }: ProjectProps) => {
-  if(error && !project) { return null }
+  if(error) {
+    return <ErrorPage statusCode="404" error="Project not found" />;
+  }
 
   return (
     <div>
