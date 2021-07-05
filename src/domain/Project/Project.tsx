@@ -29,12 +29,14 @@ const Project = ({ project, relatedProjects, error }: ProjectProps) => {
     return <ErrorPage statusCode="404" error="Project not found" />;
   }
 
+  const projectContainerClass = !relatedProjects.length ? styles.fullWidth : "";
+
   return (
     <div>
       <Navbar/>
 
       <div className={styles.container}>
-        <div className={styles.projectContainer}>
+        <div className={`${styles.projectContainer} ${projectContainerClass}`}>
           <Carousel images={project.images}/>
 
           <h1 className={styles.title}>{ project.title }</h1>
@@ -56,6 +58,7 @@ const Project = ({ project, relatedProjects, error }: ProjectProps) => {
           </div>
         </div>
 
+        { relatedProjects.length &&
         <div className={styles.relatedProjectsContainer}>
           <h3 className={styles.subtitle}>Related Projects</h3>
 
@@ -63,6 +66,7 @@ const Project = ({ project, relatedProjects, error }: ProjectProps) => {
             <RelatedProjects relatedProjects={relatedProjects}/>
           </div>
         </div>
+        }
       </div>
 
       <Footer/>
