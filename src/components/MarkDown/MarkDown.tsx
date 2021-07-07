@@ -29,7 +29,6 @@ const MarkDown = ({ content }: { content: string }) => {
     setSanitizedContent(sanitizedContent);
   }, [content]);
 
-
   return <div className={styles.markdown} dangerouslySetInnerHTML={{ __html: sanitizedContent }}></div>;
 }
 
