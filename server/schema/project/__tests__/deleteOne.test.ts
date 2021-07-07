@@ -13,6 +13,7 @@ jest.mock("../../../utils/controllers/ImageController");
 const PROJECT_MOCK = {
   title: "test title",
   description: "test description",
+  content: "test content",
   technologies: [],
   images: ["test-1.jpg", "test-2.jpg"]
 }

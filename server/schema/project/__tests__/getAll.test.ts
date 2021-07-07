@@ -13,6 +13,7 @@ const PROJECTS_MOCK = [
     title: "project 1",
     images: ["project-1-1.jpg", "project-1-2.jpg"],
     description: "project 1 description",
+    content: "project 1 content",
     technologies: [],
     createdAt: Date.now() - 2
   },
@@ -20,6 +21,7 @@ const PROJECTS_MOCK = [
     title: "project 2",
     images: ["project-2-1.jpg", "project-2-2.jpg"],
     description: "project 2 description",
+    content: "project 2 content",
     technologies: [],
     createdAt: Date.now() - 1
   },
@@ -27,6 +29,7 @@ const PROJECTS_MOCK = [
     title: "project 3",
     images: ["project-3-1.jpg", "project-3-2.jpg"],
     description: "project 3 description",
+    content: "project 3 content",
     technologies: [],
     createdAt: Date.now()
   }
@@ -50,12 +53,27 @@ describe("server/schema/project/getAll", () => {
     const { docs } = await getAll(null, {} as any);
 
     expect(docs[0].title).toBe("project 3");
+    docs[0].images.forEach((image, index) => {
+      expect(image).toEqual(PROJECTS_MOCK[2].images[index]);
+    });
+    expect(docs[0].description).toBe("project 3 description");
+    expect(docs[0].content).toBe("project 3 content");
     expect(docs[0].technologies[0].name).toBe("technology 3");
 
     expect(docs[1].title).toBe("project 2");
+    docs[1].images.forEach((image, index) => {
+      expect(image).toEqual(PROJECTS_MOCK[1].images[index]);
+    });
+    expect(docs[1].description).toBe("project 2 description");
+    expect(docs[1].content).toBe("project 2 content");
     expect(docs[1].technologies[0].name).toBe("technology 2");
 
     expect(docs[2].title).toBe("project 1");
+    docs[2].images.forEach((image, index) => {
+      expect(image).toEqual(PROJECTS_MOCK[0].images[index]);
+    });
+    expect(docs[2].description).toBe("project 1 description");
+    expect(docs[2].content).toBe("project 1 content");
     expect(docs[2].technologies[0].name).toBe("technology 1");
   });
 

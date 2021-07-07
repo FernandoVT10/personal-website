@@ -4,7 +4,7 @@ import { render } from "@testing-library/react";
 
 import ProjectCard from "./ProjectCard";
 
-jest.mock("./ImagesCarousel", () => ({ images }: { images: string[] }) => {
+jest.mock("@/components/Carousel", () => ({ images }: { images: string[] }) => {
   return (
     <div>
       {images.map((image, index) => {
