@@ -33,7 +33,6 @@ describe("src/domain/Project", () => {
     const { queryByText, getAllByTestId } = render(
       <Project project={PROJECT_MOCK} relatedProjects={RELATED_PROJECTS_MOCK} error={false}/>
     );
-
     // Project
     expect(queryByText("test title")).toBeInTheDocument();
 
@@ -52,5 +51,14 @@ describe("src/domain/Project", () => {
     RELATED_PROJECTS_MOCK.forEach(relatedProject => {
       expect(queryByText(relatedProject.title)).toBeInTheDocument();
     });
+  });
+
+  it("should render error message", () => {
+    const { queryByText } = render(
+      <Project project={PROJECT_MOCK} relatedProjects={RELATED_PROJECTS_MOCK} error={true}/>
+    );
+
+    expect(queryByText("404")).toBeInTheDocument();
+    expect(queryByText("Project not found")).toBeInTheDocument();
   });
 });
