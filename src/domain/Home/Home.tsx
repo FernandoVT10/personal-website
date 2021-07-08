@@ -6,7 +6,7 @@ import Link from "next/link";
 
 import Footer from "@/components/Footer";
 
-import ProjectList, { ProjectsData } from "@/components/ProjectList";
+import ProjectList, { ProjectsData } from "@/components/Projects/ProjectList";
 import ContactMe from "./ContactMe";
 
 import styles from "./Home.module.scss";

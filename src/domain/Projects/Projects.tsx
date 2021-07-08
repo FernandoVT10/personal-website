@@ -6,10 +6,10 @@ import { gql, useLazyQuery } from "@apollo/client";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ProjectList from "@/components/ProjectList";
+import ProjectList from "@/components/Projects/ProjectList";
 import Pagination, { PAGINATION_PROPS } from "@/components/Pagination";
 
-import Filters from "./Filters";
+import Filters from "@/components/Projects/ProjectsFilter";
 
 import styles from "./Projects.module.scss";
 

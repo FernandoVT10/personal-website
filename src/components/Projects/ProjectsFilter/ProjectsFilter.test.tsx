@@ -1,8 +1,8 @@
 import React from "react";
 
-import { render, fireEvent, queryByText } from "@testing-library/react";
+import { render, fireEvent } from "@testing-library/react";
 
-import Filters from "./Filters";
+import ProjectsFilter from "./ProjectsFilter";
 
 const TECHNOLOGIES_MOCK = [
   { name: "technology 1" }, 
@@ -19,7 +19,7 @@ const TECHNOLOGY_RESULT_MOCK = {
 describe("src/domain/Projects/Filters", () => {
   it("should render correctly", () => {
     const { queryByText, getByText, getByDisplayValue } = render(
-      <Filters
+      <ProjectsFilter
         technologiesResult={TECHNOLOGY_RESULT_MOCK}
         handleOnSubmit={jest.fn()}
         selectedTechnology=""
@@ -45,7 +45,7 @@ describe("src/domain/Projects/Filters", () => {
     const setSelectedTechnologyMock = jest.fn();
 
     const { getByText } = render(
-      <Filters
+      <ProjectsFilter
         technologiesResult={TECHNOLOGY_RESULT_MOCK}
         handleOnSubmit={jest.fn()}
         selectedTechnology=""
@@ -68,7 +68,7 @@ describe("src/domain/Projects/Filters", () => {
     const setSearchMock = jest.fn();
 
     const { getByDisplayValue } = render(
-      <Filters
+      <ProjectsFilter
         technologiesResult={TECHNOLOGY_RESULT_MOCK}
         handleOnSubmit={jest.fn()}
         selectedTechnology=""
@@ -88,7 +88,7 @@ describe("src/domain/Projects/Filters", () => {
     const handleOnSubmitMock = jest.fn();
 
     const { getByTestId } = render(
-      <Filters
+      <ProjectsFilter
         technologiesResult={TECHNOLOGY_RESULT_MOCK}
         handleOnSubmit={handleOnSubmitMock}
         selectedTechnology=""

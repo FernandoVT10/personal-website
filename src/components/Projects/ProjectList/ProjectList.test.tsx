@@ -4,7 +4,7 @@ import { render } from "@testing-library/react";
 
 import ProjectList from "./ProjectList";
 
-jest.mock("../Loader", () => () => {
+jest.mock("@/components/Loader", () => () => {
   return (
     <div data-testid="loader-component"></div>
   );

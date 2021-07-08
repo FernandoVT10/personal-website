@@ -6,7 +6,7 @@ import MessageCard from "@/components/MessageCard";
 
 import ProjectCard from "./ProjectCard";
 
-import Loader from "../Loader";
+import Loader from "@/components/Loader";
 
 import styles from "./ProjectList.module.scss";
 

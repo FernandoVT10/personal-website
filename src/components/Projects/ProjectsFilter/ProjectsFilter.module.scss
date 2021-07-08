@@ -1,6 +1,13 @@
-.filters {
+.projectsFilter {
+  display: flex;
+
+  & .selectBoxContainer {
+    width: 250px;
+  }
+
   & .searchInputContainer {
     display: flex;
+    width: calc(100% - 250px);
 
     & .searchInput {
       outline: 0;
@@ -33,5 +40,12 @@
         color: var(--white);
       }
     }
+  }
+
+  @media screen and (max-width: 600px) {
+    flex-direction: column-reverse;
+
+    & .selectBoxContainer { width: 100% }
+    & .searchInputContainer { width: 100% }
   }
 }
