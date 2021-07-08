@@ -1,0 +1,14 @@
+.container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+
+  & .filtercontainer {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  & .paginationContainer {
+    margin-top: 20px;
+  }
+}
