@@ -1,25 +1,39 @@
 .pagination {
   display: flex;
-  padding: 20px;
   width: 100%;
-  background: var(--black);
   justify-content: center;
 
   & .button {
     cursor: pointer;
-    border: none;
-    background: transparent;
+    margin-left: 10px;
+    padding: 10px 15px;
+    border: solid 1px var(--black);
+    background: var(--black);
     color: var(--white);
-    font-size: 20px;
+    font-size: 16px;
     font-weight: bold;
     transition: .3s;
 
-
-    &:hover, &.active{ color: var(--blue) }
+    &:hover, &.active {
+      color: var(--blue);
+      border-color: var(--blue);
+    }
 
     &:disabled {
       cursor: default;
       color: var(--black-gray);
+
+      &:hover {
+        border-color: var(--black);
+      }
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    & .button {
+      display: none;
+
+      &.arrowButton, &.active { display: initial; }
     }
   }
 }

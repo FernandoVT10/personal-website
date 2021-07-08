@@ -42,7 +42,7 @@ const Pagination = ({ data }: PaginationProps) => {
   return (
     <div className={styles.pagination}>
       <button
-        className={styles.button}
+        className={`${styles.button} ${styles.arrowButton}`}
         onClick={() => changePage(data.prevPage)}
         data-testid="pagination-left-button"
         disabled={!data.hasPrevPage}
@@ -66,7 +66,7 @@ const Pagination = ({ data }: PaginationProps) => {
       </div>
 
       <button
-        className={styles.button}
+        className={`${styles.button} ${styles.arrowButton}`}
         onClick={() => changePage(data.nextPage)}
         data-testid="pagination-right-button"
         disabled={!data.hasNextPage}
