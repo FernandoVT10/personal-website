@@ -5,14 +5,15 @@ import useInput from "@/hooks/useInput";
 import styles from "./Input.module.scss";
 
 interface InputProps {
-  prefix: string,
-  label: string,
-  value: string,
-  setValue: React.Dispatch<React.SetStateAction<string>>,
+  prefix: string
+  label: string
+  value: string
+  setValue: React.Dispatch<React.SetStateAction<string>>
   validator?: (newValue: string) => string
+  type?: string
 }
 
-const Input = ({ prefix, label, value, setValue, validator }: InputProps) => {
+const Input = ({ prefix, label, value, setValue, validator, type }: InputProps) => {
   const [errorMessage, handleOnChange] = useInput(setValue, validator);
 
   const inputClass = errorMessage.length > 0 ? styles.error : "";
@@ -20,7 +21,7 @@ const Input = ({ prefix, label, value, setValue, validator }: InputProps) => {
   return (
     <div className={`${styles.inputContainer} ${inputClass}`}>
       <input
-        type="text"
+        type={type ?? "text"}
         id={`${prefix}-input`}
         className={styles.input}
         value={value}
