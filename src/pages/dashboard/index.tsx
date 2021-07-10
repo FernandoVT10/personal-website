@@ -2,8 +2,6 @@ import Head from "next/head";
 
 import Home from "@/domain/Dashboard/Home";
 
-import withUser from "@/hocs/withUser";
-
 function DashboardPage() {
   return (
     <>
@@ -16,4 +14,4 @@ function DashboardPage() {
   );
 }
 
-export default withUser(DashboardPage, true, "/dashboard/login");
+export default DashboardPage;
