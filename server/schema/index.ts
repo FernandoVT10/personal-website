@@ -4,6 +4,8 @@ import { merge } from "lodash";
 import { Project, projectResolvers } from "./project";
 import { ContactMe, contactMeResolvers } from "./contactme";
 import { TechnolgySchema, technologyResolvers } from "./technology";
+import { Login, loginResolvers } from "./login";
+import { CheckLoginStatus, checkLoginStatusResolvers } from "./checkLoginStatus";
 
 const Query = gql`
   scalar Upload
@@ -17,9 +19,9 @@ const Query = gql`
   }
 `;
 
-const typeDefs = [ Query, Project, ContactMe, TechnolgySchema ];
+const typeDefs = [ Query, Project, ContactMe, TechnolgySchema, Login, CheckLoginStatus ];
 
-const resolvers = merge(projectResolvers, contactMeResolvers, technologyResolvers)
+const resolvers = merge(projectResolvers, contactMeResolvers, technologyResolvers, loginResolvers, checkLoginStatusResolvers)
 
 export default makeExecutableSchema({
   typeDefs,

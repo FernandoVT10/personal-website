@@ -16,3 +16,8 @@ export const MAIL_CONFIG = {
   user: process.env.MAIL_USER,
   pass: process.env.MAIL_PASS
 }
+
+export const DASHBOARD_USERNAME = process.env.DASHBOARD_USERNAME;
+export const DASHBOARD_PASSWORD = process.env.DASHBOARD_PASSWORD;
+
+export const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;

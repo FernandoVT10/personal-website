@@ -5,6 +5,7 @@ import { graphqlUploadExpress } from "graphql-upload";
 import { ApolloServer } from "apollo-server-express";
 
 import schema from "./schema";
+import validateJWTToken from "./utils/validateJWTToken";
 
 const dev = process.env.NODE_ENV !== "production";
 
@@ -13,7 +14,18 @@ const app = express();
 const nextApp = next({ dev });
 const nextHandler = nextApp.getRequestHandler();
 
-const server = new ApolloServer({ schema, uploads: false });
+const server = new ApolloServer({
+  schema,
+  uploads: false,
+  context: async ({ req }) => {
+    const authorizationHeader = req.headers.authorization || "";
+    const token = authorizationHeader.replace("Bearer ", "");
+
+    const isValid = await validateJWTToken(token);
+
+    return { loggedIn: isValid }
+  }
+});
 
 app.use(graphqlUploadExpress({
   maxFileSize: 10000000,
