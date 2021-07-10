@@ -7,6 +7,8 @@ import ProjectsFilter from "@/components/Projects/ProjectsFilter";
 
 import useProjectsFilter, { IVariables } from "@/hooks/useProjectsFilter";
 
+import withUser from "@/hocs/withUser";
+
 import ProjectCardList from "./ProjectCardList";
 
 import styles from "./Home.module.scss";
@@ -79,4 +81,4 @@ const Home = () => {
   );
 }
 
-export default Home;
+export default withUser(Home, true, "/dashboard/login");
