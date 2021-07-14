@@ -8,24 +8,6 @@ const FILES_MOCK = [
 
 const readAsDataURLMock = jest.fn();
 
-class FileReaderMock {
-  onload: Function
-
-  readAsDataURL(file: File) {
-    this.onload({
-      target: {
-        result: {
-          toString: () => `https://${file.name}.jpg`
-        }
-      }
-    });
-
-    readAsDataURLMock(file);
-  }
-}
-
-
-
 describe("src/utils/getImageURLs", () => {
   beforeEach(() => {
     jest.resetAllMocks();
