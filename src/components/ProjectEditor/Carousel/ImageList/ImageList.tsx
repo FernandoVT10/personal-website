@@ -75,11 +75,19 @@ const ImageList = ({
 
   return (
     <div className={styles.imageList}>
-      <button className={styles.controlButton} onClick={handleLeftArrowButton}>
+      <button
+        className={styles.controlButton}
+        onClick={handleLeftArrowButton}
+        data-testid="image-list-left-arrow-button"
+      >
         <i className="fas fa-arrow-left" aria-hidden="true"></i>
       </button>
 
-      <div className={styles.imagesContainer} ref={imagesContainer}>
+      <div
+        className={styles.imagesContainer}
+        ref={imagesContainer}
+        data-testid="image-list-images-container"
+      >
         {previewImages.map((previewImage, index) => {
           const imagesContainerClass = index === currentPreviewImage ? styles.active : "";
 
@@ -87,7 +95,7 @@ const ImageList = ({
             <div className={`${styles.imageContainer} ${imagesContainerClass}`} key={index}>
               <img
                 src={previewImage.imageURL}
-                alt="Image"
+                alt="Image List Image"
                 className={styles.image}
               />
 
@@ -96,6 +104,7 @@ const ImageList = ({
                   className={styles.actionButton}
                   onClick={() => setCurrentPreviewImage(index)}
                   title="See preview"
+                  data-testid="image-list-preview-button"
                 >
                   <i className="fas fa-expand" aria-hidden="true"></i>
                 </button>
@@ -104,6 +113,7 @@ const ImageList = ({
                   className={styles.actionButton}
                   onClick={() => deleteImage(previewImage, index)}
                   title="Delete Image"
+                  data-testid="image-list-delete-button"
                 >
                   <i className="fas fa-trash" aria-hidden="true"></i>
                 </button>
@@ -121,7 +131,11 @@ const ImageList = ({
         </div>
       </div>
 
-      <button className={styles.controlButton} onClick={handleRightArrowButton}>
+      <button
+        className={styles.controlButton}
+        onClick={handleRightArrowButton}
+        data-testid="image-list-right-arrow-button"
+      >
         <i className="fas fa-arrow-right" aria-hidden="true"></i>
       </button>
     </div>
