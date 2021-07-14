@@ -7,6 +7,7 @@ import MessageCard from "@/components/MessageCard";
 import Loader from "@/components/Loader";
 
 import styles from "./ProjectCardList.module.scss";
+import Link from "next/link";
 
 interface IProject {
   _id: string
@@ -44,9 +45,11 @@ const ProjectCardList = ({ queryResult }: ProjectCardListProps) => {
                 <h3 className={styles.title}>{ project.title }</h3>
 
                 <div className={styles.actionButtons}>
-                  <a href="#" className={styles.actionButton}>
-                    Edit
-                  </a>
+                  <Link href={`/dashboard/project/${project._id}/edit`}>
+                    <a className={styles.actionButton}>
+                      Edit
+                    </a>
+                  </Link>
 
                   <a href="#" className={styles.actionButton}>
                     Delete
