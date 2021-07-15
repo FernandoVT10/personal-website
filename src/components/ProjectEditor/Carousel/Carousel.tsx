@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 import ImageList, { INewImage } from "./ImageList";
 
@@ -16,8 +16,6 @@ interface ICarouselProps {
   setNewImages: React.Dispatch<React.SetStateAction<INewImage[]>>
 }
 
-let currentFileId = 0;
-
 const Carousel = ({ setImagesToDelete, images, setNewImages }: ICarouselProps) => {
   const [previewImages, setPreviewImages] = useState(
     // we'll need the fileId to be able to remove the image file from the newImages array
@@ -31,6 +29,8 @@ const Carousel = ({ setImagesToDelete, images, setNewImages }: ICarouselProps) =
   const [errorMessage, setErrorMessage] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [loadingImages, setLoadingImages] = useState(false);
+
+  const currentFileId = useRef(0);
 
   const addImages = async (files: FileList) => {
     const fileArray = [];
@@ -58,16 +58,16 @@ const Carousel = ({ setImagesToDelete, images, setNewImages }: ICarouselProps) =
     for(let i = 0; i < fileArray.length; i++) {
       // here we need to have the same id in the previewImages and newImages array
       newPreviewImages.push({
-        fileId: currentFileId,
+        fileId: currentFileId.current,
         imageURL: imageURLs[i]
       });
 
       newImages.push({
-        fileId: currentFileId,
+        fileId: currentFileId.current,
         file: fileArray[i]
       });
 
-      currentFileId++;
+      currentFileId.current++;
     }
 
     setPreviewImages(previewImages.concat(newPreviewImages));
@@ -89,10 +89,12 @@ const Carousel = ({ setImagesToDelete, images, setNewImages }: ICarouselProps) =
       onDragEnter={() => setIsDragging(true)}
       onDrop={handleOnDrop}
       onDragOver={e => e.preventDefault()}
+      data-testid="carousel-drop-area"
     >
       <div
         className={`${styles.dragMark} ${isDragging && styles.active}`}
         onDragLeave={() => setIsDragging(false)}
+        data-testid="carousel-drag-mark"
       >
         <p className={styles.text}>
           Drop the images to upload them.
@@ -110,6 +112,7 @@ const Carousel = ({ setImagesToDelete, images, setNewImages }: ICarouselProps) =
       <input
         type="file"
         id="carousel-input-file"
+        data-testid="carousel-input-file"
         onChange={e => addImages(e.target.files)}
         className={styles.inputFile}
         multiple
@@ -126,6 +129,7 @@ const Carousel = ({ setImagesToDelete, images, setNewImages }: ICarouselProps) =
         <label
           className={styles.addImageButton}
           htmlFor="carousel-input-file"
+          data-testid="carousel-add-image-button"
         >
           <i className="fas fa-image" aria-hidden="true"></i>
         </label>
