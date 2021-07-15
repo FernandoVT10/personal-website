@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import MarkDown from "@/components/MarkDown";
 import Modal from "@/components/Modal";
@@ -12,11 +12,11 @@ interface IContentProps {
 }
 
 const Content = ({ content, setContent }: IContentProps) => {
-  const [isPreviewing, setIsPreviewing] = useState(false);
+  const [isActive, setIsActive] = useState(false);
 
   return (
     <div className={styles.content}>
-      <Modal isActive={isPreviewing} setIsActive={setIsPreviewing}>
+      <Modal isActive={isActive} setIsActive={setIsActive}>
         <MarkDown content={content}/>
       </Modal>
 
@@ -28,7 +28,7 @@ const Content = ({ content, setContent }: IContentProps) => {
           setValue={setContent}
         />
 
-        <button className={styles.previewButton} onClick={() => setIsPreviewing(true)}>
+        <button className={styles.previewButton} onClick={() => setIsActive(true)}>
           <i className="fas fa-eye" aria-hidden="true"></i>
           See the preview
         </button>
