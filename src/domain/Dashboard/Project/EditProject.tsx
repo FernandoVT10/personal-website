@@ -12,6 +12,7 @@ interface IEditProjectProps {
     title: string
     images: string[]
     description: string
+    content: string
   }
   error: boolean
 }
@@ -21,6 +22,7 @@ const EditProject = ({ project, error }: IEditProjectProps) => {
   const [newImages, setNewImages] = useState<INewImage[]>([]);
   const [title, setTitle] = useState(project.title);
   const [description, setDescription] = useState(project.description);
+  const [content, setContent] = useState(project.content);
 
   if(error) {
     return <ErrorPage statusCode="404" error="Project not found" />;
@@ -32,7 +34,8 @@ const EditProject = ({ project, error }: IEditProjectProps) => {
     setImagesToDelete,
     setNewImages,
     title, setTitle,
-    description, setDescription
+    description, setDescription,
+    content, setContent
   }
 
 

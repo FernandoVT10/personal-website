@@ -4,6 +4,7 @@ import { Input, TextArea } from "@/components/Formulary";
 
 import Carousel from "./Carousel";
 import { INewImage } from "./Carousel/ImageList";
+import Content from "./Content";
 
 import styles from "./ProjectEditor.module.scss";
 
@@ -15,6 +16,8 @@ export interface IProjectEditorProps {
   setTitle: React.Dispatch<string>
   description: string
   setDescription: React.Dispatch<string>
+  content: string
+  setContent: React.Dispatch<string>
 }
 
 const ProjectEditor = ({
@@ -24,7 +27,9 @@ const ProjectEditor = ({
   title,
   setTitle,
   description,
-  setDescription
+  setDescription,
+  content,
+  setContent
 }: IProjectEditorProps) => {
   return (
     <div className={styles.projectEditor}>
@@ -49,6 +54,8 @@ const ProjectEditor = ({
         setValue={setDescription}
         maxLength={250}
       />
+
+      <Content content={content} setContent={setContent} />
     </div>
   );
 }
