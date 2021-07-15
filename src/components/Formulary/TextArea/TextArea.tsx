@@ -10,9 +10,10 @@ interface TextAreaProps {
   value: string,
   setValue: React.Dispatch<React.SetStateAction<string>>,
   validator?: (newValue: string) => string
+  maxLength?: number
 }
 
-const TextArea = ({ prefix, label, value, setValue, validator }: TextAreaProps) => {
+const TextArea = ({ prefix, label, value, setValue, validator, maxLength }: TextAreaProps) => {
   const [errorMessage, handleOnChange] = useInput(setValue, validator);
 
   return (
@@ -22,6 +23,7 @@ const TextArea = ({ prefix, label, value, setValue, validator }: TextAreaProps) 
         className={styles.textarea}
         value={value}
         onChange={({ target: { value } }) => handleOnChange(value)}
+        maxLength={maxLength ?? 10000}
         required
       ></textarea>
 

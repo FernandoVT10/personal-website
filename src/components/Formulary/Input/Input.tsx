@@ -11,9 +11,10 @@ interface InputProps {
   setValue: React.Dispatch<React.SetStateAction<string>>
   validator?: (newValue: string) => string
   type?: string
+  maxLength?: number
 }
 
-const Input = ({ prefix, label, value, setValue, validator, type }: InputProps) => {
+const Input = ({ prefix, label, value, setValue, validator, type, maxLength }: InputProps) => {
   const [errorMessage, handleOnChange] = useInput(setValue, validator);
 
   const inputClass = errorMessage.length > 0 ? styles.error : "";
@@ -26,6 +27,7 @@ const Input = ({ prefix, label, value, setValue, validator, type }: InputProps) 
         className={styles.input}
         value={value}
         onChange={({ target: { value } }) => handleOnChange(value)}
+        maxLength={maxLength ?? 10000}
         required
       />
 
