@@ -6,9 +6,10 @@ interface IModalProps {
   isActive: boolean
   setIsActive: React.Dispatch<boolean>
   children: JSX.Element
+  maxWidth?: number
 }
 
-const Modal = ({ isActive, setIsActive, children }: IModalProps) => {
+const Modal = ({ isActive, setIsActive, children, maxWidth }: IModalProps) => {
   const modalDiv = useRef<HTMLDivElement>(undefined);
 
   useEffect(() => {
@@ -35,7 +36,11 @@ const Modal = ({ isActive, setIsActive, children }: IModalProps) => {
         <i className="fas fa-times" aria-hidden="true"></i>
       </button>
 
-      <div className={styles.content} onClick={e => e.stopPropagation()}>
+      <div
+        className={styles.content}
+        onClick={e => e.stopPropagation()}
+        style={{ maxWidth: maxWidth ?? 1000 }}
+      >
         { children }
       </div>
     </div>

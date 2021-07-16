@@ -1,4 +1,8 @@
 .content {
+  & .markDownContainer {
+    padding: 20px;
+  }
+
   & .previewContainer {
     border: solid 1px var(--white);
     padding: 20px;

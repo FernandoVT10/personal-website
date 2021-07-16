@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import MarkDown from "@/components/MarkDown";
 import Modal from "@/components/Modal";
@@ -17,7 +17,9 @@ const Content = ({ content, setContent }: IContentProps) => {
   return (
     <div className={styles.content}>
       <Modal isActive={isPreviewing} setIsActive={setIsPreviewing}>
-        <MarkDown content={content}/>
+        <div className={styles.markDownContainer}>
+          <MarkDown content={content}/>
+        </div>
       </Modal>
 
       <div className={styles.contentEditor}>
