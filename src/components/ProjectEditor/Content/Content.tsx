@@ -12,11 +12,11 @@ interface IContentProps {
 }
 
 const Content = ({ content, setContent }: IContentProps) => {
-  const [isPreviewing, setIsPreviewing] = useState(false);
+  const [isActive, setIsActive] = useState(false);
 
   return (
     <div className={styles.content}>
-      <Modal isActive={isPreviewing} setIsActive={setIsPreviewing}>
+      <Modal isActive={isActive} setIsActive={setIsActive}>
         <div className={styles.markDownContainer}>
           <MarkDown content={content}/>
         </div>
@@ -30,7 +30,7 @@ const Content = ({ content, setContent }: IContentProps) => {
           setValue={setContent}
         />
 
-        <button className={styles.previewButton} onClick={() => setIsPreviewing(true)}>
+        <button className={styles.previewButton} onClick={() => setIsActive(true)}>
           <i className="fas fa-eye" aria-hidden="true"></i>
           See the preview
         </button>

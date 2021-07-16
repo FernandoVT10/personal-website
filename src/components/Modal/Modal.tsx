@@ -32,6 +32,7 @@ const Modal = ({ isActive, setIsActive, children, maxWidth }: IModalProps) => {
       <button
         onClick={() => setIsActive(false)}
         className={styles.closeButton}
+        data-testid="modal-close-button"
       >
         <i className="fas fa-times" aria-hidden="true"></i>
       </button>
