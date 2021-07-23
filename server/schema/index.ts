@@ -3,7 +3,7 @@ import { merge } from "lodash";
 
 import { Project, projectResolvers } from "./project";
 import { ContactMe, contactMeResolvers } from "./contactme";
-import { TechnolgySchema, technologyResolvers } from "./technology";
+import { TechnologySchema, technologyResolvers } from "./technology";
 import { Login, loginResolvers } from "./login";
 import { CheckLoginStatus, checkLoginStatusResolvers } from "./checkLoginStatus";
 
@@ -19,7 +19,7 @@ const Query = gql`
   }
 `;
 
-const typeDefs = [ Query, Project, ContactMe, TechnolgySchema, Login, CheckLoginStatus ];
+const typeDefs = [ Query, Project, ContactMe, TechnologySchema, Login, CheckLoginStatus ];
 
 const resolvers = merge(projectResolvers, contactMeResolvers, technologyResolvers, loginResolvers, checkLoginStatusResolvers)
 
