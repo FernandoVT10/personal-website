@@ -1,13 +1,13 @@
 import React from "react";
 
 import { ApolloQueryResult } from "@apollo/client";
+import Link from "next/link";
 
 import Carousel from "@/components/Carousel";
 import MessageCard from "@/components/MessageCard";
 import Loader from "@/components/Loader";
 
 import styles from "./ProjectCardList.module.scss";
-import Link from "next/link";
 
 interface IProject {
   _id: string
