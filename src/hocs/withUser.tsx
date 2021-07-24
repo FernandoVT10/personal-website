@@ -8,7 +8,7 @@ import FullScreenLoader from "@/components/FullScreenLoader";
 
 import apolloClient from "@/config/apolloClient";
 
-const CHECK_LOGIN_STATUS = gql`
+export const CHECK_LOGIN_STATUS = gql`
   query CheckLoginStatus {
     checkLoginStatus
   }
