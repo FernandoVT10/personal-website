@@ -1,0 +1,40 @@
+.dropdown {
+  position: relative;
+
+  &.active {
+    & .dropdownMenu {
+      display: block;
+    }
+  }
+
+  & .dropdownMenu {
+    z-index: 10;
+    display: none;
+    position: absolute;
+    width: 150px;
+    top: 20px;
+    right: 0;
+    box-shadow: 0 0 4px 1px black;
+
+    & .dropdownItem {
+      cursor: pointer;
+      width: 100%;
+      background: black;
+      border: none;
+      color: var(--white);
+      padding: 15px 10px;
+      font-weight: bold;
+      text-align: left;
+      transition: .3s;
+      opacity: 0;
+      animation: a 0.3s forwards;
+
+      &:hover { background: var(--black); }
+    }
+  }
+}
+
+@keyframes a {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

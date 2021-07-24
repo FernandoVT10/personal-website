@@ -6,6 +6,7 @@ import ProjectEditor, { IProjectEditorProps } from "@/components/ProjectEditor";
 import { INewImage } from "@/components/ProjectEditor/Carousel/ImageList";
 
 import styles from "./Styles.module.scss";
+import withUser from "@/hocs/withUser";
 
 interface IEditProjectProps {
   project: {
@@ -13,6 +14,9 @@ interface IEditProjectProps {
     images: string[]
     description: string
     content: string
+    technologies: {
+      name: string
+    }[]
   }
   error: boolean
 }
@@ -23,6 +27,9 @@ const EditProject = ({ project, error }: IEditProjectProps) => {
   const [title, setTitle] = useState(project.title);
   const [description, setDescription] = useState(project.description);
   const [content, setContent] = useState(project.content);
+  const [selectedTechnologies, setSelectedTechnologies] = useState(
+    project.technologies.map(technology => technology.name)
+  );
 
   if(error) {
     return <ErrorPage statusCode="404" error="Project not found" />;
@@ -35,7 +42,8 @@ const EditProject = ({ project, error }: IEditProjectProps) => {
     setNewImages,
     title, setTitle,
     description, setDescription,
-    content, setContent
+    content, setContent,
+    selectedTechnologies, setSelectedTechnologies
   }
 
 
@@ -46,4 +54,4 @@ const EditProject = ({ project, error }: IEditProjectProps) => {
   );
 }
 
-export default EditProject;
+export default withUser(EditProject, true, "/dashboard/login");

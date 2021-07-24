@@ -7,6 +7,7 @@ import { INewImage } from "./Carousel/ImageList";
 import Content from "./Content";
 
 import styles from "./ProjectEditor.module.scss";
+import Technologies from "./Technologies";
 
 export interface IProjectEditorProps {
   images: string[]
@@ -18,6 +19,8 @@ export interface IProjectEditorProps {
   setDescription: React.Dispatch<string>
   content: string
   setContent: React.Dispatch<string>
+  selectedTechnologies: string[]
+  setSelectedTechnologies: React.Dispatch<string[]>
 }
 
 const ProjectEditor = ({
@@ -29,7 +32,9 @@ const ProjectEditor = ({
   description,
   setDescription,
   content,
-  setContent
+  setContent,
+  selectedTechnologies,
+  setSelectedTechnologies
 }: IProjectEditorProps) => {
   return (
     <div className={styles.projectEditor}>
@@ -56,6 +61,8 @@ const ProjectEditor = ({
       />
 
       <Content content={content} setContent={setContent} />
+
+      <Technologies selectedTechnologies={selectedTechnologies} setSelectedTechnologies={setSelectedTechnologies} />
     </div>
   );
 }

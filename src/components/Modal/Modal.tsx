@@ -7,9 +7,10 @@ interface IModalProps {
   setIsActive: React.Dispatch<boolean>
   children: JSX.Element
   maxWidth?: number
+  centerModal?: boolean
 }
 
-const Modal = ({ isActive, setIsActive, children, maxWidth }: IModalProps) => {
+const Modal = ({ isActive, setIsActive, children, maxWidth, centerModal }: IModalProps) => {
   const modalDiv = useRef<HTMLDivElement>(undefined);
 
   useEffect(() => {
@@ -23,9 +24,11 @@ const Modal = ({ isActive, setIsActive, children, maxWidth }: IModalProps) => {
 
   if(!isActive) return null;
 
+  const centerModalClass = centerModal ? styles.centerModal : "";
+
   return (
     <div
-      className={`${styles.modal}`}
+      className={`${styles.modal} ${centerModalClass}`}
       onClick={() => setIsActive(false)}
       ref={modalDiv}
     >

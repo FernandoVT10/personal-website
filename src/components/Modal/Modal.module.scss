@@ -10,6 +10,12 @@
   background: rgba(0, 0, 0, .6);
   overflow: auto;
 
+  &.centerModal {
+    align-items: center;
+
+    & .content { margin: 0; }
+  }
+
   & .closeButton {
     cursor: pointer;
     position: absolute;

@@ -1,0 +1,43 @@
+.checkBox {
+  & .input { display: none; }
+
+  & .input:checked ~ .label .customCheckBox {
+    border-color: var(--blue);
+    background: var(--blue);
+
+    &:before { display: block; }
+  }
+
+  & .label {
+    display: flex;
+    cursor: pointer;
+
+    & .customCheckBox {
+      position: relative;
+      display: block;
+      margin-right: 10px;
+      width: 20px;
+      height: 20px;
+      border: solid 2px var(--white);
+      border-radius: 3px;
+      transition: .3s;
+
+      &:hover { border-color: var(--blue); }
+
+      &:before {
+        display: none;
+        position: absolute;
+        content: "";
+        left: 4px;
+        top: 0px;
+        width: 5px;
+        height: 10px;
+        border: solid var(--black);
+        border-width: 0 3px 3px 0;
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform: rotate(45deg);
+      }
+    }
+  }
+}
