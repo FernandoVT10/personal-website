@@ -9,7 +9,7 @@ import Loader from "@/components/Loader";
 
 import styles from "./Login.module.scss";
 
-const LOGIN = gql`
+export const LOGIN = gql`
   mutation Login($username: String!, $password: String!) {
     login(username: $username, password: $password)
   }
@@ -65,7 +65,11 @@ const Login = () => {
           }
 
           { !loading ?
-            <button type="submit" className={`submit-button ${styles.submitButton}`}>
+            <button
+              type="submit"
+              className={`submit-button ${styles.submitButton}`}
+              data-testid="submit-button"
+            >
               Login
             </button>
             :
