@@ -8,7 +8,7 @@ import client from "@/config/apolloClient";
 
 import HomePage, { getStaticProps, GET_PROJECTS } from "@/pages/index";
 
-jest.mock("@/config/apolloClient");
+jest.mock("@/config/apolloClient", () => ({ query: jest.fn() }));
 
 const PROJECT_RESULT_MOCK = {
   error: null,

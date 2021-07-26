@@ -5,9 +5,9 @@ import { mocked } from "ts-jest/utils";
 
 import apolloClient from "@/config/apolloClient";
 
-import ProjectPage, {getServerSideProps} from "@/pages/projects/[projectId]";
+import ProjectPage, { getServerSideProps } from "@/pages/projects/[projectId]";
 
-jest.mock("@/config/apolloClient");
+jest.mock("@/config/apolloClient", () => ({ query: jest.fn() }));
 
 const PROJECT_MOCK = {
   title: "test title",
