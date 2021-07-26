@@ -32,7 +32,11 @@ const DropDown = ({ actions, children }: IDropDownProps) => {
   const dropdownClass = isActive ? styles.active : "";
 
   return (
-    <div className={`${styles.dropdown} ${dropdownClass}`} ref={dropdownContainerRef}>
+    <div
+      className={`${styles.dropdown} ${dropdownClass}`}
+      data-testid="dropdown"
+      ref={dropdownContainerRef}
+    >
       <div className={styles.dropdownMenu}>
         {actions.map((action, index) => {
           const handleOnClick = () => {
