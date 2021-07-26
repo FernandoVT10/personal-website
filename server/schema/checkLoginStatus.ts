@@ -6,7 +6,7 @@ export const CheckLoginStatus = gql`
   }
 `;
 
-const checkLoginStatus = async (_: null, _args: null, context: any): Promise<boolean> => {
+const checkLoginStatus = async (_: null, _args: null, context: { loggedIn: boolean }): Promise<boolean> => {
   return context.loggedIn;
 }
 
