@@ -13,7 +13,7 @@ import ProjectCardList from "./ProjectCardList";
 
 import styles from "./Home.module.scss";
 
-const GET_PROJECS = gql`
+export const GET_PROJECTS = gql`
   query GetProjects($page: Int, $search: String, $technology: String) {
     projects(limit: 6, page: $page, search: $search, technology: $technology) {
       ${PAGINATION_PROPS}
@@ -26,7 +26,7 @@ const GET_PROJECS = gql`
   }
 `;
 
-const GET_TECHNOLOGIES = gql`
+export const GET_TECHNOLOGIES = gql`
   query GetTechnologies {
     technologies {
       name
@@ -35,7 +35,7 @@ const GET_TECHNOLOGIES = gql`
 `;
 
 const Home = () => {
-  const [getProjects, projectsQueryResult] = useLazyQuery(GET_PROJECS);
+  const [getProjects, projectsQueryResult] = useLazyQuery(GET_PROJECTS);
   const [getTechnologies, technologiesQueryResult] = useLazyQuery(GET_TECHNOLOGIES);
 
   const toTheChangeOfVariables = (newVariables: IVariables) => {
