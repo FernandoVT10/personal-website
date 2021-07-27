@@ -77,7 +77,11 @@ const Technology = ({
             onChange={({ target: { value } }) => setName(value)}
           />
 
-          <button type="submit" className={`${styles.button} ${styles.check}`}>
+          <button
+            type="submit"
+            className={`${styles.button} ${styles.check}`}
+            data-testid="technology-form-confirm-button"
+          >
             <i className="fas fa-check"></i>
           </button>
 
@@ -85,6 +89,7 @@ const Technology = ({
             type="button"
             className={`${styles.button} ${styles.times}`}
             onClick={() => setIsEditing(false)}
+            data-testid="technology-form-cancel-button"
           >
             <i className="fas fa-times"></i>
           </button>
@@ -103,6 +108,7 @@ const Technology = ({
     <div className={styles.technology}>
       <div
         className={`${styles.confirmationContainer} ${confirmationContainerClass}`}
+        data-testid="technology-confirmation-container"
         onClick={() => setIsConfirming(false)}
       >
         <div className={styles.confirmation} onClick={e => e.stopPropagation()}>
