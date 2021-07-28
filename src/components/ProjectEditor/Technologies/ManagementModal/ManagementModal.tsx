@@ -73,6 +73,7 @@ const ManagementModal = ({
           className={styles.searchInput}
           value={searchTechnology}
           onChange={({ target: { value } }) => setSearchTechnology(value)}
+          data-testid="search-technology"
         />
 
         { getTechnologiesResult.loading || !getTechnologiesResult.called ?
