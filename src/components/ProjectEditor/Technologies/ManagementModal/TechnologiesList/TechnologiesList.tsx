@@ -7,7 +7,7 @@ import Technology, { ITechnology } from "./Technology";
 import styles from "./TechnologiesList.module.scss";
 import Loader from "@/components/Loader";
 
-const DELETE_TECHNOLOGY = gql`
+export const DELETE_TECHNOLOGY = gql`
   mutation DeleteTechnology($technologyId: ID!) {
     deleteTechnology(technologyId: $technologyId) {
       _id
@@ -16,7 +16,7 @@ const DELETE_TECHNOLOGY = gql`
   }
 `;
 
-const UPDATE_TECHNOLOGY = gql`
+export const UPDATE_TECHNOLOGY = gql`
   mutation UpdateTechnology($technologyId: ID!, $name: String!) {
     updateTechnology(technologyId: $technologyId, name: $name) {
       _id
@@ -162,7 +162,7 @@ const TechnologiesList = ({ technologies, selectedTechnologies, setSelectedTechn
       })}
 
       { technologies.length === 0 &&
-        <p className={styles.noTechnologiesMessage}>There is no technologies</p>
+        <p className={styles.noTechnologiesMessage}>There are no technologies</p>
       }
     </div>
   );
