@@ -33,7 +33,7 @@ const Technologies = ({ selectedTechnologies, setSelectedTechnologies }: ITechno
         })}
       </div>
 
-      <button className={styles.editButton} onClick={() => setIsActive(true)}>
+      <button className={styles.editButton} onClick={() => setIsActive(true)} data-testid="activate-modal-button">
         <i className="fas fa-pencil-alt" aria-hidden="true"></i>
       </button>
     </div>
