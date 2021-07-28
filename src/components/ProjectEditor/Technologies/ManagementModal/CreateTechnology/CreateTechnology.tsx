@@ -5,8 +5,6 @@ import { gql, Reference, useMutation } from "@apollo/client";
 import { Input } from "@/components/Formulary";
 import Loader from "@/components/Loader";
 
-import apolloClient from "@/config/apolloClient";
-
 import styles from "./CreateTechnology.module.scss";
 
 const CREATE_TECHNOLOGY = gql `
@@ -48,19 +46,8 @@ const CreateTechnology = () => {
     setErrorMessage("");
 
     try {
-      const result = await createTechnology({
+      await createTechnology({
         variables: { name: technologyName }
-      });
-
-      const newTechnology = result.data.createTechnology;
-
-      apolloClient.cache.modify({
-        id: apolloClient.cache.identify(newTechnology),
-        fields: {
-          technologies(existingTechnologyRefs) {
-            return [...existingTechnologyRefs, newTechnology];
-          }
-        }
       });
 
       setTechnologyName("");
