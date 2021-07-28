@@ -7,7 +7,7 @@ import Loader from "@/components/Loader";
 
 import styles from "./CreateTechnology.module.scss";
 
-const CREATE_TECHNOLOGY = gql `
+export const CREATE_TECHNOLOGY = gql `
   mutation createTechnology($name: String!) {
     createTechnology(name: $name) {
       _id
