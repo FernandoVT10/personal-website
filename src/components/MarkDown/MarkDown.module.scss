@@ -4,13 +4,21 @@
   }
 
   & img {
-    width: 100%;
+    max-width: 100%;
   }
 
   & code {
     font-weight: bold;
+    line-height: 2;
+    display: block;
+    padding: 20px;
 
-    &.codeSpan { color: var(--blue); }
+    &.codeSpan {
+      padding: 0;
+      display: initial;
+      color: var(--blue);
+      line-height: 1;
+    }
   }
 
 
