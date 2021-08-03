@@ -72,7 +72,7 @@ const Content = ({ content, setContent }: IContentProps) => {
   const contentClass = errorMessage.length > 0 ? styles.error : "";
 
   return (
-    <div className={`${styles.content} ${contentClass}`}>
+    <div className={`${styles.content} ${contentClass}`} data-testid="content-container">
       <Modal isActive={isActive} setIsActive={setIsActive}>
         <div className={styles.markDownContainer}>
           <MarkDown content={content}/>
