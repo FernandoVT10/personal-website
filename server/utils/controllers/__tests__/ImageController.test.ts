@@ -57,6 +57,18 @@ describe("server/utils/controllers/ImageController", () => {
         } as any)
       ).toBe("https://test.com/img/uploads/123file-1.jpg");
     });
+
+    it("should return the image url with the directory parameter", async () => {
+      Date.now = () => 123;
+
+      expect(
+        await ImageController.uploadFileUploadAsImage({
+          filename: "file-1.jpg",
+          mimetype: "image/jpeg",
+          createReadStream: () => {}
+        } as any, "/test/")
+      ).toBe("https://test.com/img/uploads/test/123file-1.jpg");
+    });
   });
 
   describe("uploadFileUploadArrayAsImages", () => {
