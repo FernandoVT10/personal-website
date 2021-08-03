@@ -6,6 +6,7 @@ import { ContactMe, contactMeResolvers } from "./contactme";
 import { TechnologySchema, technologyResolvers } from "./technology";
 import { Login, loginResolvers } from "./login";
 import { CheckLoginStatus, checkLoginStatusResolvers } from "./checkLoginStatus";
+import { UploadImageSchema, UploadImageResolvers } from "./uploadImage";
 
 const Query = gql`
   scalar Upload
@@ -19,9 +20,9 @@ const Query = gql`
   }
 `;
 
-const typeDefs = [ Query, Project, ContactMe, TechnologySchema, Login, CheckLoginStatus ];
+const typeDefs = [ Query, Project, ContactMe, TechnologySchema, Login, CheckLoginStatus, UploadImageSchema ];
 
-const resolvers = merge(projectResolvers, contactMeResolvers, technologyResolvers, loginResolvers, checkLoginStatusResolvers)
+const resolvers = merge(projectResolvers, contactMeResolvers, technologyResolvers, loginResolvers, checkLoginStatusResolvers, UploadImageResolvers);
 
 export default makeExecutableSchema({
   typeDefs,

@@ -12,9 +12,9 @@ import { imageValidator } from "../validators";
 
 const IMAGES_PATH = join(PUBLIC_DIRECTORY, "/img/uploads");
 
-const uploadFileUploadAsImage = async (file: FileUpload): Promise<string> => {
+const uploadFileUploadAsImage = async (file: FileUpload, directory = "/"): Promise<string> => {
   const imageName = Date.now() + file.filename;
-  const imagePath = join(IMAGES_PATH, imageName);
+  const imagePath = join(IMAGES_PATH, directory, imageName);
   const stream = file.createReadStream();
 
   if(!imageValidator(file.mimetype)) throw new UserInputError("The file must be a .png, .jpg or .jpeg image");
@@ -22,7 +22,8 @@ const uploadFileUploadAsImage = async (file: FileUpload): Promise<string> => {
   try {
     await saveFileStream(stream, imagePath);
 
-    return `${WEBSITE_URL}/img/uploads/${imageName}`;
+    const imageURL = join(WEBSITE_URL, "/img/uploads/", directory, imageName).replace(":/", "://");
+    return imageURL;
   } catch (err) {
     throw err;
   }
