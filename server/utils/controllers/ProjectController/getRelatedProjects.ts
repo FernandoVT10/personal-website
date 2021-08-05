@@ -1,5 +1,5 @@
 import { UserInputError } from "apollo-server-errors";
-import { Project, IProject } from "../../models";
+import { Project, IProject } from "../../../models";
 
 const PROJECTS_LIMIT = 6;
 

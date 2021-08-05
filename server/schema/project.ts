@@ -1,13 +1,8 @@
 import { gql } from "apollo-server-express";
 
-import getAll from "./getAll";
-import getOne from "./getOne";
-import getRelatedProjects from "./getRelatedProjects";
-import createOne from "./createOne";
-import updateOne from "./updateOne";
-import deleteOne from "./deleteOne";
+import ProjectController from "../utils/controllers/ProjectController";
 
-export const Project = gql`
+export const ProjectSchema = gql`
   type Project {
     _id: ID,
     title: String,
@@ -36,37 +31,38 @@ export const Project = gql`
     relatedProjects(projectId: ID!, limit: Int): [Project]
   }
 
-  input ProjectInput {
+  input CreateProjectInput {
     title: String!
-    images: [Upload]
+    images: [Upload!]!
     description: String!
-    technologies: [ID]
+    content: String!
+    technologies: [String]!
   }
 
   input UpdateProjectInput {
     title: String!
-    currentImages: [String]
-    newImages: [Upload]
+    imagesToDelete: [String!]
+    newImages: [Upload!]
     description: String!
-    technologies: [ID]
+    content: String!
+    technologies: [String]!
   }
 
   extend type Mutation {
-    createProject(project: ProjectInput!): Project
+    createProject(project: CreateProjectInput!): Project
     updateProject(projectId: ID!, project: UpdateProjectInput!): Project
     deleteProject(projectId: ID!): Project
   }
 `;
 
-export const projectResolvers = {
+export const ProjectResolvers = {
   Query: {
-    projects: getAll,
-    project: getOne,
-    relatedProjects: getRelatedProjects
+    projects: ProjectController.getAll,
+    project: ProjectController.getOne,
+    relatedProjects: ProjectController.getRelatedProjects
   },
   Mutation: {
-    createProject: createOne,
-    updateProject: updateOne,
-    deleteProject: deleteOne
+    createProject: ProjectController.createOne,
+    updateProject: ProjectController.updateOne
   }
 }

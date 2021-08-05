@@ -1,4 +1,63 @@
 .projectEditor {
   padding: 20px;
-  background: var(--black)
+  margin-bottom: 40px;
+  background: var(--black);
+
+  & .errorMessage {
+    margin-top: 40px;
+    color: var(--red);
+    font-weight: bold;
+    font-size: 18px;
+
+    & i {
+      margin-right: 5px;
+    }
+  }
+
+  & .loaderContainer {
+    margin-top: 20px;
+    display: inline-block;
+  }
+
+  & .buttons {
+    margin-top: 20px;
+
+    & .button {
+      cursor: pointer;
+      background: var(--blue);
+      border: solid 1px var(--blue);
+      border-radius: 5px;
+      color: var(--black);
+      padding: 15px 30px;
+      font-weight: bold;
+      font-size: 16px;
+      margin-top: 20px;
+      transition: .3s;
+
+      &.secondary {
+        background: var(--black);
+        color: var(--blue);
+        margin-left: 20px;
+
+        &:hover {
+          background: var(--blue);
+          color: var(--black);
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 400px) {
+    & .buttons {
+      & .button {
+        display: block;
+        width: 100%;
+
+        &.secondary {
+          margin: 0;
+          margin-top: 20px;
+        }
+      }
+    }
+  }
 }

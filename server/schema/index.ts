@@ -1,7 +1,7 @@
 import { gql, makeExecutableSchema } from "apollo-server-express";
 import { merge } from "lodash";
 
-import { Project, projectResolvers } from "./project";
+import { ProjectSchema, ProjectResolvers } from "./project";
 import { ContactMe, contactMeResolvers } from "./contactme";
 import { TechnologySchema, technologyResolvers } from "./technology";
 import { Login, loginResolvers } from "./login";
@@ -20,9 +20,9 @@ const Query = gql`
   }
 `;
 
-const typeDefs = [ Query, Project, ContactMe, TechnologySchema, Login, CheckLoginStatus, UploadImageSchema ];
+const typeDefs = [ Query, ProjectSchema, ContactMe, TechnologySchema, Login, CheckLoginStatus, UploadImageSchema ];
 
-const resolvers = merge(projectResolvers, contactMeResolvers, technologyResolvers, loginResolvers, checkLoginStatusResolvers, UploadImageResolvers);
+const resolvers = merge(ProjectResolvers, contactMeResolvers, technologyResolvers, loginResolvers, checkLoginStatusResolvers, UploadImageResolvers);
 
 export default makeExecutableSchema({
   typeDefs,

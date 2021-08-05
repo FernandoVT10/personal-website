@@ -1,6 +1,6 @@
 import { PaginateResult } from "mongoose";
 
-import { Project, IProject, Technology } from "../../models";
+import { Project, IProject, Technology } from "../../../models";
 
 const PROJECTS_PER_PAGE = 6;
 

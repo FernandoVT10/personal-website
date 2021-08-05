@@ -5,9 +5,11 @@ import { Input, TextArea } from "@/components/Formulary";
 import Carousel from "./Carousel";
 import { INewImage } from "./Carousel/ImageList";
 import Content from "./Content";
+import Technologies from "./Technologies";
+
+import Loader from "../Loader";
 
 import styles from "./ProjectEditor.module.scss";
-import Technologies from "./Technologies";
 
 export interface IProjectEditorProps {
   images: string[]
@@ -21,6 +23,10 @@ export interface IProjectEditorProps {
   setContent: React.Dispatch<string>
   selectedTechnologies: string[]
   setSelectedTechnologies: React.Dispatch<string[]>
+  goBack: () => void
+  onSave: () => void
+  loading: boolean
+  error: string
 }
 
 const ProjectEditor = ({
@@ -34,7 +40,11 @@ const ProjectEditor = ({
   content,
   setContent,
   selectedTechnologies,
-  setSelectedTechnologies
+  setSelectedTechnologies,
+  goBack,
+  onSave,
+  loading,
+  error
 }: IProjectEditorProps) => {
   return (
     <div className={styles.projectEditor}>
@@ -63,6 +73,29 @@ const ProjectEditor = ({
       <Content content={content} setContent={setContent} />
 
       <Technologies selectedTechnologies={selectedTechnologies} setSelectedTechnologies={setSelectedTechnologies} />
+
+      { error &&
+      <p className={styles.errorMessage}>
+        <i className="fas fa-times-circle" aria-hidden="true"></i>
+        { error }
+      </p>
+      }
+
+      { loading ?
+        <div className={styles.loaderContainer}>
+          <Loader/>
+        </div>
+        :
+
+        <div className={styles.buttons}>
+          <button className={styles.button} onClick={onSave}>Save Project</button>
+
+          <button className={`${styles.button} ${styles.secondary}`} onClick={goBack}>
+            Go Back
+          </button>
+        </div>
+
+      }
     </div>
   );
 }

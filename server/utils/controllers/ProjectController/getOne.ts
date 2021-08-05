@@ -1,6 +1,6 @@
 import { UserInputError } from "apollo-server-express";
 
-import { Project, IProject } from "../../models";
+import { Project, IProject } from "../../../models";
 
 interface Parameters {
   projectId: string

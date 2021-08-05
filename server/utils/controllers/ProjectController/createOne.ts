@@ -1,27 +1,29 @@
+import { AuthenticationError } from "apollo-server-express";
 import { FileUpload } from "graphql-upload";
 
-import ImageController from "../../utils/controllers/ImageController";
+import ImageController from "../ImageController";
 
-import { Project, IProject, Technology } from "../../models";
+import { Project, IProject, Technology } from "../../../models";
 
 interface Parameters {
   project: {
     title: string
     description: string
     technologies: string[]
+    content: string
     images: { promise: Promise<FileUpload> }[]
   }
 }
 
-export default async (_: null, args: Parameters): Promise<IProject> => {
-  const { title, description, technologies, images } = args.project;
+export default async (_: null, args: Parameters, context: { loggedIn: boolean }): Promise<IProject> => {
+  if(!context.loggedIn) throw new AuthenticationError("You don't have enough permissions");
+
+  const { title, description, content, technologies, images } = args.project;
 
   const filesUpload = [];
 
-  if(images) {
-    for(const file of images) {
-      filesUpload.push(await file.promise);
-    }
+  for(const file of images) {
+    filesUpload.push(await file.promise);
   }
 
   const imagesURL = await ImageController.uploadFileUploadArrayAsImages(filesUpload);
@@ -32,6 +34,7 @@ export default async (_: null, args: Parameters): Promise<IProject> => {
     return await Project.create({
       title,
       description,
+      content,
       technologies: technologiesDocuments,
       images: imagesURL
     });   
