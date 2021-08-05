@@ -63,6 +63,7 @@ export const ProjectResolvers = {
   },
   Mutation: {
     createProject: ProjectController.createOne,
-    updateProject: ProjectController.updateOne
+    updateProject: ProjectController.updateOne,
+    deleteProject: ProjectController.deleteOne
   }
 }
