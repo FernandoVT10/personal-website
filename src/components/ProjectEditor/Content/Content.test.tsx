@@ -146,5 +146,15 @@ describe("src/components/ProjectEditor/Content", () => {
 
       expect(queryByText("The file must be a .jpg, .png or .jpeg image.")).toBeInTheDocument();
     });
+
+    it("should display an erorr message when the textarea is empty and we blur it", () => {
+      const { getByTestId, queryByText } = renderComponent({ content: "" });
+
+      const textarea = getByTestId("content-editor-textarea");
+      expect(queryByText("The content is required")).not.toBeInTheDocument();
+
+      fireEvent.blur(textarea);
+      expect(queryByText("The content is required")).toBeInTheDocument();
+    });
   });
 });

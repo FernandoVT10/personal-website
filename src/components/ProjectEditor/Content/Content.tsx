@@ -37,6 +37,12 @@ const Content = ({ content, setContent }: IContentProps) => {
     setErrorMessage("");
   }
 
+  const handleTextAreaOnBlur = () => {
+    if(!content) {
+      setErrorMessage("The content is required");
+    }
+  }
+
   const setImageOnTheTextArea = (imageName: string, imageURL: string) => {
     const start = editor.current.selectionStart;
     const end = editor.current.selectionEnd;
@@ -111,16 +117,19 @@ const Content = ({ content, setContent }: IContentProps) => {
       <div className={styles.contentEditor}>
         <textarea 
           className={styles.editor}
+          id="content-textarea"
           placeholder="Content"
           value={content}
           onChange={handleTextAreaOnChange}
+          onBlur={handleTextAreaOnBlur}
+          data-testid="content-editor-textarea"
           ref={editor}
         ></textarea>
       </div>
 
       { errorMessage.length > 0 &&
       <p className={styles.errorMessage}>
-        <i className="fas fa-times-circle"></i>
+        <i className="fas fa-times-circle" aria-hidden="true"></i>
         { errorMessage }
       </p>
       }
