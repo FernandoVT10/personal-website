@@ -87,7 +87,6 @@ const EditProject = ({ project, error }: IEditProjectProps) => {
 
   const projectEditorProps = {
     images: project.images,
-    project,
     setImagesToDelete,
     setNewImages,
     title, setTitle,

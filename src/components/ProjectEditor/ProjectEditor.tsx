@@ -13,7 +13,7 @@ import styles from "./ProjectEditor.module.scss";
 
 export interface IProjectEditorProps {
   images: string[]
-  setImagesToDelete: React.Dispatch<string[]>
+  setImagesToDelete?: React.Dispatch<string[]>
   setNewImages: React.Dispatch<INewImage[]>
   title: string
   setTitle: React.Dispatch<string>
