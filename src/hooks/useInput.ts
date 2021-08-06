@@ -5,23 +5,35 @@ const useInput = (
   validator: (newValue: string) => string,
 ): [
   string,
-  (newValue: string) => void
+  {
+    onChange: (newValue: string) => void,
+    onBlur: (value: string) => void
+  }
+  
 ] => {
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleOnChange = (newValue: string) => {
-    const validatorResult = validator ? validator(newValue) : "";
+  const onChange = (newValue: string) => {
+    const validatorMessage = validator ? validator(newValue) : "";
 
-    if(validatorResult) {
-      setErrorMessage(validatorResult);
-    } else {
+    if(!validatorMessage) {
       setErrorMessage("");
     }
 
     setValue(newValue);
   }
 
-  return [errorMessage, handleOnChange];
+  const onBlur = (value: string) => {
+    const validatorMessage = validator ? validator(value) : "";
+
+    if(validatorMessage) {
+      setErrorMessage(validatorMessage);
+    } else {
+      setErrorMessage("");
+    }
+  }
+
+  return [errorMessage, { onChange, onBlur }];
 }
 
 export default useInput;
