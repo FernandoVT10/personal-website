@@ -1,4 +1,4 @@
-import { AuthenticationError } from "apollo-server-express";
+import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { FileUpload } from "graphql-upload";
 
 import ImageController from "../ImageController";
@@ -19,6 +19,10 @@ export default async (_: null, args: Parameters, context: { loggedIn: boolean })
   if(!context.loggedIn) throw new AuthenticationError("You don't have enough permissions");
 
   const { title, description, content, technologies, images } = args.project;
+
+  if(!images.length) {
+    throw new UserInputError("You need at least add one image");
+  }
 
   const filesUpload = [];
 
