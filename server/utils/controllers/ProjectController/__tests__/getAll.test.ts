@@ -1,4 +1,4 @@
-import { Project, Technology } from "../../../models";
+import { Project, Technology } from "../../../../models";
 
 import getAll from "../getAll";
 
@@ -35,7 +35,7 @@ const PROJECTS_MOCK = [
   }
 ];
 
-setupTestDB("test_schema_project_getAll");
+setupTestDB("test_utils_controllers_project_getAll");
 
 describe("server/schema/project/getAll", () => {
   beforeEach(async () => {
