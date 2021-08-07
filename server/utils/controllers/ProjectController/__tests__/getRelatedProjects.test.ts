@@ -1,10 +1,10 @@
 import { UserInputError } from "apollo-server-errors";
 
-import { Project, IProject, Technology } from "../../../models";
+import { Project, IProject, Technology } from "../../../../models";
 
 import getRelatedProjects from "../getRelatedProjects";
 
-setupTestDB("test_schema_project_getRelatedProjects");
+setupTestDB("test_utils_controllers_project_getRelatedProjects");
 
 const TECHNOLOGIES_MOCK = [
   { name: "technology 1" },
@@ -39,7 +39,7 @@ const PROJECTS_MOCK = [
   }
 ];
 
-describe("server/schema/project/getRelatedProjects", () => {
+describe("server/utils/controllers/ProjectController/getRelatedProjects", () => {
   let projects: IProject[] = [];
 
   beforeEach(async () => {
