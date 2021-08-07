@@ -15,7 +15,7 @@ interface InputProps {
 }
 
 const Input = ({ prefix, label, value, setValue, validator, type, maxLength }: InputProps) => {
-  const [errorMessage, handleOnChange] = useInput(setValue, validator);
+  const [errorMessage, { onChange, onBlur }] = useInput(setValue, validator);
 
   const inputClass = errorMessage.length > 0 ? styles.error : "";
 
@@ -26,8 +26,9 @@ const Input = ({ prefix, label, value, setValue, validator, type, maxLength }: I
         id={`${prefix}-input`}
         className={styles.input}
         value={value}
-        onChange={({ target: { value } }) => handleOnChange(value)}
+        onChange={({ target: { value } }) => onChange(value)}
         maxLength={maxLength ?? 10000}
+        onBlur={({ target: { value } }) => onBlur(value)}
         required
       />
 
