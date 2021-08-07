@@ -14,16 +14,19 @@ interface TextAreaProps {
 }
 
 const TextArea = ({ prefix, label, value, setValue, validator, maxLength }: TextAreaProps) => {
-  const [errorMessage, handleOnChange] = useInput(setValue, validator);
+  const [errorMessage, { onChange, onBlur }] = useInput(setValue, validator);
+
+  const textareaClass = errorMessage.length > 0 ? styles.error : "";
 
   return (
-    <div className={styles.textareaContainer}>
+    <div className={`${styles.textareaContainer} ${textareaClass}`}>
       <textarea
         id={`${prefix}-textarea`}
         className={styles.textarea}
         value={value}
-        onChange={({ target: { value } }) => handleOnChange(value)}
+        onChange={({ target: { value } }) => onChange(value)}
         maxLength={maxLength ?? 10000}
+        onBlur={({ target: { value } }) => onBlur(value)}
         required
       ></textarea>
 

@@ -7,12 +7,19 @@ import TextArea from "./TextArea";
 describe("src/components/Formulary/TextArea", () => {
   it("should render correctly", () => {
     const { queryByText, getByDisplayValue } = render(
-      <TextArea prefix="test" label="Test Label" value="test value" setValue={jest.fn()} />
+      <TextArea
+        maxLength={500}
+        prefix="test"
+        label="Test Label"
+        value="test value"
+        setValue={jest.fn()}
+      />
     );
 
     expect(queryByText("Test Label")).toBeInTheDocument();
 
-    const textarea = getByDisplayValue("test value");
+    const textarea = getByDisplayValue("test value") as HTMLTextAreaElement;
+    expect(textarea.maxLength).toBe(500);
     expect(textarea.id).toBe("test-textarea");
   });
 
@@ -30,7 +37,7 @@ describe("src/components/Formulary/TextArea", () => {
   });
 
   it("should display an error with a custom validator", () => {
-    const validator = (value: string) => value === "updated test value" ? "test error" : "";
+    const validator = (value: string) => value === "updated test value" ? "" : "test error";
 
     const { queryByText, getByDisplayValue } = render(
       <TextArea prefix="test" label="Test Label" value="test value" setValue={jest.fn()} validator={validator} />
@@ -38,7 +45,7 @@ describe("src/components/Formulary/TextArea", () => {
 
     expect(queryByText("test error")).not.toBeInTheDocument();
 
-    fireEvent.change(getByDisplayValue("test value"), { target: { value: "updated test value" } });
+    fireEvent.blur(getByDisplayValue("test value"), { target: { value: "random text" } });
 
     expect(queryByText("test error")).toBeInTheDocument();
   });
