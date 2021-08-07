@@ -33,7 +33,7 @@ export default async (_: null, args: Parameters, context: { loggedIn: boolean })
 
   const imagesURL = [];
 
-  if(imagesToDelete) {
+  if(imagesToDelete?.length) {
     // here we're filtering the images that don't exist in the project
     imagesToDelete = imagesToDelete.filter(imageToDelete => project.images.includes(imageToDelete));
 
@@ -71,7 +71,7 @@ export default async (_: null, args: Parameters, context: { loggedIn: boolean })
 
     await project.save();
 
-    if(imagesToDelete) {
+    if(imagesToDelete?.length) {
       // if everything is ok, we need to delete the images from the server
       ImageController.deleteImageArray(imagesToDelete);
     }
