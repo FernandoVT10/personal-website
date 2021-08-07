@@ -52,6 +52,8 @@ const EditProject = ({ project, error }: IEditProjectProps) => {
     project.technologies.map(technology => technology.name)
   );
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   const router = useRouter();
 
   if(error) {
@@ -61,6 +63,17 @@ const EditProject = ({ project, error }: IEditProjectProps) => {
   const goBack = () => router.push("/dashboard/");
 
   const onSave = async () => {
+    const numberOfImagesNotDeleted = project.images.reduce((acc, image) => {
+      if(imagesToDelete.includes(image)) acc--;
+      return acc;
+    }, project.images.length);
+
+    if(!newImages.length && numberOfImagesNotDeleted < 1) {
+      return setErrorMessage("You need to add at least one image to the carousel");
+    }
+
+    setErrorMessage("");
+
     try {
       const result = await updateProject({
         variables: {
@@ -81,7 +94,7 @@ const EditProject = ({ project, error }: IEditProjectProps) => {
 
       router.push(`/projects/${projectId}`);
     } catch(err) {
-      console.log(err.message);
+      setErrorMessage(err.message);
     }
   }
 
@@ -95,7 +108,7 @@ const EditProject = ({ project, error }: IEditProjectProps) => {
     selectedTechnologies, setSelectedTechnologies,
     goBack, onSave,
     loading: updateProjectResult.loading,
-    error: updateProjectResult.error ? updateProjectResult.error.message : ""
+    error: errorMessage
   }
 
 

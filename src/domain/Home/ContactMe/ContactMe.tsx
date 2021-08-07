@@ -4,7 +4,7 @@ import { gql, useMutation } from "@apollo/client";
 
 import { Input, TextArea } from "@/components/Formulary";
 
-import { email as emailValidator } from "@/utils/validators";
+import { inputValidators } from "@/utils/validators";
 
 import Loader from "@/components/Loader";
 
@@ -58,7 +58,7 @@ const ContactMe = () => {
             label="Email"
             value={email}
             setValue={setEmail}
-            validator={emailValidator}
+            validator={inputValidators.email}
           />
 
           <Input

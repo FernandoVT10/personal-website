@@ -2,6 +2,8 @@ import React from "react";
 
 import { Input, TextArea } from "@/components/Formulary";
 
+import { inputValidators } from "@/utils/validators";
+
 import Carousel from "./Carousel";
 import { INewImage } from "./Carousel/ImageList";
 import Content from "./Content";
@@ -46,6 +48,14 @@ const ProjectEditor = ({
   loading,
   error
 }: IProjectEditorProps) => {
+  const handleOnClick = () => {
+    if(!title.length) return document.getElementById("title-input").focus();;
+    if(!description.length) return document.getElementById("description-textarea").focus();
+    if(!content.length) return document.getElementById("content-textarea").focus();
+
+    onSave();
+  }
+
   return (
     <div className={styles.projectEditor}>
       <Carousel
@@ -60,6 +70,7 @@ const ProjectEditor = ({
         value={title}
         setValue={setTitle}
         maxLength={100}
+        validator={inputValidators.requiredInput("title")}
       />
 
       <TextArea
@@ -68,6 +79,7 @@ const ProjectEditor = ({
         value={description}
         setValue={setDescription}
         maxLength={250}
+        validator={inputValidators.requiredInput("description")}
       />
 
       <Content content={content} setContent={setContent} />
@@ -88,7 +100,7 @@ const ProjectEditor = ({
         :
 
         <div className={styles.buttons}>
-          <button className={styles.button} onClick={onSave}>Save Project</button>
+          <button className={styles.button} onClick={handleOnClick}>Save Project</button>
 
           <button className={`${styles.button} ${styles.secondary}`} onClick={goBack}>
             Go Back

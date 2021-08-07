@@ -26,24 +26,32 @@ interface ICreateProjectResult {
 const Create = () => {
   const [createProject, createProjectResult] = useMutation<ICreateProjectResult>(CREATE_PROJECT);
 
-  const [newImages, setNewImages] = useState<INewImage[]>([]);
+  const [images, setImages] = useState<INewImage[]>([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [content, setContent] = useState("");
   const [selectedTechnologies, setSelectedTechnologies] = useState<string[]>([]);
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   const router = useRouter();
 
   const goBack = () => router.push("/dashboard/");
 
   const onSave = async () => {
+    if(!images.length) {
+      return setErrorMessage("You need to add at least one image to the carousel");
+    }
+
+    setErrorMessage("");
+
     try {
       const result = await createProject({
         variables: {
           project: {
             title,
             // here we're getting the files from the newImages array
-            images: newImages.map(newImage => newImage.file),
+            images: images.map(newImage => newImage.file),
             description,
             content,
             technologies: selectedTechnologies
@@ -55,20 +63,20 @@ const Create = () => {
 
       router.push(`/projects/${projectId}`);
     } catch(err) {
-      console.log(err.message);
+      setErrorMessage(err.message);
     }
   }
 
   const projectEditorProps = {
     images: [],
-    setNewImages,
+    setNewImages: setImages,
     title, setTitle,
     description, setDescription,
     content, setContent,
     selectedTechnologies, setSelectedTechnologies,
     goBack, onSave,
     loading: createProjectResult.loading,
-    error: createProjectResult.error ? createProjectResult.error.message : ""
+    error: errorMessage
   }
 
   return (
