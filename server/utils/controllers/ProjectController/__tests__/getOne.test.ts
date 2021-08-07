@@ -1,11 +1,11 @@
 import { UserInputError } from "apollo-server-express";
 import { Types } from "mongoose";
 
-import { Project, Technology } from "../../../models";
+import { Project, Technology } from "../../../../models";
 
 import getOne from "../getOne";
 
-setupTestDB("test_schema_project_getOne");
+setupTestDB("test_utils_controllers_project_getOne");
 
 const TECHNOLOGIES_MOCK = [
   { name: "technology 1" },
@@ -21,7 +21,7 @@ const PROJECT_MOCK = {
   technologies: [],
 }
 
-describe("server/schema/project/getOne", () => {
+describe("server/utils/controllers/ProjectController/getOne", () => {
   let projectId = "";
 
   beforeEach(async () => {

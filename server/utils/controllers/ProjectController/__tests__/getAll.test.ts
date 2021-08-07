@@ -37,7 +37,7 @@ const PROJECTS_MOCK = [
 
 setupTestDB("test_utils_controllers_project_getAll");
 
-describe("server/schema/project/getAll", () => {
+describe("server/utils/controllers/ProjectController/getAll", () => {
   beforeEach(async () => {
     const technologies = await Technology.create(TECHNOLOGIES_MOCK);
 
