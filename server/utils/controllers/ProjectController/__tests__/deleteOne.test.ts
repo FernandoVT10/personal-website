@@ -1,14 +1,14 @@
-import { UserInputError } from "apollo-server-errors";
+import { UserInputError, AuthenticationError } from "apollo-server-errors";
 
 import { mocked } from "ts-jest/utils";
 
-import { Project } from "../../../models";
+import { Project } from "../../../../models";
 
-import ImageController from "../../../utils/controllers/ImageController";
+import ImageController from "../../ImageController";
 
 import deleteOne from "../deleteOne";
 
-jest.mock("../../../utils/controllers/ImageController");
+jest.mock("../../ImageController");
 
 const PROJECT_MOCK = {
   title: "test title",
@@ -18,11 +18,11 @@ const PROJECT_MOCK = {
   images: ["test-1.jpg", "test-2.jpg"]
 }
 
-setupTestDB("test_schema_project_createOne");
+setupTestDB("test_utils_controller_project_deleteOne");
 
 const mockedDeleteImageArray = mocked(ImageController.deleteImageArray);
 
-describe("server/schema/project/deleteOne", () => {
+describe("server/utils/controllers/ProjectController/deleteOne", () => {
   let projectId: string;
 
   beforeEach(async () => {
@@ -32,7 +32,7 @@ describe("server/schema/project/deleteOne", () => {
   });
 
   it("should delete a project correctly", async () => {
-    const project = await deleteOne(null, { projectId });
+    const project = await deleteOne(null, { projectId }, { loggedIn: true });
 
     expect(await Project.exists({ _id: projectId })).toBeFalsy();
 
@@ -42,9 +42,17 @@ describe("server/schema/project/deleteOne", () => {
     expect([...deletedImageArray]).toEqual(["test-1.jpg", "test-2.jpg"]);
   });
 
+  it("should throw an error when the user isn't logged in", async () => {
+    try {
+      await deleteOne(null, { projectId: null }, { loggedIn: false });
+    } catch (err) {
+      expect(err).toEqual(new AuthenticationError("You don't have enough permissions"));
+    }
+  });
+
   it("should throw an error when the projectId doesn't exist", async () => {
     try {
-      await deleteOne(null, { projectId: "abcdefabcdefabcdefabcdef" });
+      await deleteOne(null, { projectId: "abcdefabcdefabcdefabcdef" }, { loggedIn: true });
     } catch (err) {
       expect(err).toEqual(new UserInputError("The project with the ID 'abcdefabcdefabcdefabcdef' doesn't exist."));
     }
