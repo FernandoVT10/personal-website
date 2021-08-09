@@ -9,7 +9,7 @@ import apolloClient from "@/config/apolloClient";
 
 import EditProject from "@/domain/Dashboard/Project/EditProject";
 
-const GET_PROJECT = gql`
+export const GET_PROJECT = gql`
   query GetProject($projectId: ID!) {
     project(projectId: $projectId) {
       _id
