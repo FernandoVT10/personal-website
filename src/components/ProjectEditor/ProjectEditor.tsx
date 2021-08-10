@@ -49,7 +49,7 @@ const ProjectEditor = ({
   error
 }: IProjectEditorProps) => {
   const handleOnClick = () => {
-    if(!title.length) return document.getElementById("title-input").focus();;
+    if(!title.length) return document.getElementById("title-input").focus();
     if(!description.length) return document.getElementById("description-textarea").focus();
     if(!content.length) return document.getElementById("content-textarea").focus();
 
