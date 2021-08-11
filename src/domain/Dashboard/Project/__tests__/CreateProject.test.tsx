@@ -1,20 +1,19 @@
 import React from "react";
 import { GraphQLError } from "graphql";
 
-import { render, fireEvent, screen, act } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
+import { render, fireEvent, screen, act } from "@testing-library/react";
+import { mocked } from "ts-jest/utils";
 
 import { GET_TECHNOLOGIES } from "@/components/ProjectEditor/Technologies/ManagementModal/";
 
+import withUser from "@/hocs/withUser";
+
 import CreateProject, { CREATE_PROJECT } from "../CreateProject";
 
-jest.mock("@/utils/getImageURLs", () => (files: File[]) => Promise.resolve(
-  files.map(file => `${file.name}.jpg`)
-));
-
-jest.mock("@/components/Modal", () => ({ children }) => {
-  return children;
-});
+jest.mock("@/hocs/withUser");
+jest.mock("@/components/Modal");
+jest.mock("@/utils/getImageURLs");
 
 const IMAGES_MOCK = [
   new File([], "new-image-1.jpg",  { type: "image/jpg" }),
@@ -81,11 +80,21 @@ const changeInputValue = (inputTestId: string, newValue: string) => {
 
 describe("src/domain/Dashboard/Project/CreateProject", () => {
   const routerPushMock = jest.fn();
+  const withUserMocked = mocked(withUser);
 
   beforeEach(() => {
+    routerPushMock.mockReset();
+
     changeRouterProperties({
       push: routerPushMock
     });
+  });
+
+  it("should call the withUser hoc correctly", () => {
+    renderComponent();
+
+    expect(withUserMocked).toHaveBeenCalledTimes(1);
+    expect(withUserMocked).toHaveBeenCalledWith(expect.any(Function), true, "/dashboard/login");
   });
 
   describe("onSave", () => {

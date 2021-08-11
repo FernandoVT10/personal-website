@@ -7,6 +7,8 @@ import { gql, useMutation } from "@apollo/client";
 import ProjectEditor from "@/components/ProjectEditor";
 import { INewImage } from "@/components/ProjectEditor/Carousel/ImageList";
 
+import withUser from "@/hocs/withUser";
+
 import styles from "./Styles.module.scss";
 
 export const CREATE_PROJECT = gql`
@@ -86,4 +88,4 @@ const Create = () => {
   );
 }
 
-export default Create;
+export default withUser(Create, true, "/dashboard/login");
