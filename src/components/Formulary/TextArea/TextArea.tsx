@@ -27,6 +27,7 @@ const TextArea = ({ prefix, label, value, setValue, validator, maxLength }: Text
         onChange={({ target: { value } }) => onChange(value)}
         maxLength={maxLength ?? 10000}
         onBlur={({ target: { value } }) => onBlur(value)}
+        data-testid="textarea-component"
         required
       ></textarea>
 

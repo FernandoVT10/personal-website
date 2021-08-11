@@ -9,7 +9,7 @@ import { INewImage } from "@/components/ProjectEditor/Carousel/ImageList";
 
 import styles from "./Styles.module.scss";
 
-const CREATE_PROJECT = gql`
+export const CREATE_PROJECT = gql`
   mutation CreateProject($project: CreateProjectInput!) {
     createProject(project: $project) {
       _id
