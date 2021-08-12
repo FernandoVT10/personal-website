@@ -12,7 +12,7 @@ import withUser from "@/hocs/withUser";
 
 import styles from "./Styles.module.scss";
 
-const UPDATE_PROJECT = gql`
+export const UPDATE_PROJECT = gql`
   mutation UpdateProject($projectId: ID!, $project: UpdateProjectInput!) {
     updateProject(projectId: $projectId, project: $project) {
       _id
@@ -63,7 +63,9 @@ const EditProject = ({ project, error }: IEditProjectProps) => {
   const goBack = () => router.push("/dashboard/");
 
   const onSave = async () => {
+    // here i get the images that aren't deleted
     const numberOfImagesNotDeleted = project.images.reduce((acc, image) => {
+      // if the image is included on te imagesToDelete array it means that the image is already deleted
       if(imagesToDelete.includes(image)) acc--;
       return acc;
     }, project.images.length);
