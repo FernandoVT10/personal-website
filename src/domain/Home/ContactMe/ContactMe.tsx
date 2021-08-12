@@ -4,7 +4,7 @@ import { gql, useMutation } from "@apollo/client";
 
 import { Input, TextArea } from "@/components/Formulary";
 
-import { inputValidators } from "@/utils/validators";
+import { inputValidators, email as emailValidator } from "@/utils/validators";
 
 import Loader from "@/components/Loader";
 
@@ -27,7 +27,7 @@ const ContactMe = () => {
   const handleOnSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if(emailValidator(email)) return;
+    if(!emailValidator(email)) return;
 
     sendMessage({
       variables: { name, email, subject, message }

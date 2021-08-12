@@ -39,7 +39,7 @@ const mockedDeleteImageArray = mocked(ImageController.deleteImageArray);
 
 describe("server/utils/controllers/ProjectController/createOne", () => {
   beforeEach(async () => {
-    await Technology.create(MOCK_TECHNOLOGIES);
+    await Technology.insertMany(MOCK_TECHNOLOGIES);
 
     jest.resetAllMocks();
 

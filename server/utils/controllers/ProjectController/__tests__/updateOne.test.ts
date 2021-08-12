@@ -99,7 +99,7 @@ describe("server/utils/controllers/ProjectController/updateOne", () => {
     expect(mockedDeleteImageArray).toHaveBeenCalledWith(["test-1.jpg"]);
   });
 
-  it("should delete any image when the imagesToDelete is empty", async () => {
+  it("shouldn't call deleteImageArray when the imagesToDelete array is empty", async () => {
     mockedUploadFileUploadArrayAsImages.mockResolvedValue([]);
 
     const updatedProject = await updateOne(null, {
@@ -116,7 +116,7 @@ describe("server/utils/controllers/ProjectController/updateOne", () => {
 
     expect([...updatedProject.images]).toEqual(["test-1.jpg", "test-2.jpg", "test-3.jpg"]);
 
-    expect(mockedDeleteImageArray).toHaveBeenCalledWith([]);
+    expect(mockedDeleteImageArray).not.toHaveBeenCalled();
   });
 
   it("should throw an error when user isn't logged in", async () => {
