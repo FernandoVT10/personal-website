@@ -2,7 +2,7 @@ import React from "react";
 
 import { gql } from "@apollo/client";
 
-import { InferGetStaticPropsType } from "next";
+import { InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 
 import Home from "@/domain/Home";
@@ -22,7 +22,7 @@ export const GET_PROJECTS = gql`
   }
 `;
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const projectsResult = await client.query({
     query: GET_PROJECTS
   });
@@ -34,7 +34,7 @@ export async function getStaticProps() {
   }
 }
 
-export default function HomePage({ projectsResult }: InferGetStaticPropsType<typeof getStaticProps>) {
+export default function HomePage({ projectsResult }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <div>
       <Head>

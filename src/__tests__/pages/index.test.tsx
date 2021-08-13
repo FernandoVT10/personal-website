@@ -6,7 +6,7 @@ import { MockedProvider } from "@apollo/client/testing";
 
 import client from "@/config/apolloClient";
 
-import HomePage, { getStaticProps, GET_PROJECTS } from "@/pages/index";
+import HomePage, { getServerSideProps, GET_PROJECTS } from "@/pages/index";
 
 jest.mock("@/config/apolloClient", () => ({ query: jest.fn() }));
 
@@ -48,7 +48,7 @@ describe("src/pages/index", () => {
 
   describe("getStaticProps", () => {
     it("should return the props correctly", async () => {
-      const result = await getStaticProps();
+      const result = await getServerSideProps();
 
       expect(result).toEqual({
         props: {
