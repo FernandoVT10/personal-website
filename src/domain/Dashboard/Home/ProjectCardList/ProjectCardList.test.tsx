@@ -1,8 +1,25 @@
 import React from "react";
 
-import { render } from "@testing-library/react";
+import { MockedProvider } from "@apollo/client/testing";
 
-import ProjectCardList from "./ProjectCardList";
+import { render, fireEvent, act } from "@testing-library/react";
+
+import ProjectCardList, { DELETE_PROJECT } from "./ProjectCardList";
+import {GraphQLError} from "graphql";
+
+const mockProjectCardComponent = jest.fn()
+jest.mock("./ProjectCard", () => (props: any) => {
+  mockProjectCardComponent(props);
+
+  return (
+    <div>
+      <button
+        onClick={() => props.deleteProject(props.project._id)}
+        data-testid={`delete-${props.project._id}`}
+      ></button>
+    </div>
+  );
+});
 
 const PROJECTS_MOCK = [
   {
@@ -22,48 +39,74 @@ const PROJECTS_MOCK = [
   }
 ];
 
-const QUERY_RESULT_MOCK = {
-  data: {
-    projects: {
-      docs: PROJECTS_MOCK
+const MOCKS = [
+  {
+    request: {
+      query: DELETE_PROJECT,
+      variables: {
+        projectId: "test-id-3"
+      }
+    },
+    result: {
+      data: {
+        deleteProject: {
+          _id: "test-id-3"
+        }
+      }
     }
-  },
-  loading: false,
-  error: null
-} as any;
+  }
+]
+
+const renderComponent = (props: {[key: string]: any} = {}) => {
+  return render(
+    <MockedProvider mocks={props.mocks ?? MOCKS} addTypename={false}>
+      <ProjectCardList
+        error={props.error  ?? null}
+        loading={props.loading ?? false}
+        projects={PROJECTS_MOCK}
+        refetchProjects={props.refetchProjects ?? jest.fn()}
+      />
+    </MockedProvider>
+  );
+}
 
 describe("src/domain/Dashboard/Home/ProjectCardList", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("should render correctly", () => {
-    const { queryByText, getAllByTestId, getAllByText } = render(<ProjectCardList queryResult={QUERY_RESULT_MOCK}/>);
+    renderComponent();
 
-    PROJECTS_MOCK.forEach((project, index) => {
-      expect(queryByText(project.title)).toBeInTheDocument();
-
-      const link = getAllByText("Edit")[index] as HTMLAnchorElement;
-      expect(link.href).toMatch(`/dashboard/project/${project._id}/edit`);
+    PROJECTS_MOCK.forEach((project) => {
+      expect(mockProjectCardComponent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          project,
+          deleteProject: expect.any(Function)
+        })
+      );
     });
-
-    const images = getAllByTestId("image-carousel-image");
-    expect(images).toHaveLength(6);
   });
 
   it("should render the loader component", () => {
-    const queryResult = {
-      ...QUERY_RESULT_MOCK,
-      loading: true
-    }
-    const { queryByTestId } = render(<ProjectCardList queryResult={queryResult}/>);
-
+    const { queryByTestId } = renderComponent({ loading: true });
     expect(queryByTestId("loader-component")).toBeInTheDocument();
   });
 
   it("should render the error message", () => {
-    const queryResult = {
-      ...QUERY_RESULT_MOCK,
-      error: "error"
-    }
-    const { queryByText } = render(<ProjectCardList queryResult={queryResult}/>);
-
+    const { queryByText } = renderComponent({ error: "message" });
     expect(queryByText("There was an error trying to display the projects. Try it again later.")).toBeInTheDocument();
+  });
+
+  describe("handleDeleteProject", () => {
+    it("should call the deleteProject mutation and refetchProjects", async () => {
+      const refetchProjectsMock = jest.fn();
+      const { getByTestId } = renderComponent({ refetchProjects: refetchProjectsMock });
+
+      fireEvent.click(getByTestId("delete-test-id-3"));
+      await act(async () => new Promise(resolve => setTimeout(resolve, 0)));
+
+      expect(refetchProjectsMock).toHaveBeenCalled();
+    });
   });
 });

@@ -5,7 +5,7 @@ import { gql, NetworkStatus, useLazyQuery } from "@apollo/client";
 import Pagination, { PAGINATION_PROPS } from "@/components/Pagination";
 import ProjectsFilter from "@/components/Projects/ProjectsFilter";
 
-import useProjectsFilter, { IVariables, getVariables } from "@/hooks/useProjectsFilter";
+import useProjectsFilter, { IVariables } from "@/hooks/useProjectsFilter";
 
 import withUser from "@/hocs/withUser";
 

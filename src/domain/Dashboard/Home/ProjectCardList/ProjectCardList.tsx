@@ -11,7 +11,7 @@ import ProjectCard, { IProject } from "./ProjectCard";
 
 import styles from "./ProjectCardList.module.scss";
 
-const DELETE_PROJECT = gql`
+export const DELETE_PROJECT = gql`
   mutation DeleteProject($projectId: ID!) {
     deleteProject(projectId: $projectId) {
       _id
@@ -48,13 +48,9 @@ const ProjectCardList = ({ error, loading, projects, refetchProjects }: ProjectC
   }
 
   const handleDeleteProject = async (projectId: string) => {
-    try {
-      await deleteProject({ variables: { projectId } });
+    await deleteProject({ variables: { projectId } });
 
-      refetchProjects();
-    } catch (err) {
-      throw err;
-    }
+    refetchProjects();
   }
 
   return (
