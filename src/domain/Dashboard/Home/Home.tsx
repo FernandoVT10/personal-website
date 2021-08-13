@@ -1,11 +1,11 @@
 import React from "react";
 
-import { gql, useLazyQuery } from "@apollo/client";
+import { gql, NetworkStatus, useLazyQuery } from "@apollo/client";
 
 import Pagination, { PAGINATION_PROPS } from "@/components/Pagination";
 import ProjectsFilter from "@/components/Projects/ProjectsFilter";
 
-import useProjectsFilter, { IVariables } from "@/hooks/useProjectsFilter";
+import useProjectsFilter, { IVariables, getVariables } from "@/hooks/useProjectsFilter";
 
 import withUser from "@/hocs/withUser";
 
@@ -35,7 +35,7 @@ export const GET_TECHNOLOGIES = gql`
 `;
 
 const Home = () => {
-  const [getProjects, projectsQueryResult] = useLazyQuery(GET_PROJECTS);
+  const [getProjects, projectsQueryResult] = useLazyQuery(GET_PROJECTS, { notifyOnNetworkStatusChange: true });
   const [getTechnologies, technologiesQueryResult] = useLazyQuery(GET_TECHNOLOGIES);
 
   const toTheChangeOfVariables = (newVariables: IVariables) => {
@@ -47,6 +47,10 @@ const Home = () => {
     } else if(!loading) refetch(newVariables);
   }
 
+  const refetchProjects = () => {
+    projectsQueryResult.refetch();
+  }
+
   const {
     search,
     setSearch,
@@ -54,6 +58,8 @@ const Home = () => {
     setSelectedTechnology,
     handleOnSubmit
   } = useProjectsFilter(toTheChangeOfVariables);
+
+  const projects = projectsQueryResult.data?.projects.docs;
 
   return (
     <div className={styles.container}>
@@ -69,7 +75,12 @@ const Home = () => {
       </div>
 
       { projectsQueryResult.called &&
-      <ProjectCardList queryResult={projectsQueryResult}/>
+      <ProjectCardList
+        loading={projectsQueryResult.loading || projectsQueryResult.networkStatus === NetworkStatus.refetch}
+        error={projectsQueryResult.error}
+        projects={projects}
+        refetchProjects={refetchProjects}
+      />
       }
 
       <div className={styles.paginationContainer}>

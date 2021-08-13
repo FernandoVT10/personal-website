@@ -8,7 +8,7 @@ export interface IVariables {
   technology: string
 }
 
-const getVariables = (): IVariables => {
+export const getVariables = (): IVariables => {
   const query = new URLSearchParams(window.location.search);
 
   const page = query.get("page") ? parseInt(query.get("page")) || 0 : 0;

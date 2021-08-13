@@ -1,64 +1,67 @@
 import React from "react";
 
-import { ApolloQueryResult } from "@apollo/client";
-import Link from "next/link";
+import { ApolloError } from "@apollo/client";
 
-import Carousel from "@/components/Carousel";
+import { gql, useMutation } from "@apollo/client";
+
 import MessageCard from "@/components/MessageCard";
 import Loader from "@/components/Loader";
 
+import ProjectCard, { IProject } from "./ProjectCard";
+
 import styles from "./ProjectCardList.module.scss";
 
-interface IProject {
-  _id: string
-  title: string
-  images: string[]
+const DELETE_PROJECT = gql`
+  mutation DeleteProject($projectId: ID!) {
+    deleteProject(projectId: $projectId) {
+      _id
+    }
+  }
+`;
+
+interface IDeleteProjectResult {
+  deleteProject: {
+    _id: string
+  }
+}
+
+interface IDeleteProjectVariables {
+  projectId: string
 }
 
 interface ProjectCardListProps {
-  queryResult: ApolloQueryResult<{
-    projects: {
-      docs: IProject[]
-    }
-  }>
+  error: ApolloError,
+  loading: boolean,
+  projects: IProject[],
+  refetchProjects: () => void
 }
 
-const ProjectCardList = ({ queryResult }: ProjectCardListProps) => {
-  if(queryResult.loading) {
+const ProjectCardList = ({ error, loading, projects, refetchProjects }: ProjectCardListProps) => {
+  const [deleteProject] = useMutation<IDeleteProjectResult, IDeleteProjectVariables>(DELETE_PROJECT);
+
+  if(loading) {
     return  <Loader/>;
   }
 
-  if(queryResult.error) {
+  if(error) {
     return  <MessageCard type="error" message="There was an error trying to display the projects. Try it again later."/>;
   }
 
-  const projects = queryResult.data.projects.docs;
+  const handleDeleteProject = async (projectId: string) => {
+    try {
+      await deleteProject({ variables: { projectId } });
+
+      refetchProjects();
+    } catch (err) {
+      throw err;
+    }
+  }
 
   return (
     <div className={styles.projectCardList}>
       { projects.map(project => {
-          return (
-            <div className={styles.projectCard} key={project._id}>
-              <Carousel images={project.images}/>
-
-              <div className={styles.details}>
-                <h3 className={styles.title}>{ project.title }</h3>
-
-                <div className={styles.actionButtons}>
-                  <Link href={`/dashboard/project/${project._id}/edit`}>
-                    <a className={styles.actionButton}>
-                      Edit
-                    </a>
-                  </Link>
-
-                  <a href="#" className={styles.actionButton}>
-                    Delete
-                  </a>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        return <ProjectCard key={project._id} project={project} deleteProject={handleDeleteProject}/>;
+      })}
     </div>
   );
 }
