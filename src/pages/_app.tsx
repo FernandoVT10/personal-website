@@ -13,8 +13,8 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ApolloProvider client={client}>
       <Head>
-        <script src="https://kit.fontawesome.com/10218d85cd.js"></script>
-      </Head>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+        </Head>
       <Component {...pageProps} />
     </ApolloProvider>
   );
