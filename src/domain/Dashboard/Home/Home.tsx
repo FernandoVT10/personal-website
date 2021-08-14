@@ -12,6 +12,7 @@ import withUser from "@/hocs/withUser";
 import ProjectCardList from "./ProjectCardList";
 
 import styles from "./Home.module.scss";
+import Link from "next/link";
 
 export const GET_PROJECTS = gql`
   query GetProjects($page: Int, $search: String, $technology: String) {
@@ -73,6 +74,13 @@ const Home = () => {
           setSearch={setSearch}
         />
       </div>
+
+      <Link href="/dashboard/project/create">
+        <button className={styles.createProjectButton}>
+          Create a new project
+          <i className="fas fa-plus" aria-hidden="true"></i>
+        </button>
+      </Link>
 
       { projectsQueryResult.called &&
       <ProjectCardList
