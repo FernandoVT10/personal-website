@@ -19,6 +19,7 @@
     "graphql": "^15.5.0",
     "graphql-upload": "^11.0.0",
     "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.21",
     "mongoose": "^5.12.4",
     "mongoose-paginate-v2": "^1.3.17",
     "next": "^11.1.0",
