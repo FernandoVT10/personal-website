@@ -7,6 +7,8 @@ import { ApolloServer } from "apollo-server-express";
 import schema from "./schema";
 import validateJWTToken from "./utils/validateJWTToken";
 
+const PORT = process.env.PORT || 3000;
+
 const dev = process.env.NODE_ENV !== "production";
 
 const app = express();
@@ -43,7 +45,7 @@ export default async function startServer() {
     return nextHandler(req, res);
   });
 
-  await new Promise(resolve => app.listen(3000, () => resolve(true)));
+  await new Promise(resolve => app.listen(PORT, () => resolve(true)));
 
-  console.log(`🚀  Server ready at http://localhost:3000${server.graphqlPath}`);
+  console.log(`🚀  Server listening on the port ${PORT}`);
 }

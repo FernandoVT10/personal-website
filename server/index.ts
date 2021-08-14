@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
 
 import startServer from "./app";
+import { MONGODB_URI } from "./config";
 
-mongoose.connect("mongodb://localhost:27017/personal-website", {
+mongoose.connect(MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,

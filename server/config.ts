@@ -8,6 +8,8 @@ export const PUBLIC_DIRECTORY = join(__dirname, "../public/");
 
 export const WEBSITE_URL = process.env.WEBSITE_URL;
 
+export const MONGODB_URI = process.env.MONGODB_URI;
+
 export const MY_EMAIL = process.env.MY_EMAIL;
 
 export const MAIL_CONFIG = {
