@@ -14,12 +14,19 @@ const IMAGES_PATH = join(PUBLIC_DIRECTORY, "/img/uploads");
 
 const uploadFileUploadAsImage = async (file: FileUpload, directory = "/"): Promise<string> => {
   const imageName = Date.now() + file.filename;
-  const imagePath = join(IMAGES_PATH, directory, imageName);
+  const dirPath = join(IMAGES_PATH, directory);
   const stream = file.createReadStream();
 
   if(!imageValidator(file.mimetype)) throw new UserInputError("The file must be a .png, .jpg or .jpeg image");
 
   try {
+    // if the directory doesn't exist we need to create it
+    if(!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true });
+    }
+
+    const imagePath = join(dirPath, imageName);
+
     await saveFileStream(stream, imagePath);
 
     const imageURL = join(WEBSITE_URL, "/img/uploads/", directory, imageName).replace(":/", "://");
