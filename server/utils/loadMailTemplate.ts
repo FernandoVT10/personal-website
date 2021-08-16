@@ -1,9 +1,4 @@
-import { readFileSync } from "fs";
-
-export default (templateName: string, variables: object): string => {
-  const data = readFileSync(`${__dirname}/mailTemplates/${templateName}.html`);
-  let template = data.toString();
-
+export default (template: string, variables: object): string => {
   Object.keys(variables).forEach(key => {
     template = template.replace(`{${key}}`, variables[key]);
   });

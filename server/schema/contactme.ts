@@ -2,6 +2,8 @@ import { gql, UserInputError } from "apollo-server-express";
 
 import { MY_EMAIL, WEBSITE_URL } from "../config";
 
+import sendMessageMailTemplate from "../utils/mailTemplates/sendMessage";
+
 import loadMailTemplate from "../utils/loadMailTemplate";
 import transporter from "../utils/mailTransporter";
 import { emailValidator } from "../utils/validators";
@@ -22,7 +24,7 @@ interface Parameters {
 const sendMessage = async (_: null, args: Parameters) => {
   if(!emailValidator(args.email)) throw new UserInputError("The email is invalid");
 
-  let mailTemplate = loadMailTemplate("sendMessage", {
+  let mailTemplate = loadMailTemplate(sendMessageMailTemplate, {
     name: args.name,
     websiteURL: WEBSITE_URL,
     message: args.message
