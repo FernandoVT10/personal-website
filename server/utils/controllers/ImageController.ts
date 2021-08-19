@@ -1,67 +1,76 @@
-import fs from "fs";
+import { UserInputError, ApolloError } from "apollo-server-express";
 
-import { UserInputError } from "apollo-server-express";
+import ibm from "ibm-cos-sdk";
+
 import { FileUpload } from "graphql-upload";
-import { join } from "path";
-
-import { PUBLIC_DIRECTORY, WEBSITE_URL } from "../../config";
-
-import saveFileStream from "../saveFileStream";
 
 import { imageValidator } from "../validators";
 
-const IMAGES_PATH = join(PUBLIC_DIRECTORY, "/img/uploads");
+import { IBM_CONFIG } from "../../config";
 
-const uploadFileUploadAsImage = async (file: FileUpload, directory = "/"): Promise<string> => {
-  const imageName = Date.now() + file.filename;
-  const dirPath = join(IMAGES_PATH, directory);
-  const stream = file.createReadStream();
+const cos = new ibm.S3({
+  endpoint: IBM_CONFIG.endpoint,
+  apiKeyId: IBM_CONFIG.apiKeyId,
+  serviceInstanceId: IBM_CONFIG.serviceInstanceid
+});
 
-  if(!imageValidator(file.mimetype)) throw new UserInputError("The file must be a .png, .jpg or .jpeg image");
+const getImage = async (imageKey: string) => {
+  const image = await cos.getObject({
+    Bucket: IBM_CONFIG.bucket,
+    Key: imageKey
+  }).promise();
+
+  return image;
+}
+
+const uploadImage = async (image: FileUpload): Promise<string> => {
+  const { mimetype, filename, createReadStream } = image;
+
+  if(!imageValidator(image.mimetype)) throw new UserInputError("The file must be a .png, .jpg or .jpeg image");
 
   try {
-    // if the directory doesn't exist we need to create it
-    if(!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath, { recursive: true });
-    }
+    const Key = `${Date.now()}-${filename}`;
 
-    const imagePath = join(dirPath, imageName);
+    const buffer = await new Promise<Buffer>((resolve, reject) => {
+      const stream = createReadStream();
 
-    await saveFileStream(stream, imagePath);
+      const buffers = [];
 
-    const imageURL = join(WEBSITE_URL, "/img/uploads/", directory, imageName).replace(":/", "://");
-    return imageURL;
-  } catch (err) {
-    throw err;
+      stream.on("data", buffer => buffers.push(buffer));
+      stream.on("end", () => resolve(Buffer.concat(buffers)));
+      stream.on("error", err => reject(err));
+    });
+
+    await cos.putObject({
+      Bucket: IBM_CONFIG.bucket,
+      Key,
+      Body: buffer,
+      ContentType: mimetype
+    }).promise();
+
+    return Key;
+  } catch(err) {
+    console.log(err);
+    throw new ApolloError(`Error trying to upload the ${filename} image to the server.`);
   }
 }
 
-const uploadFileUploadArrayAsImages = (filesUpload: FileUpload[]): Promise<string[]> => {
-  filesUpload.forEach(filesUpload => {
+const uploadImages = async (images: FileUpload[]): Promise<string[]> => {
+  images.forEach(filesUpload => {
     if(!imageValidator(filesUpload.mimetype)) {
       throw new UserInputError("All the files must be a .png, .jpg or .jpeg image");
     }
   });
-  
-  return Promise.all(filesUpload.map(fileUpload => {
-    return uploadFileUploadAsImage(fileUpload);
-  }));
-}
 
-const deleteImage = (fileURL: string) => {
-  const imagePath = fileURL.replace(WEBSITE_URL, "");
-  const imageCompletePath = join(PUBLIC_DIRECTORY, imagePath);
-
-  if(fs.existsSync(imageCompletePath)) fs.unlinkSync(imageCompletePath);
-}
-
-const deleteImageArray = (filesURL: string[]) => {
-  filesURL.forEach(fileURL => deleteImage(fileURL));
+  return Promise.all(images.map(image => uploadImage(image)));
 }
 
 export default {
-  uploadFileUploadAsImage,
-  uploadFileUploadArrayAsImages,
-  deleteImage,
-  deleteImageArray
+  // mocks
+  uploadFileUploadArrayAsImages: (_: any[]): any => {},
+  deleteImageArray: (_: string[]) => {},
+  // end of mocks
+  getImage,
+  uploadImage,
+  uploadImages
 }

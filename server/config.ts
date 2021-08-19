@@ -19,6 +19,14 @@ export const MAIL_CONFIG = {
   pass: process.env.MAIL_PASS
 }
 
+
+export const IBM_CONFIG = {
+  endpoint: process.env.IBM_END_POINT,
+  apiKeyId: process.env.IBM_API_KEY,
+  serviceInstanceid: process.env.IBM_SERVICE_INSTANCE_ID,
+  bucket: process.env.IBM_BUCKET
+}
+
 export const DASHBOARD_USERNAME = process.env.DASHBOARD_USERNAME;
 export const DASHBOARD_PASSWORD = process.env.DASHBOARD_PASSWORD;
 
