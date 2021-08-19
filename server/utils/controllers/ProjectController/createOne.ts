@@ -1,4 +1,6 @@
-import { AuthenticationError, UserInputError } from "apollo-server-express";
+import { Error as MongooseError } from "mongoose";
+
+import { AuthenticationError, ApolloError, UserInputError } from "apollo-server-express";
 import { FileUpload } from "graphql-upload";
 
 import ImageController from "../ImageController";
@@ -30,21 +32,30 @@ export default async (_: null, args: Parameters, context: { loggedIn: boolean })
     filesUpload.push(await file.promise);
   }
 
-  const imagesURL = await ImageController.uploadFileUploadArrayAsImages(filesUpload);
-
   try {
     const technologiesDocuments = await Technology.find({ name: { $in: technologies } });
 
-    return await Project.create({
+    const project = new Project({
       title,
       description,
       content,
       technologies: technologiesDocuments,
-      images: imagesURL
-    });   
-  } catch(err) {
-    // delete the images if there is an error
-    ImageController.deleteImageArray(imagesURL);
-    throw err;
+      images: []
+    }); 
+
+    await project.validate();
+
+    const imagesURL = await ImageController.uploadImages(filesUpload);
+
+    project.images = imagesURL;
+
+    return await project.save();
+  } catch (err) {
+    if(err instanceof MongooseError.ValidationError) {
+      throw err;
+    }
+
+    console.log(err);
+    throw new ApolloError("An error has appeared creating the project");
   }
 }

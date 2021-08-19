@@ -67,12 +67,24 @@ const uploadImages = async (images: FileUpload[]): Promise<string[]> => {
   return Promise.all(images.map(image => uploadImage(image)));
 }
 
+const deleteImages = async (imagesURL: string[]): Promise<void> => {
+  try {
+    const Objects = imagesURL.map(imageURL => ({
+      Key: imageURL.split(`/img/uploads/`)[1]
+    }));
+
+    await cos.deleteObjects({
+      Bucket: IBM_CONFIG.bucket,
+      Delete: { Objects }
+    }).promise();
+  } catch (err) {
+    throw new ApolloError("Error trying to delete the images");
+  }
+}
+
 export default {
-  // mocks
-  uploadFileUploadArrayAsImages: (_: any[]): any => {},
-  deleteImageArray: (_: string[]) => {},
-  // end of mocks
   getImage,
   uploadImage,
-  uploadImages
+  uploadImages,
+  deleteImages
 }

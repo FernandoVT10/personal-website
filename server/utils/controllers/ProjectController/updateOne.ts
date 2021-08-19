@@ -1,4 +1,6 @@
-import { UserInputError, AuthenticationError } from "apollo-server-express";
+import { Error as MongooseError } from "mongoose";
+
+import { UserInputError, ApolloError, AuthenticationError } from "apollo-server-express";
 import { FileUpload } from "graphql-upload";
 
 import ImageController from "../ImageController";
@@ -55,9 +57,6 @@ export default async (_: null, args: Parameters, context: { loggedIn: boolean })
     }
   }
 
-  const newImagesURL = await ImageController.uploadFileUploadArrayAsImages(imagesToUpload);
-  imagesURL.push(...newImagesURL);
-
   try {
     const technologiesDocuments = await Technology.find({ name: { $in: technologies } });
 
@@ -66,20 +65,30 @@ export default async (_: null, args: Parameters, context: { loggedIn: boolean })
       description,
       content,
       technologies: technologiesDocuments,
-      images: imagesURL
+      images: []
     });
+
+    await project.validate();
+
+    const newImagesURL = await ImageController.uploadImages(imagesToUpload);
+    imagesURL.push(...newImagesURL);
+
+    project.images = imagesURL;
 
     await project.save();
 
     if(imagesToDelete?.length) {
       // if everything is ok, we need to delete the images from the server
-      ImageController.deleteImageArray(imagesToDelete);
+      await ImageController.deleteImages(imagesToDelete);
     }
 
     return project;
-  } catch(err) {
-    // delete the new images if there is an error
-    ImageController.deleteImageArray(newImagesURL);
-    throw err;
+  } catch (err) {
+    if(err instanceof MongooseError.ValidationError) {
+      throw err;
+    }
+
+    console.log(err);
+    throw new ApolloError("An error has appeared creating the project");
   }
 }

@@ -18,7 +18,7 @@ export default async (_: null, args: Parameters, context: { loggedIn: boolean })
     throw new UserInputError(`The project with the ID '${projectId}' doesn't exist.`);
   }
 
-  ImageController.deleteImageArray(project.images);
+  await ImageController.deleteImages(project.images);
 
   return await project.delete();
 }
