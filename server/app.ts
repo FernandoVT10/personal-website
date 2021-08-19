@@ -1,8 +1,6 @@
 import express from "express";
 import next from "next";
 
-import vhost from "vhost";
-
 import { graphqlUploadExpress } from "graphql-upload";
 import { ApolloServer } from "apollo-server-express";
 
@@ -46,7 +44,7 @@ export default async function startServer() {
 
   server.applyMiddleware({ app });
   
-  app.use(vhost("img.localhost", imgApp));
+  app.use("/img/uploads/", imgApp);
 
   app.get("*", (req, res) => {
     return nextHandler(req, res);
