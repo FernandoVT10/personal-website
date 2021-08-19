@@ -1,3 +1,4 @@
+import { join } from "path";
 import { UserInputError, ApolloError } from "apollo-server-express";
 
 import ibm from "ibm-cos-sdk";
@@ -6,7 +7,7 @@ import { FileUpload } from "graphql-upload";
 
 import { imageValidator } from "../validators";
 
-import { IBM_CONFIG } from "../../config";
+import { IBM_CONFIG, WEBSITE_URL  } from "../../config";
 
 const cos = new ibm.S3({
   endpoint: IBM_CONFIG.endpoint,
@@ -48,7 +49,8 @@ const uploadImage = async (image: FileUpload): Promise<string> => {
       ContentType: mimetype
     }).promise();
 
-    return Key;
+    const imageURL = join(WEBSITE_URL, "/img/uploads/", Key).replace(":/", "://");
+    return imageURL;
   } catch(err) {
     console.log(err);
     throw new ApolloError(`Error trying to upload the ${filename} image to the server.`);

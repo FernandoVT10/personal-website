@@ -4,7 +4,7 @@ import ImageController from "../utils/controllers/ImageController";
 
 const router = Router();
 
-router.get("/:imageKey", async (req, res) => {
+router.get("/:imageKey", async (req, res, next) => {
   const { imageKey } = req.params;
 
   try {
@@ -12,7 +12,7 @@ router.get("/:imageKey", async (req, res) => {
     res.setHeader("Content-Type", image.ContentType);
     res.send(image.Body);
   } catch {
-    res.sendStatus(404);
+    next();
   }
 });
 
