@@ -14,7 +14,7 @@ const IMAGE_MOCK = {
   })
 } as any;
 
-const uploadFileUploadAsImageMocked = mocked(ImageController.uploadFileUploadAsImage);
+const uploadImageMocked = mocked(ImageController.uploadImage);
 
 describe("server/schema/uploadImage", () => {
   beforeEach(() => {
@@ -22,16 +22,16 @@ describe("server/schema/uploadImage", () => {
   });
 
   it("should return the image url", async () => {
-    uploadFileUploadAsImageMocked.mockResolvedValue("https://example.com/image.jpg");
+    uploadImageMocked.mockResolvedValue("https://example.com/image.jpg");
 
     expect(
       await UploadImageResolvers.Mutation.uploadImage(null, { image: IMAGE_MOCK }, { loggedIn: true })
     ).toBe("https://example.com/image.jpg");
 
-    expect(uploadFileUploadAsImageMocked).toHaveBeenCalledWith({
+    expect(uploadImageMocked).toHaveBeenCalledWith({
       filename: "test name",
       mimetype: "image/jpg"
-    }, "/content/");
+    });
   });
 
   it("should throw an error when the user isn't logged in", async () => {
