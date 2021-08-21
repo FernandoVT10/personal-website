@@ -58,6 +58,8 @@ const uploadImage = async (image: FileUpload): Promise<string> => {
 }
 
 const uploadImages = async (images: FileUpload[]): Promise<string[]> => {
+  if(!images.length) return [];
+
   images.forEach(filesUpload => {
     if(!imageValidator(filesUpload.mimetype)) {
       throw new UserInputError("All the files must be a .png, .jpg or .jpeg image");
@@ -68,6 +70,8 @@ const uploadImages = async (images: FileUpload[]): Promise<string[]> => {
 }
 
 const deleteImages = async (imagesURL: string[]): Promise<void> => {
+  if(!imagesURL.length) return;
+
   try {
     const Objects = imagesURL.map(imageURL => ({
       Key: imageURL.split(`/img/uploads/`)[1]
