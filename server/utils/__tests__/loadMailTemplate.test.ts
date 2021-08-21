@@ -20,7 +20,7 @@ describe("server/utils/loadMailTemplate", () => {
   });
 
   it("should return a template with the variables value correctly", () => {
-    const template = loadMailTemplate("test", {
+    const template = loadMailTemplate(TEMPLATE_MOCK, {
       testValue: "jhon",
       otherTestValue: "eric"
     });
