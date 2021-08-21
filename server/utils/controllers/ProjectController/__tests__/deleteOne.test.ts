@@ -20,7 +20,7 @@ const PROJECT_MOCK = {
 
 setupTestDB("test_utils_controller_project_deleteOne");
 
-const mockedDeleteImageArray = mocked(ImageController.deleteImageArray);
+const deleteImagesMocked = mocked(ImageController.deleteImages);
 
 describe("server/utils/controllers/ProjectController/deleteOne", () => {
   let projectId: string;
@@ -38,7 +38,7 @@ describe("server/utils/controllers/ProjectController/deleteOne", () => {
 
     expect(project.title).toBe("test title");
 
-    const deletedImageArray = mockedDeleteImageArray.mock.calls[0][0];
+    const deletedImageArray = deleteImagesMocked.mock.calls[0][0];
     expect([...deletedImageArray]).toEqual(["test-1.jpg", "test-2.jpg"]);
   });
 
