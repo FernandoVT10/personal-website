@@ -1,4 +1,6 @@
-import { AuthenticationError, UserInputError } from "apollo-server-express";
+import { Error as MongooseError } from "mongoose";
+
+import { AuthenticationError, UserInputError, ApolloError } from "apollo-server-express";
 
 import { mocked } from "ts-jest/utils";
 
@@ -34,8 +36,10 @@ const PROJECT_MOCK = {
   ]
 }
 
-const mockedUploadFileUploadArrayAsImages = mocked(ImageController.uploadFileUploadArrayAsImages);
-const mockedDeleteImageArray = mocked(ImageController.deleteImageArray);
+const uploadImagesMocked = mocked(ImageController.uploadImages);
+
+// deactivate the console.log
+console.log = () => {}
 
 describe("server/utils/controllers/ProjectController/createOne", () => {
   beforeEach(async () => {
@@ -43,7 +47,7 @@ describe("server/utils/controllers/ProjectController/createOne", () => {
 
     jest.resetAllMocks();
 
-    mockedUploadFileUploadArrayAsImages.mockResolvedValue(["test-1.jpg", "test-2.jpg"]);
+    uploadImagesMocked.mockResolvedValue(["test-1.jpg", "test-2.jpg"]);
   });
 
   it("should create a project", async () => {
@@ -61,7 +65,7 @@ describe("server/utils/controllers/ProjectController/createOne", () => {
 
     expect([...project.images]).toEqual(["test-1.jpg", "test-2.jpg"]);
 
-    expect(mockedUploadFileUploadArrayAsImages).toHaveBeenCalledWith([FILE_UPLOAD_MOCK]);
+    expect(uploadImagesMocked).toHaveBeenCalledWith([FILE_UPLOAD_MOCK]);
   });
 
   it("should throw an error when the user isn't logged in", async () => {
@@ -85,7 +89,7 @@ describe("server/utils/controllers/ProjectController/createOne", () => {
     }
   });
 
-  it("should delete all the images when it throws an error", async () => {
+  it("shouldn't upload the images when there's a validation error", async () => {
     try {
       await createOne(null, {
         project: {
@@ -93,8 +97,22 @@ describe("server/utils/controllers/ProjectController/createOne", () => {
           title: ""
         }
       }, { loggedIn: true });
-    } catch {
-      expect(mockedDeleteImageArray).toHaveBeenCalledWith(["test-1.jpg", "test-2.jpg"]);
+    } catch(err) {
+      expect(err).toBeInstanceOf(MongooseError.ValidationError);
+      expect(uploadImagesMocked).not.toHaveBeenCalled();
+    }
+  });
+
+  it("should throw an error when there's an error uploading the images", async () => {
+    uploadImagesMocked.mockReset();
+    uploadImagesMocked.mockRejectedValue(new Error("test"));
+
+    try {
+      await createOne(null, {
+        project: PROJECT_MOCK
+      }, { loggedIn: true });
+    } catch(err) {
+      expect(err).toEqual(new ApolloError("An error has appeared creating the project"));
     }
   });
 });
