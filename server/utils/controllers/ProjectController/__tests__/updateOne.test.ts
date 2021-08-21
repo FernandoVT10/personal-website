@@ -1,4 +1,5 @@
-import { AuthenticationError, UserInputError } from "apollo-server-errors";
+import { Error as MongooseError } from "mongoose";
+import { ApolloError, AuthenticationError, UserInputError } from "apollo-server-errors";
 import { mocked } from "ts-jest/utils";
 
 import { Project, Technology } from "../../../../models";
@@ -29,10 +30,13 @@ const PROJECT_MOCK = {
   images: ["test-1.jpg", "test-2.jpg", "test-3.jpg"]
 }
 
-const mockedUploadFileUploadArrayAsImages = mocked(ImageController.uploadFileUploadArrayAsImages);
-const mockedDeleteImageArray = mocked(ImageController.deleteImageArray);
+// deactivate the console.log
+console.log = () => {}
 
 describe("server/utils/controllers/ProjectController/updateOne", () => {
+  const uploadImagesMocked = mocked(ImageController.uploadImages);
+  const deleteImagesMocked = mocked(ImageController.deleteImages);
+
   let projectId: string;
 
   beforeEach(async () => {
@@ -45,7 +49,7 @@ describe("server/utils/controllers/ProjectController/updateOne", () => {
 
     jest.resetAllMocks();
 
-    mockedUploadFileUploadArrayAsImages.mockResolvedValue(["updated.jpg"]);
+    uploadImagesMocked.mockResolvedValue(["updated.jpg"]);
   });
 
   it("should update a project correctly", async () => {
@@ -72,13 +76,12 @@ describe("server/utils/controllers/ProjectController/updateOne", () => {
 
     expect([...updatedProject.images]).toEqual(["test-1.jpg", "updated.jpg"]);
 
-    expect(mockedUploadFileUploadArrayAsImages).toHaveBeenCalledWith([FILE_UPLOAD_MOCK]);
-
-    expect(mockedDeleteImageArray).toHaveBeenCalledWith(["test-2.jpg", "test-3.jpg"]);
+    expect(uploadImagesMocked).toHaveBeenCalledWith([FILE_UPLOAD_MOCK]);
+    expect(deleteImagesMocked).toHaveBeenCalledWith(["test-2.jpg", "test-3.jpg"]);
   });
 
   it("should update a project correctly without newImages parameter", async () => {
-    mockedUploadFileUploadArrayAsImages.mockResolvedValue([]);
+    uploadImagesMocked.mockResolvedValue([]);
 
     const updatedProject = await updateOne(null, {
       projectId,
@@ -94,13 +97,12 @@ describe("server/utils/controllers/ProjectController/updateOne", () => {
 
     expect([...updatedProject.images]).toEqual(["test-2.jpg", "test-3.jpg"]);
 
-    expect(mockedUploadFileUploadArrayAsImages).toHaveBeenCalledWith([]);
-
-    expect(mockedDeleteImageArray).toHaveBeenCalledWith(["test-1.jpg"]);
+    expect(uploadImagesMocked).toHaveBeenCalledWith([]);
+    expect(deleteImagesMocked).toHaveBeenCalledWith(["test-1.jpg"]);
   });
 
-  it("shouldn't call deleteImageArray when the imagesToDelete array is empty", async () => {
-    mockedUploadFileUploadArrayAsImages.mockResolvedValue([]);
+  it("shouldn't call deleteImages when the imagesToDelete array is empty", async () => {
+    uploadImagesMocked.mockResolvedValue([]);
 
     const updatedProject = await updateOne(null, {
       projectId,
@@ -116,7 +118,7 @@ describe("server/utils/controllers/ProjectController/updateOne", () => {
 
     expect([...updatedProject.images]).toEqual(["test-1.jpg", "test-2.jpg", "test-3.jpg"]);
 
-    expect(mockedDeleteImageArray).not.toHaveBeenCalled();
+    expect(deleteImagesMocked).not.toHaveBeenCalled();
   });
 
   it("should throw an error when user isn't logged in", async () => {
@@ -135,7 +137,7 @@ describe("server/utils/controllers/ProjectController/updateOne", () => {
     }
   });
 
-  it("should delete all the new images and shouldn't delete the images on the imagesToDelete array when it throws an error", async () => {
+  it("should upload the new images and shouldn't delete the images on the imagesToDelete array when it throws a validation error", async () => {
     try {
       await updateOne(null, {
         projectId,
@@ -150,14 +152,40 @@ describe("server/utils/controllers/ProjectController/updateOne", () => {
           ]
         }
       }, { loggedIn: true });   
-    } catch {
+    } catch(err) {
       // images on the newImages array
-      expect(mockedUploadFileUploadArrayAsImages).toHaveBeenCalledWith([FILE_UPLOAD_MOCK]);
-      expect(mockedDeleteImageArray).toHaveBeenCalledWith(["updated.jpg"]);
+      expect(uploadImagesMocked).not.toHaveBeenCalled();
 
       // images on the imagesToDelete array
-      expect(mockedDeleteImageArray).not.toHaveBeenCalledWith(["test-1.jpg"]);
-      expect(mockedDeleteImageArray).toHaveBeenCalledTimes(1);
+      expect(deleteImagesMocked).not.toHaveBeenCalled();
+
+      expect(err).toBeInstanceOf(MongooseError.ValidationError);
+    }
+  });
+
+  it("should throw an error when there's an error uploading the images", async () => {
+    uploadImagesMocked.mockReset();
+    uploadImagesMocked.mockRejectedValue(new Error("test error"));
+
+    try {
+      await updateOne(null, {
+        projectId,
+        project: {
+          title: "updated title",
+          description: "updated description",
+          content: "updated content",
+          technologies: ["technology 1", "technology 3"],
+          imagesToDelete: ["test-1.jpg"],
+          newImages: [
+            { promise: Promise.resolve(FILE_UPLOAD_MOCK) }
+          ]
+        }
+      }, { loggedIn: true });   
+    } catch(err) {
+      // images on the imagesToDelete array
+      expect(deleteImagesMocked).not.toHaveBeenCalled();
+
+      expect(err).toEqual(new ApolloError("An error has appeared creating the project"));
     }
   });
 });
