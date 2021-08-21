@@ -1,14 +1,20 @@
-import fs from "fs";
+import { PassThrough } from "stream";
+import ibm from "ibm-cos-sdk";
 
-import { UserInputError } from "apollo-server-errors";
+import { mocked } from "ts-jest/utils";
 
-import ImageController from "../ImageController";
+import { UserInputError, ApolloError } from "apollo-server-errors";
 
-jest.mock("../../saveFileStream", () => () => {});
+jest.mock("ibm-cos-sdk");
 
 jest.mock("../../../config", () => ({
   WEBSITE_URL: "https://test.com",
-  PUBLIC_DIRECTORY: "./test/"
+  IBM_CONFIG: {
+    endpoint: "s3.endpoint.com",
+    apiKeyId: "api-key-id",
+    serviceInstanceid: "service-instance-id",
+    bucket: "test-bucket"
+  }
 }));
 
 const FILE_UPLOADS_MOCK = [
@@ -24,100 +30,235 @@ const FILE_UPLOADS_MOCK = [
   }
 ] as any;
 
-const mockedExistSync = jest.spyOn(fs, "existsSync");
-const mockedUnlinkSync = jest.spyOn(fs, "unlinkSync");
+// I'm using dynamic imports because i wanna see if the ibm.S3 class is called with the correct data
+// And i can't import the ImageController globally
+const getImageController = async () => {
+  return (await import("../ImageController")).default;
+}
+
+// deactivate the console log
+console.log = () => {}
 
 describe("server/utils/controllers/ImageController", () => {
+  const getObjectMock = jest.fn();
+  const putObjectMock = jest.fn();
+  const deleteObjectsMock = jest.fn();
+
+  const ibmS3Mocked = mocked(ibm.S3);
+
+  const dateNowSpy = jest.spyOn(Date, "now");
+
   beforeEach(() => {
-    mockedExistSync.mockReset();
-    mockedUnlinkSync.mockReset();
+    jest.resetAllMocks();
+
+    putObjectMock.mockImplementation(() => ({
+      promise: () => Promise.resolve()
+    }))
+
+    deleteObjectsMock.mockImplementation(() => ({
+      promise: () => Promise.resolve()
+    }))
+
+    ibmS3Mocked.mockImplementation(() => {
+      return {
+        getObject: getObjectMock,
+        putObject: putObjectMock,
+        deleteObjects: deleteObjectsMock
+      } as any;
+    });
+
+    dateNowSpy.mockImplementation(() => 1111);
   });
 
-  describe("uploadFileUploadAsImage", () => {
+
+  it("should call the ibm.s3 class correctly", async () => {
+    await import("../ImageController");
+
+    expect(ibmS3Mocked).toHaveBeenCalledTimes(1);
+
+    expect(ibmS3Mocked).toHaveBeenCalledWith({
+      endpoint: "s3.endpoint.com",
+      apiKeyId: "api-key-id",
+      serviceInstanceId: "service-instance-id"
+    });
+  });
+
+  describe("getImage", () => {
+    beforeEach(() => {
+      getObjectMock.mockImplementation(() => ({
+        promise: () => Promise.resolve(FILE_UPLOADS_MOCK[0])
+      } as any));
+    });
+
+    it("should call the getObject function and return the result", async () => {
+      const ImageController = await getImageController();
+
+      const image = await ImageController.getImage("test-key");
+
+      expect(image).toEqual(FILE_UPLOADS_MOCK[0]);
+      expect(getObjectMock).toHaveBeenCalledWith({
+        Bucket: "test-bucket",
+        Key: "test-key"
+      });
+    });
+  });
+
+  describe("uploadImage", () => {
+    it("should call putObject and return the image url", async () => {
+      const ImageController = await getImageController();
+
+      const readStreamMock = new PassThrough();
+
+      const fileUploadMock = {
+        ...FILE_UPLOADS_MOCK[0],
+        createReadStream: () => readStreamMock
+      }
+
+      const imageURLPromise = ImageController.uploadImage(fileUploadMock);
+
+      const bufferMock = Buffer.from("test");
+
+      readStreamMock.emit("data", bufferMock);
+      readStreamMock.emit("end");
+
+      const Key = "1111-file-1.png";
+
+      expect(await imageURLPromise).toBe(`https://test.com/img/uploads/${Key}`);
+
+      expect(putObjectMock).toHaveBeenCalledWith({
+        Bucket: "test-bucket",
+        Key,
+        Body: bufferMock,
+        ContentType: "image/png"
+      });
+    });
+
     it("should throw an error when the file type is not supported", async () => {
+      const ImageController = await getImageController();
+
       try {
-        await ImageController.uploadFileUploadAsImage({
-          filename: "file-1.webp",
-          mimetype: "image/webp",
-          createReadStream: () => {}
+        await ImageController.uploadImage({
+          filename: "file-1.html",
+          mimetype: "text/html",
         } as any);
       } catch (err) {
          expect(err).toEqual(new UserInputError("The file must be a .png, .jpg or .jpeg image")) ;
       }
     });
 
-    it("should return the image url", async () => {
-      Date.now = () => 123;
+    it("should throw an error when the readStream throws an error", async () => {
+      const ImageController = await getImageController();
 
-      expect(
-        await ImageController.uploadFileUploadAsImage({
-          filename: "file-1.jpg",
-          mimetype: "image/jpeg",
-          createReadStream: () => {}
-        } as any)
-      ).toBe("https://test.com/img/uploads/123file-1.jpg");
-    });
+      try {
+        const readStreamMock = new PassThrough();
 
-    it("should return the image url with the directory parameter", async () => {
-      Date.now = () => 123;
+        const fileUploadMock = {
+          ...FILE_UPLOADS_MOCK[0],
+          createReadStream: () => readStreamMock
+        }
 
-      expect(
-        await ImageController.uploadFileUploadAsImage({
-          filename: "file-1.jpg",
-          mimetype: "image/jpeg",
-          createReadStream: () => {}
-        } as any, "/test/")
-      ).toBe("https://test.com/img/uploads/test/123file-1.jpg");
+        const imageURLPromise = ImageController.uploadImage(fileUploadMock);
+
+        readStreamMock.emit("error", new Error("test error"));
+
+        await imageURLPromise;
+      } catch (err) {
+         expect(err).toEqual(new ApolloError("Error trying to upload the file-1.png image to the server.")) ;
+      }
     });
   });
 
-  describe("uploadFileUploadArrayAsImages", () => {
-    it("should throw an error when there is a file that is not an image", async () => {
+  describe("uploadImages", () => {
+    it("should throw an error when there is a file type not supported", async () => {
+      const ImageController = await getImageController();
+
       try {
-        await ImageController.uploadFileUploadArrayAsImages([{
-          filename: "file-1.jpg",
-          mimetype: "image/jpeg",
-          createReadStream: () => {}
+        await ImageController.uploadImages([{
+          filename: "file-1.html",
+          mimetype: "text/html",
         }] as any);
       } catch (err) {
         expect(err).toEqual(new UserInputError("All the files must be a .png, .jpg or .jpeg image")) ;
       }
     });
 
-    it("should return the images url", async () => {
-      Date.now = () => 321;
+    it("should return an empty array when we pass an empty array as parameter", async () => {
+      const ImageController = await getImageController();
+      
+      const imageURLs = await ImageController.uploadImages([]);
+      expect(imageURLs).toEqual([]);
+    });
 
-      expect(
-        await ImageController.uploadFileUploadArrayAsImages(FILE_UPLOADS_MOCK)
-      ).toEqual([
-        "https://test.com/img/uploads/321file-1.png",
-        "https://test.com/img/uploads/321file-2.jpg"
+    it("should return the image urls", async () => {
+      const ImageController = await getImageController();
+
+      const readStreamsMock = [new PassThrough(), new PassThrough()];
+
+      const fileUploadsMock = [
+        {
+          ...FILE_UPLOADS_MOCK[0],
+          createReadStream: () => readStreamsMock[0]
+        },
+        {
+          ...FILE_UPLOADS_MOCK[1],
+          createReadStream: () => readStreamsMock[1]
+        }
+      ];
+
+      const imageURLsPromise = ImageController.uploadImages(fileUploadsMock);
+
+      readStreamsMock.forEach(readStream => readStream.emit("end"));
+
+      expect(await imageURLsPromise).toEqual([
+        "https://test.com/img/uploads/1111-file-1.png",
+        "https://test.com/img/uploads/1111-file-2.jpg"
       ]);
     });
   });
 
-  describe("deleteImage", () => {
-    it("should call fs.existsSync and fs.unlinkSync correctly", () => {
-      mockedExistSync.mockImplementation(() => true);
+  describe("deleteImages", () => {
+    it("should do nothing when we pass an empty array as parameter", async () => {
+      const ImageController = await getImageController();
 
-      ImageController.deleteImage("https://test.com/img/uploads/test-file.jpg");
+      await ImageController.deleteImages([]);
 
-      expect(mockedExistSync).toHaveBeenCalledWith("test/img/uploads/test-file.jpg");
-      expect(mockedUnlinkSync).toHaveBeenCalledWith("test/img/uploads/test-file.jpg");
+      expect(deleteObjectsMock).not.toHaveBeenCalled();
     });
-  });
 
-  describe("deleteImageArray", () => {
-    it("should call fs.unlinkSync 2 times", () => {
-      mockedExistSync.mockImplementation(() => true);
+    it("should call deleteObjects with the object keys", async () => {
+      const ImageController = await getImageController();
 
-      ImageController.deleteImageArray([
+      await ImageController.deleteImages([
         "https://test.com/img/uploads/test-file.jpg",
         "https://test.com/img/uploads/test-file-2.jpg"
       ]);
 
-      expect(mockedUnlinkSync).toHaveBeenCalledWith("test/img/uploads/test-file.jpg");
-      expect(mockedUnlinkSync).toHaveBeenCalledWith("test/img/uploads/test-file-2.jpg");
+      expect(deleteObjectsMock).toHaveBeenCalledWith({
+        Bucket: "test-bucket",
+        Delete: {
+          Objects: [
+            { Key: "test-file.jpg" },
+            { Key: "test-file-2.jpg" }
+          ]
+        }
+      });
+    });
+
+    it("should throw an error when the getObjects function throws an error", async () => {
+      try {
+        const ImageController = await getImageController();
+
+        deleteObjectsMock.mockImplementation(() => ({
+          promise: () => Promise.reject()
+        }))
+
+        await ImageController.deleteImages([
+          "https://test.com/img/uploads/test-file.jpg",
+          "https://test.com/img/uploads/test-file-2.jpg"
+        ]);
+      } catch (err) {
+        expect(err).toEqual(new ApolloError("Error trying to delete the images"));
+      }
     });
   });
 });
