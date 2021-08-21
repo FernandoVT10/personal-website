@@ -1,10 +1,10 @@
-import { Router } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 
 import ImageController from "../utils/controllers/ImageController";
 
 const router = Router();
 
-router.get("/:imageKey", async (req, res, next) => {
+export const getImageHandler = async (req: Request, res: Response, next: NextFunction) => {
   const { imageKey } = req.params;
 
   try {
@@ -14,7 +14,9 @@ router.get("/:imageKey", async (req, res, next) => {
   } catch {
     next();
   }
-});
+}
+
+router.get("/:imageKey", getImageHandler);
 
 
 export default router;
