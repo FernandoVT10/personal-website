@@ -14,6 +14,7 @@ jest.mock("../../config", () => ({
 
 jest.mock("../../utils/mailTransporter");
 jest.mock("../../utils/loadMailTemplate");
+jest.mock("../../utils/mailTemplates/sendMessage", () => "test template");
 
 const mockedTransporterSendMail = mocked(transporter.sendMail);
 const mockedLoadMailTemplate = mocked(loadMailTemplate);
@@ -36,7 +37,7 @@ describe("server/schema/contactme", () => {
 
     expect(result).toBeTruthy();
 
-    expect(mockedLoadMailTemplate).toHaveBeenCalledWith("sendMessage", {
+    expect(mockedLoadMailTemplate).toHaveBeenCalledWith("test template", {
       websiteURL: "testwebsiteurl",
       name: "testname",
       message: "test message"
