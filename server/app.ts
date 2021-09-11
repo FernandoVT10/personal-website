@@ -6,8 +6,6 @@ import { ApolloServer } from "apollo-server-express";
 
 import validateJWTToken from "./utils/validateJWTToken";
 
-import imgApp from "./routes/img";
-
 import schema from "./schema";
 
 const PORT = process.env.PORT || 3000;
@@ -43,8 +41,6 @@ export default async function startServer() {
   await server.start();
 
   server.applyMiddleware({ app });
-  
-  app.use("/img/uploads/", imgApp);
 
   app.get("*", (req, res) => {
     return nextHandler(req, res);

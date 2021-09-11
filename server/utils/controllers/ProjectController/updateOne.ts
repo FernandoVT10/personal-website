@@ -70,7 +70,7 @@ export default async (_: null, args: Parameters, context: { loggedIn: boolean })
 
     await project.validate();
 
-    const newImagesURL = await ImageController.uploadImages(imagesToUpload);
+    const newImagesURL = await ImageController.uploadImages(imagesToUpload, "/projects/");
     imagesURL.push(...newImagesURL);
 
     project.images = imagesURL;

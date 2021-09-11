@@ -18,7 +18,7 @@ const uploadImage = async (_: null, args: Parameters, context: { loggedIn: boole
 
   const image = await args.image.promise;
 
-  return await ImageController.uploadImage(image);
+  return await ImageController.uploadImage(image, "/content/");
 }
 
 export const UploadImageResolvers = {

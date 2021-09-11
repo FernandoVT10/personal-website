@@ -1,63 +1,47 @@
+import fs from "fs";
 import { join } from "path";
 import { UserInputError, ApolloError } from "apollo-server-express";
-
-import ibm from "ibm-cos-sdk";
 
 import { FileUpload } from "graphql-upload";
 
 import { imageValidator } from "../validators";
 
-import { IBM_CONFIG, WEBSITE_URL  } from "../../config";
+import saveFileStream from "../saveFileStream";
 
-const cos = new ibm.S3({
-  endpoint: IBM_CONFIG.endpoint,
-  apiKeyId: IBM_CONFIG.apiKeyId,
-  serviceInstanceId: IBM_CONFIG.serviceInstanceid
-});
+import { IBM_CONFIG, PUBLIC_DIRECTORY, WEBSITE_URL  } from "../../config";
 
-const getImage = async (imageKey: string) => {
-  const image = await cos.getObject({
-    Bucket: IBM_CONFIG.bucket,
-    Key: imageKey
-  }).promise();
+const IMAGE_DIRECTORY = join(PUBLIC_DIRECTORY, "/img/uploads/");
 
-  return image;
-}
-
-const uploadImage = async (image: FileUpload): Promise<string> => {
+const uploadImage = async (image: FileUpload, folder = ""): Promise<string> => {
   const { mimetype, filename, createReadStream } = image;
 
-  if(!imageValidator(image.mimetype)) throw new UserInputError("The file must be a .png, .jpg or .jpeg image");
+  if(!imageValidator(mimetype)) throw new UserInputError("The file must be a .png, .jpg or .jpeg image");
 
   try {
-    const Key = `${Date.now()}-${filename}`;
+    // create the directory if it doesn't exist
+    const imageDir = join(IMAGE_DIRECTORY, folder);
+    await fs.promises.mkdir(imageDir, { recursive: true });
 
-    const buffer = await new Promise<Buffer>((resolve, reject) => {
-      const stream = createReadStream();
+    // save the image
+    const imageName = `${Date.now()}-${filename}`;
+    const imageStream = createReadStream();
+    const imagePath = join(imageDir, imageName);
 
-      const buffers = [];
 
-      stream.on("data", buffer => buffers.push(buffer));
-      stream.on("end", () => resolve(Buffer.concat(buffers)));
-      stream.on("error", err => reject(err));
-    });
+    saveFileStream(imageStream, imagePath);
 
-    await cos.putObject({
-      Bucket: IBM_CONFIG.bucket,
-      Key,
-      Body: buffer,
-      ContentType: mimetype
-    }).promise();
-
-    const imageURL = join(WEBSITE_URL, "/img/uploads/", Key).replace(":/", "://");
+    // then we need to create a url to use in our website
+    // here i'm using the WEBSITE_URL variable that contains the url
+    // for our website where the images will be storaged
+    const imageURL = join(WEBSITE_URL, "/img/uploads/", folder, imageName).replace(":/", "://");
     return imageURL;
   } catch(err) {
-    console.log(err);
+    console.error(err);
     throw new ApolloError(`Error trying to upload the ${filename} image to the server.`);
   }
 }
 
-const uploadImages = async (images: FileUpload[]): Promise<string[]> => {
+const uploadImages = async (images: FileUpload[], folder = ""): Promise<string[]> => {
   if(!images.length) return [];
 
   images.forEach(filesUpload => {
@@ -66,28 +50,35 @@ const uploadImages = async (images: FileUpload[]): Promise<string[]> => {
     }
   });
 
-  return Promise.all(images.map(image => uploadImage(image)));
+  return Promise.all(images.map(image => uploadImage(image, folder)));
+}
+
+const deleteImage = async (imageURL: string): Promise<void> => {
+  try {
+    // here i wanna get the path after of the "/img/uploads/"
+    // and then concatenate it with the IMAGE_DIRECTORY variable
+    // to replace the website url with the real image path
+    const imagePath = imageURL.split("/img/uploads/")[1];
+    const imageFullPath = join(IMAGE_DIRECTORY, imagePath);
+    await fs.promises.unlink(imageFullPath);
+  } catch(err) {
+    if(err.code !== "ENOENT") throw err;
+  }
 }
 
 const deleteImages = async (imagesURL: string[]): Promise<void> => {
   if(!imagesURL.length) return;
 
   try {
-    const Objects = imagesURL.map(imageURL => ({
-      Key: imageURL.split(`/img/uploads/`)[1]
-    }));
-
-    await cos.deleteObjects({
-      Bucket: IBM_CONFIG.bucket,
-      Delete: { Objects }
-    }).promise();
+    for(const imageURL of imagesURL) {
+      await deleteImage(imageURL);
+    }
   } catch (err) {
     throw new ApolloError("Error trying to delete the images");
   }
 }
 
 export default {
-  getImage,
   uploadImage,
   uploadImages,
   deleteImages

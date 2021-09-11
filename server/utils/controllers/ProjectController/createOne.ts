@@ -45,7 +45,7 @@ export default async (_: null, args: Parameters, context: { loggedIn: boolean })
 
     await project.validate();
 
-    const imagesURL = await ImageController.uploadImages(filesUpload);
+    const imagesURL = await ImageController.uploadImages(filesUpload, "/projects/");
 
     project.images = imagesURL;
 
