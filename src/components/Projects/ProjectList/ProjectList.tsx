@@ -4,22 +4,15 @@ import { ApolloQueryResult } from "@apollo/client";
 
 import MessageCard from "@/components/MessageCard";
 
-import ProjectCard from "./ProjectCard";
+import ProjectCard, { ProjectCardProps } from "./ProjectCard";
 
 import Loader from "@/components/Loader";
 
 import styles from "./ProjectList.module.scss";
 
-interface Project {
-  _id: string
-  title: string
-  description: string
-  images: string[]
-}
-
 export interface ProjectsData {
   projects: {
-    docs: Project[]
+    docs: ProjectCardProps["project"][]
   }
 }
 

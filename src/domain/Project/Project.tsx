@@ -45,8 +45,9 @@ const Project = ({ project, relatedProjects, error }: ProjectProps) => {
             <MarkDown content={project.content}/>
           </div>
 
+          { project.technologies.length > 0 &&
           <div className={styles.technologiesContainer}>
-            <i className={`${styles.tagIcon} fas fa-tag`} aria-hidden="true"></i>
+            <i className={`${styles.tagIcon} fas fa-code`} aria-hidden="true"></i>
 
             {project.technologies.map((technology, index) => {
               return (
@@ -56,9 +57,10 @@ const Project = ({ project, relatedProjects, error }: ProjectProps) => {
               );
             })}
           </div>
+          }
         </div>
 
-        { relatedProjects.length &&
+        { relatedProjects.length > 0 &&
         <div className={styles.relatedProjectsContainer}>
           <h3 className={styles.subtitle}>Related Projects</h3>
 

@@ -10,7 +10,10 @@ export interface Project {
   _id: string,
   title: string,
   description: string,
-  images: string[]
+  images: string[],
+  technologies: {
+    name: string
+  }[]
 }
 
 export interface ProjectCardProps {
@@ -21,7 +24,23 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
   return (
     <div className={styles.projectCard}>
       <div className={styles.details}>
+
         <h3 className={styles.title}>{ project.title }</h3>
+
+        { project.technologies.length > 0 &&
+        <div className={styles.technologies}>
+          <i className={`${styles.icon} fas fa-code`} aria-hidden="true"></i>
+
+          {project.technologies.map(technology => {
+            return (
+              <Link href={`projects?technology=${technology.name}`}>
+                <a className={styles.technology}>{ technology.name }</a>
+              </Link>
+            );
+          })}
+        </div>
+        }
+
         <p className={styles.description}>
           { project.description }
         </p>

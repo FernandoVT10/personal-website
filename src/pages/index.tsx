@@ -17,6 +17,9 @@ export const GET_PROJECTS = gql`
         title
         description
         images
+        technologies {
+          name
+        }
       }
     }
   }
