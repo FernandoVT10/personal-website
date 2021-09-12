@@ -14,6 +14,8 @@ const dev = process.env.NODE_ENV !== "production";
 
 const app = express();
 
+app.use(express.static("public"));
+
 const nextApp = next({ dev });
 const nextHandler = nextApp.getRequestHandler();
 
