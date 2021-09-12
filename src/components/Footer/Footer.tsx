@@ -18,7 +18,7 @@ const Footer = () => {
           <i className="fab fa-github" aria-hidden="true"></i>
         </a>
 
-        <Link href="/contactme/">
+        <Link href="/#contactme">
           <a href="#" className={styles.socialNetwork}>
             <i className="fas fa-envelope" aria-hidden="true"></i>
           </a>

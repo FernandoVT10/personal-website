@@ -14,6 +14,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     <ApolloProvider client={client}>
       <Head>
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+        <link rel="icon" type="image/svg" href="/img/favicon.svg" />
         </Head>
       <Component {...pageProps} />
     </ApolloProvider>

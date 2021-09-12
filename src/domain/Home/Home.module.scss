@@ -113,13 +113,17 @@
     }
   }
 
-  @media screen and (max-width: 500px) {
+  @media screen and (max-width: 600px) {
     & .profileContainer {
       align-items: start;
 
       & .profile {
         margin: 80px 0;
       }
+    }
+
+    & .contactMe {
+      padding: 0 10px;
     }
   }
 }

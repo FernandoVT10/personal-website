@@ -35,4 +35,4 @@ yarn-error.log*
 .vercel
 
 # Images
-/public/img/
+/public/img/uploads/

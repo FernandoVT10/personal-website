@@ -33,7 +33,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
 
           {project.technologies.map(technology => {
             return (
-              <Link href={`projects?technology=${technology.name}`}>
+              <Link href={`/projects?technology=${technology.name}`} key={technology.name}>
                 <a className={styles.technology}>{ technology.name }</a>
               </Link>
             );
