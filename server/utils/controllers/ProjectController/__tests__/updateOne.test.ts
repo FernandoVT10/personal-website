@@ -76,7 +76,7 @@ describe("server/utils/controllers/ProjectController/updateOne", () => {
 
     expect([...updatedProject.images]).toEqual(["test-1.jpg", "updated.jpg"]);
 
-    expect(uploadImagesMocked).toHaveBeenCalledWith([FILE_UPLOAD_MOCK]);
+    expect(uploadImagesMocked).toHaveBeenCalledWith([FILE_UPLOAD_MOCK], "/projects/");
     expect(deleteImagesMocked).toHaveBeenCalledWith(["test-2.jpg", "test-3.jpg"]);
   });
 
@@ -97,7 +97,7 @@ describe("server/utils/controllers/ProjectController/updateOne", () => {
 
     expect([...updatedProject.images]).toEqual(["test-2.jpg", "test-3.jpg"]);
 
-    expect(uploadImagesMocked).toHaveBeenCalledWith([]);
+    expect(uploadImagesMocked).toHaveBeenCalledWith([], "/projects/");
     expect(deleteImagesMocked).toHaveBeenCalledWith(["test-1.jpg"]);
   });
 

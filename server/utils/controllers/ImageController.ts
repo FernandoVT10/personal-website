@@ -8,7 +8,7 @@ import { imageValidator } from "../validators";
 
 import saveFileStream from "../saveFileStream";
 
-import { IBM_CONFIG, PUBLIC_DIRECTORY, WEBSITE_URL  } from "../../config";
+import { PUBLIC_DIRECTORY, WEBSITE_URL  } from "../../config";
 
 const IMAGE_DIRECTORY = join(PUBLIC_DIRECTORY, "/img/uploads/");
 
@@ -81,5 +81,6 @@ const deleteImages = async (imagesURL: string[]): Promise<void> => {
 export default {
   uploadImage,
   uploadImages,
+  deleteImage,
   deleteImages
 }

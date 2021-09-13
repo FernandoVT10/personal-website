@@ -10,6 +10,12 @@ import HomePage, { getServerSideProps, GET_PROJECTS } from "@/pages/index";
 
 jest.mock("@/config/apolloClient", () => ({ query: jest.fn() }));
 
+const mockHomeComponent = jest.fn();
+jest.mock("@/domain/Home", () => ({ projectsResult }) => {
+  mockHomeComponent(projectsResult);
+  return null;
+});
+
 const PROJECT_RESULT_MOCK = {
   error: null,
   data: {
@@ -19,7 +25,12 @@ const PROJECT_RESULT_MOCK = {
           _id: "testid",
           title: "test title",
           description: "test description",
-          images: ["test-1.jpg", "test-2.jpg"]
+          images: ["test-1.jpg", "test-2.jpg"],
+          technologies: [
+            { name: "technology 1" },
+            { name: "technology 2" },
+            { name: "technology 3" }
+          ]
         }
       ]
     }
@@ -30,20 +41,19 @@ const mockedQuery = mocked(client.query);
 
 describe("src/pages/index", () => {
   beforeEach(() => {
-    mockedQuery.mockReset();
+    jest.resetAllMocks();
 
     mockedQuery.mockResolvedValue(PROJECT_RESULT_MOCK);
   });
   
   it("should render correctly", () => {
-    const { queryByText } = render(
+    render(
       <MockedProvider>
         <HomePage projectsResult={PROJECT_RESULT_MOCK}/>
       </MockedProvider>
     );
 
-    expect(queryByText("test title")).toBeInTheDocument();
-    expect(queryByText("test description")).toBeInTheDocument();
+    expect(mockHomeComponent).toHaveBeenCalledWith(PROJECT_RESULT_MOCK);
   });
 
   describe("getStaticProps", () => {

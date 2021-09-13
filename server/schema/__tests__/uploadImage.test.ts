@@ -31,7 +31,7 @@ describe("server/schema/uploadImage", () => {
     expect(uploadImageMocked).toHaveBeenCalledWith({
       filename: "test name",
       mimetype: "image/jpg"
-    });
+    }, "/content/");
   });
 
   it("should throw an error when the user isn't logged in", async () => {

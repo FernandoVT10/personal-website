@@ -1,141 +1,68 @@
-import { PassThrough } from "stream";
-import ibm from "ibm-cos-sdk";
-
 import { mocked } from "ts-jest/utils";
 
-import { UserInputError, ApolloError } from "apollo-server-errors";
+import fs from "fs";
 
-jest.mock("ibm-cos-sdk");
+import ImageController from "../ImageController";
+import saveFileStream from "../../saveFileStream";
+
+import { UserInputError, ApolloError } from "apollo-server-express";
+
+jest.mock("../../saveFileStream");
 
 jest.mock("../../../config", () => ({
   WEBSITE_URL: "https://test.com",
-  IBM_CONFIG: {
-    endpoint: "s3.endpoint.com",
-    apiKeyId: "api-key-id",
-    serviceInstanceid: "service-instance-id",
-    bucket: "test-bucket"
-  }
+  PUBLIC_DIRECTORY: "/public/"
 }));
 
 const FILE_UPLOADS_MOCK = [
   {
     filename: "file-1.png",
     mimetype: "image/png",
-    createReadStream: () => {}
+    createReadStream: () => "test"
   },
   {
     filename: "file-2.jpg",
     mimetype: "image/jpg",
-    createReadStream: () => {}
+    createReadStream: () => "test"
   }
 ] as any;
 
-// I'm using dynamic imports because i wanna see if the ibm.S3 class is called with the correct data
-// And i can't import the ImageController globally
-const getImageController = async () => {
-  return (await import("../ImageController")).default;
-}
+// deactivate the console error
+console.error = () => {}
 
-// deactivate the console log
-console.log = () => {}
+Date.now = () => 1111;
 
 describe("server/utils/controllers/ImageController", () => {
-  const getObjectMock = jest.fn();
-  const putObjectMock = jest.fn();
-  const deleteObjectsMock = jest.fn();
+  const mockedSaveFileStream = mocked(saveFileStream);
 
-  const ibmS3Mocked = mocked(ibm.S3);
-
-  const dateNowSpy = jest.spyOn(Date, "now");
+  const mkdirSpy = jest.spyOn(fs.promises, "mkdir");
+  const unlinkSpy = jest.spyOn(fs.promises, "unlink");
 
   beforeEach(() => {
     jest.resetAllMocks();
 
-    putObjectMock.mockImplementation(() => ({
-      promise: () => Promise.resolve()
-    }))
-
-    deleteObjectsMock.mockImplementation(() => ({
-      promise: () => Promise.resolve()
-    }))
-
-    ibmS3Mocked.mockImplementation(() => {
-      return {
-        getObject: getObjectMock,
-        putObject: putObjectMock,
-        deleteObjects: deleteObjectsMock
-      } as any;
-    });
-
-    dateNowSpy.mockImplementation(() => 1111);
-  });
-
-
-  it("should call the ibm.s3 class correctly", async () => {
-    await import("../ImageController");
-
-    expect(ibmS3Mocked).toHaveBeenCalledTimes(1);
-
-    expect(ibmS3Mocked).toHaveBeenCalledWith({
-      endpoint: "s3.endpoint.com",
-      apiKeyId: "api-key-id",
-      serviceInstanceId: "service-instance-id"
-    });
-  });
-
-  describe("getImage", () => {
-    beforeEach(() => {
-      getObjectMock.mockImplementation(() => ({
-        promise: () => Promise.resolve(FILE_UPLOADS_MOCK[0])
-      } as any));
-    });
-
-    it("should call the getObject function and return the result", async () => {
-      const ImageController = await getImageController();
-
-      const image = await ImageController.getImage("test-key");
-
-      expect(image).toEqual(FILE_UPLOADS_MOCK[0]);
-      expect(getObjectMock).toHaveBeenCalledWith({
-        Bucket: "test-bucket",
-        Key: "test-key"
-      });
-    });
+    mkdirSpy.mockResolvedValue(null);
+    unlinkSpy.mockResolvedValue(null);
   });
 
   describe("uploadImage", () => {
-    it("should call putObject and return the image url", async () => {
-      const ImageController = await getImageController();
+    it("should return the image url", async () => {
+      expect(await ImageController.uploadImage(FILE_UPLOADS_MOCK[0])).toBe("https://test.com/img/uploads/1111-file-1.png");
 
-      const readStreamMock = new PassThrough();
+      expect(mkdirSpy).toHaveBeenCalledWith("/public/img/uploads/", { recursive: true });
+      expect(mockedSaveFileStream).toHaveBeenCalledWith("test", "/public/img/uploads/1111-file-1.png");
+    });
 
-      const fileUploadMock = {
-        ...FILE_UPLOADS_MOCK[0],
-        createReadStream: () => readStreamMock
-      }
+    it("should return the image url with a specific folder", async () => {
+      expect(
+        await ImageController.uploadImage(FILE_UPLOADS_MOCK[0], "/tests/")
+      ).toBe("https://test.com/img/uploads/tests/1111-file-1.png");
 
-      const imageURLPromise = ImageController.uploadImage(fileUploadMock);
-
-      const bufferMock = Buffer.from("test");
-
-      readStreamMock.emit("data", bufferMock);
-      readStreamMock.emit("end");
-
-      const Key = "1111-file-1.png";
-
-      expect(await imageURLPromise).toBe(`https://test.com/img/uploads/${Key}`);
-
-      expect(putObjectMock).toHaveBeenCalledWith({
-        Bucket: "test-bucket",
-        Key,
-        Body: bufferMock,
-        ContentType: "image/png"
-      });
+      expect(mkdirSpy).toHaveBeenCalledWith("/public/img/uploads/tests/", { recursive: true });
+      expect(mockedSaveFileStream).toHaveBeenCalledWith("test", "/public/img/uploads/tests/1111-file-1.png");
     });
 
     it("should throw an error when the file type is not supported", async () => {
-      const ImageController = await getImageController();
-
       try {
         await ImageController.uploadImage({
           filename: "file-1.html",
@@ -146,22 +73,11 @@ describe("server/utils/controllers/ImageController", () => {
       }
     });
 
-    it("should throw an error when the readStream throws an error", async () => {
-      const ImageController = await getImageController();
-
+    it("should throw an error when something throws an error", async () => {
       try {
-        const readStreamMock = new PassThrough();
+        await ImageController.uploadImage(FILE_UPLOADS_MOCK[0]);
 
-        const fileUploadMock = {
-          ...FILE_UPLOADS_MOCK[0],
-          createReadStream: () => readStreamMock
-        }
-
-        const imageURLPromise = ImageController.uploadImage(fileUploadMock);
-
-        readStreamMock.emit("error", new Error("test error"));
-
-        await imageURLPromise;
+        mockedSaveFileStream.mockRejectedValue(new Error("test error"));
       } catch (err) {
          expect(err).toEqual(new ApolloError("Error trying to upload the file-1.png image to the server.")) ;
       }
@@ -169,9 +85,14 @@ describe("server/utils/controllers/ImageController", () => {
   });
 
   describe("uploadImages", () => {
-    it("should throw an error when there is a file type not supported", async () => {
-      const ImageController = await getImageController();
+    it("should return the image urls", async () => {
+      expect(await ImageController.uploadImages(FILE_UPLOADS_MOCK)).toEqual([
+        "https://test.com/img/uploads/1111-file-1.png",
+        "https://test.com/img/uploads/1111-file-2.jpg"
+      ]);
+    });
 
+    it("should throw an error when there is a file type not supported", async () => {
       try {
         await ImageController.uploadImages([{
           filename: "file-1.html",
@@ -183,74 +104,56 @@ describe("server/utils/controllers/ImageController", () => {
     });
 
     it("should return an empty array when we pass an empty array as parameter", async () => {
-      const ImageController = await getImageController();
-      
       const imageURLs = await ImageController.uploadImages([]);
       expect(imageURLs).toEqual([]);
     });
+  });
 
-    it("should return the image urls", async () => {
-      const ImageController = await getImageController();
+  describe("deleteImage", () => {
+    it("should call fs.promises.unlink", async () => {
+      await ImageController.deleteImage("https://test.com/img/uploads/tests/file-1.png");
+      expect(unlinkSpy).toHaveBeenCalledWith("/public/img/uploads/tests/file-1.png");
+    });
 
-      const readStreamsMock = [new PassThrough(), new PassThrough()];
+    it("shouldn't throw an error if it is an ENOENT error", async () => {
+      unlinkSpy.mockRejectedValue({ code: "ENOENT" });
 
-      const fileUploadsMock = [
-        {
-          ...FILE_UPLOADS_MOCK[0],
-          createReadStream: () => readStreamsMock[0]
-        },
-        {
-          ...FILE_UPLOADS_MOCK[1],
-          createReadStream: () => readStreamsMock[1]
-        }
-      ];
+      await ImageController.deleteImage("https://test.com/img/uploads/tests/file-1.png");
+    });
 
-      const imageURLsPromise = ImageController.uploadImages(fileUploadsMock);
+    it("should throw an error if it isn't an ENOENT error", async () => {
+      const errorMock = new Error("test error");
 
-      readStreamsMock.forEach(readStream => readStream.emit("end"));
+      try {
+        unlinkSpy.mockRejectedValue(errorMock);
 
-      expect(await imageURLsPromise).toEqual([
-        "https://test.com/img/uploads/1111-file-1.png",
-        "https://test.com/img/uploads/1111-file-2.jpg"
-      ]);
+        await ImageController.deleteImage("https://test.com/img/uploads/tests/file-1.png");
+      } catch (err) {
+        expect(err).toEqual(errorMock);
+      }
     });
   });
 
   describe("deleteImages", () => {
-    it("should do nothing when we pass an empty array as parameter", async () => {
-      const ImageController = await getImageController();
-
-      await ImageController.deleteImages([]);
-
-      expect(deleteObjectsMock).not.toHaveBeenCalled();
-    });
-
-    it("should call deleteObjects with the object keys", async () => {
-      const ImageController = await getImageController();
-
-      await ImageController.deleteImages([
+    it("should call the deleteImage function correctly", async () => {
+      const imagesMock = [
         "https://test.com/img/uploads/test-file.jpg",
         "https://test.com/img/uploads/test-file-2.jpg"
-      ]);
+      ];
 
-      expect(deleteObjectsMock).toHaveBeenCalledWith({
-        Bucket: "test-bucket",
-        Delete: {
-          Objects: [
-            { Key: "test-file.jpg" },
-            { Key: "test-file-2.jpg" }
-          ]
-        }
-      });
+      await ImageController.deleteImages(imagesMock);
+
+      expect(unlinkSpy).toHaveBeenCalledTimes(2);
     });
 
-    it("should throw an error when the getObjects function throws an error", async () => {
-      try {
-        const ImageController = await getImageController();
+    it("should do nothing when we pass an empty array as parameter", async () => {
+      await ImageController.deleteImages([]);
+      expect(unlinkSpy).not.toHaveBeenCalled();
+    });
 
-        deleteObjectsMock.mockImplementation(() => ({
-          promise: () => Promise.reject()
-        }))
+    it("should throw an error when something throws an error", async () => {
+      try {
+        unlinkSpy.mockRejectedValue(new Error("test error"));
 
         await ImageController.deleteImages([
           "https://test.com/img/uploads/test-file.jpg",

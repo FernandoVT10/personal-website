@@ -16,13 +16,21 @@ const PROJECTS_MOCK = [
     _id: "testid",
     title: "test project title",
     description: "test project description",
-    images: ["test-1.jpg", "test-2.jpg"]
+    images: ["test-1.jpg", "test-2.jpg"],
+    technologies: [
+      { name: "project technology 1" },
+      { name: "project technology 2" }
+    ]
   },
   {
     _id: "testid2",
     title: "test project title 2",
     description: "test project description 2",
-    images: []
+    images: [],
+    technologies: [
+      { name: "project technology 1" },
+      { name: "project technology 2" }
+    ]
   }
 ];
 
@@ -168,7 +176,11 @@ describe("src/domain/Projects", () => {
                   _id: "testid",
                   title: "refetch project title",
                   description: "refetch project description",
-                  images: ["refetch-1.jpg"]
+                  images: ["refetch-1.jpg"],
+                  technologies: [
+                    { name: "project technology 1" },
+                    { name: "project technology 2" }
+                  ]
                 }
               ],
               ...PAGINATION_MOCK

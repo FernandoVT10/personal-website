@@ -28,7 +28,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
         <h3 className={styles.title}>{ project.title }</h3>
 
         { project.technologies.length > 0 &&
-        <div className={styles.technologies}>
+        <div className={styles.technologies} data-testid="technologies-container">
           <i className={`${styles.icon} fas fa-code`} aria-hidden="true"></i>
 
           {project.technologies.map(technology => {

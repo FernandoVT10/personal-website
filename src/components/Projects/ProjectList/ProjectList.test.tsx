@@ -10,6 +10,12 @@ jest.mock("@/components/Loader", () => () => {
   );
 });
 
+const mockProjectCardComponent = jest.fn();
+jest.mock("./ProjectCard", () => ({ project }) => {
+  mockProjectCardComponent(project);
+  return null;
+});
+
 const APOLLO_ERROR_MOCK = {
   graphQLErrors: [{ message: "test error message" }]
 }
@@ -39,12 +45,13 @@ describe("src/domain/Home/ProjectList", () => {
       }
     } as any;
 
-    const { queryByText } = render(<ProjectList projectsResult={projectsResult}/>);
+    render(<ProjectList projectsResult={projectsResult}/>);
 
     PROJECTS_MOCK.forEach(project => {
-      expect(queryByText(project.title)).toBeInTheDocument();
-      expect(queryByText(project.description)).toBeInTheDocument();
+      expect(mockProjectCardComponent).toHaveBeenCalledWith(project);
     });
+
+    expect(mockProjectCardComponent).toHaveBeenCalledTimes(2);
   });
 
   it("should display the loading state correctly", () => {

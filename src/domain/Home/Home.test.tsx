@@ -5,6 +5,13 @@ import { MockedProvider } from "@apollo/client/testing";
 
 import Home from "./Home";
 
+const mockProjectListComponent = jest.fn();
+
+jest.mock("@/components/Projects/ProjectList", () => ({ projectsResult }) => {
+  mockProjectListComponent(projectsResult);
+  return null;
+});
+
 const PROJECT_RESULT_MOCK = {
   error: null,
   data: {
@@ -14,7 +21,12 @@ const PROJECT_RESULT_MOCK = {
           _id: "testid",
           title: "test title",
           description: "test description",
-          images: ["test-1.jpg", "test-2.jpg"]
+          images: ["test-1.jpg", "test-2.jpg"],
+          technologies: [
+            { name: "technology 1" },
+            { name: "technology 2" },
+            { name: "technology 3" }
+          ]
         }
       ]
     }
@@ -22,14 +34,17 @@ const PROJECT_RESULT_MOCK = {
 } as any;
 
 describe("src/domain/Home", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
   it("should render correctly", () => {
-    const { queryByText } = render(
+    render(
       <MockedProvider>
         <Home projectsResult={PROJECT_RESULT_MOCK}/>
       </MockedProvider>
     );
 
-    expect(queryByText("test title")).toBeInTheDocument();
-    expect(queryByText("test description")).toBeInTheDocument();
+    expect(mockProjectListComponent).toHaveBeenCalledWith(PROJECT_RESULT_MOCK);
   });
 });

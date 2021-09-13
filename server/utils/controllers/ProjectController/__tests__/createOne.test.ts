@@ -65,7 +65,7 @@ describe("server/utils/controllers/ProjectController/createOne", () => {
 
     expect([...project.images]).toEqual(["test-1.jpg", "test-2.jpg"]);
 
-    expect(uploadImagesMocked).toHaveBeenCalledWith([FILE_UPLOAD_MOCK]);
+    expect(uploadImagesMocked).toHaveBeenCalledWith([FILE_UPLOAD_MOCK], "/projects/");
   });
 
   it("should throw an error when the user isn't logged in", async () => {
