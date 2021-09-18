@@ -44,7 +44,8 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       variables: {
         projectId,
         limit: RELATED_PROJECTS_LIMIT
-      }
+      },
+      fetchPolicy: "network-only"
     });
 
     const { project, relatedProjects } = queryResult.data;

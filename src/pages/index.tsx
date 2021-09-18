@@ -27,7 +27,8 @@ export const GET_PROJECTS = gql`
 
 export async function getServerSideProps() {
   const projectsResult = await client.query({
-    query: GET_PROJECTS
+    query: GET_PROJECTS,
+    fetchPolicy: "network-only"
   });
 
   return {
