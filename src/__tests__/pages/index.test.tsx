@@ -66,7 +66,10 @@ describe("src/pages/index", () => {
         }
       });
 
-      expect(mockedQuery).toHaveBeenCalledWith({ query: GET_PROJECTS });
+      expect(mockedQuery).toHaveBeenCalledWith({
+        fetchPolicy: "network-only",
+        query: GET_PROJECTS
+      });
     });
   });
 });
