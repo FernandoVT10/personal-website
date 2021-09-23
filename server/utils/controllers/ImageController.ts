@@ -1,4 +1,6 @@
 import fs from "fs";
+import sharp from "sharp";
+
 import { join } from "path";
 import { UserInputError, ApolloError } from "apollo-server-express";
 
@@ -12,6 +14,11 @@ import { PUBLIC_DIRECTORY, WEBSITE_URL  } from "../../config";
 
 const IMAGE_DIRECTORY = join(PUBLIC_DIRECTORY, "/img/uploads/");
 
+const generateRandomName = (): string => {
+  const randomNumber = Math.random().toString().substring(2, 8);
+  return Date.now() + randomNumber;
+}
+
 const uploadImage = async (image: FileUpload, folder = ""): Promise<string> => {
   const { mimetype, filename, createReadStream } = image;
 
@@ -23,12 +30,15 @@ const uploadImage = async (image: FileUpload, folder = ""): Promise<string> => {
     await fs.promises.mkdir(imageDir, { recursive: true });
 
     // save the image
-    const imageName = `${Date.now()}-${filename}`;
+    const imageName = `${generateRandomName()}.webp`;
     const imageStream = createReadStream();
     const imagePath = join(imageDir, imageName);
 
+    // convert the image to webp
+    const sharpPipeline = sharp().webp();
+    imageStream.pipe(sharpPipeline);
 
-    saveFileStream(imageStream, imagePath);
+    saveFileStream(sharpPipeline, imagePath);
 
     // then we need to create a url to use in our website
     // here i'm using the WEBSITE_URL variable that contains the url
