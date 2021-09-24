@@ -7,6 +7,12 @@ import saveFileStream from "../../saveFileStream";
 
 import { UserInputError, ApolloError } from "apollo-server-express";
 
+const sharpWebpMock = jest.fn();
+
+jest.mock("sharp", () => () => ({
+  webp: sharpWebpMock
+}));
+
 jest.mock("../../saveFileStream");
 
 jest.mock("../../../config", () => ({
@@ -18,48 +24,65 @@ const FILE_UPLOADS_MOCK = [
   {
     filename: "file-1.png",
     mimetype: "image/png",
-    createReadStream: () => "test"
+    createReadStream: () => ({ pipe: jest.fn() })
   },
   {
     filename: "file-2.jpg",
     mimetype: "image/jpg",
-    createReadStream: () => "test"
+    createReadStream: () => ({ pipe: jest.fn() })
   }
 ] as any;
 
 // deactivate the console error
-console.error = () => {}
+// console.error = () => {}
 
-Date.now = () => 1111;
+Date.now = () => 1;
 
 describe("server/utils/controllers/ImageController", () => {
   const mockedSaveFileStream = mocked(saveFileStream);
 
   const mkdirSpy = jest.spyOn(fs.promises, "mkdir");
   const unlinkSpy = jest.spyOn(fs.promises, "unlink");
+  const mathRandomSpy = jest.spyOn(Math, "random");
+
+  // this is the name of the file that the generateRandomName function will return
+  const returnedImageName = "1234567.webp";
 
   beforeEach(() => {
     jest.resetAllMocks();
 
+    sharpWebpMock.mockReturnValue("sharp webp pipeline");
     mkdirSpy.mockResolvedValue(null);
     unlinkSpy.mockResolvedValue(null);
+    mathRandomSpy.mockReturnValue(0.234567);
   });
 
   describe("uploadImage", () => {
-    it("should return the image url", async () => {
-      expect(await ImageController.uploadImage(FILE_UPLOADS_MOCK[0])).toBe("https://test.com/img/uploads/1111-file-1.png");
+
+    it("should call sharp.webp and return the image url", async () => {
+      const pipeMock = jest.fn();
+
+      const fileMock = {
+        ...FILE_UPLOADS_MOCK[0],
+        createReadStream: () => ({ pipe: pipeMock })
+      }
+
+      expect(await ImageController.uploadImage(fileMock)).toBe(`https://test.com/img/uploads/${returnedImageName}`);
+
+      expect(sharpWebpMock).toHaveBeenCalled();
+      expect(pipeMock).toHaveBeenCalledWith("sharp webp pipeline");
 
       expect(mkdirSpy).toHaveBeenCalledWith("/public/img/uploads/", { recursive: true });
-      expect(mockedSaveFileStream).toHaveBeenCalledWith("test", "/public/img/uploads/1111-file-1.png");
+      expect(mockedSaveFileStream).toHaveBeenCalledWith("sharp webp pipeline", `/public/img/uploads/${returnedImageName}`);
     });
 
     it("should return the image url with a specific folder", async () => {
       expect(
         await ImageController.uploadImage(FILE_UPLOADS_MOCK[0], "/tests/")
-      ).toBe("https://test.com/img/uploads/tests/1111-file-1.png");
+      ).toBe(`https://test.com/img/uploads/tests/${returnedImageName}`);
 
       expect(mkdirSpy).toHaveBeenCalledWith("/public/img/uploads/tests/", { recursive: true });
-      expect(mockedSaveFileStream).toHaveBeenCalledWith("test", "/public/img/uploads/tests/1111-file-1.png");
+      expect(mockedSaveFileStream).toHaveBeenCalledWith("sharp webp pipeline", `/public/img/uploads/tests/${returnedImageName}`);
     });
 
     it("should throw an error when the file type is not supported", async () => {
@@ -87,8 +110,8 @@ describe("server/utils/controllers/ImageController", () => {
   describe("uploadImages", () => {
     it("should return the image urls", async () => {
       expect(await ImageController.uploadImages(FILE_UPLOADS_MOCK)).toEqual([
-        "https://test.com/img/uploads/1111-file-1.png",
-        "https://test.com/img/uploads/1111-file-2.jpg"
+        `https://test.com/img/uploads/${returnedImageName}`,
+        `https://test.com/img/uploads/${returnedImageName}`
       ]);
     });
 
