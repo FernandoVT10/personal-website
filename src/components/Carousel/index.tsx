@@ -1,3 +1,5 @@
-import ImaggesCarousel from "./ImagesCarousel";
+export type { ImageObject } from "./Carousel";
 
-export default ImaggesCarousel;
+import Carousel from "./Carousel";
+
+export default Carousel;

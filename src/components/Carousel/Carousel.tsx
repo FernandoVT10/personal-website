@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import Image from "next/image";
 
-import styles from "./ImagesCarousel.module.scss";
+import styles from "./Carousel.module.scss";
 
 const ImagesCarousel = ({ images }: { images: string[] }) => {
   const [activeImage, setActiveImage] = useState(0);
@@ -30,10 +31,12 @@ const ImagesCarousel = ({ images }: { images: string[] }) => {
           return (
             <div
               className={styles.image}
-              style={{ background: `url(${image})`, left: `${left}%` }}
+              style={{ left: `${left}%` }}
               data-testid="image-carousel-image"
               key={index}
-            ></div>
+            >
+              <Image src={image} objectFit="cover" objectPosition="center" layout="fill" />
+            </div>
           );
         })}
       </div>

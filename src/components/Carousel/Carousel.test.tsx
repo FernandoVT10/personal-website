@@ -2,7 +2,14 @@ import React from "react";
 
 import { render, fireEvent } from "@testing-library/react";
 
-import ImagesCarousel from "./ImagesCarousel";
+import Carousel from "./Carousel";
+
+const nextImageMock = jest.fn();
+
+jest.mock("next/image", () => (props: any) => {
+  nextImageMock(props);
+  return null;
+});
 
 const IMAGES_MOCK = [
   "test-1.jpg",
@@ -10,9 +17,9 @@ const IMAGES_MOCK = [
   "test-3.jpg"
 ];
 
-describe("src/domain/Home/ProjectList/ProjectCard/ImagesCarousel", () => {
+describe("src/components/Carousel", () => {
   it("should render correctly", () => {
-    const { queryAllByTestId } = render(<ImagesCarousel images={IMAGES_MOCK}/>);
+    const { queryAllByTestId } = render(<Carousel images={IMAGES_MOCK}/>);
 
     const images = queryAllByTestId("image-carousel-image");
 
@@ -21,11 +28,21 @@ describe("src/domain/Home/ProjectList/ProjectCard/ImagesCarousel", () => {
     expect(images[1].style.left).toBe("100%");
     expect(images[2].style.left).toBe("200%");
 
+    // testing the next/image component
+    IMAGES_MOCK.forEach(image => {
+      expect(nextImageMock).toHaveBeenCalledWith({
+        src: image,
+        objectFit: "cover",
+        objectPosition: "center",
+        layout: "fill"
+      });
+    });
+
     expect(queryAllByTestId("image-carousel-indicator")).toHaveLength(3);
   });
 
   it("should change the carousel image with the right button", () => {
-    const { queryAllByTestId, getByTestId } = render(<ImagesCarousel images={IMAGES_MOCK}/>);
+    const { queryAllByTestId, getByTestId } = render(<Carousel images={IMAGES_MOCK}/>);
 
     fireEvent.click(getByTestId("image-carousel-right-button"));
 
@@ -36,7 +53,7 @@ describe("src/domain/Home/ProjectList/ProjectCard/ImagesCarousel", () => {
   });
 
   it("should change the carousel image with the left button", () => {
-    const { queryAllByTestId, getByTestId } = render(<ImagesCarousel images={IMAGES_MOCK}/>);
+    const { queryAllByTestId, getByTestId } = render(<Carousel images={IMAGES_MOCK}/>);
 
     fireEvent.click(getByTestId("image-carousel-left-button"));
 
@@ -47,7 +64,7 @@ describe("src/domain/Home/ProjectList/ProjectCard/ImagesCarousel", () => {
   });
 
   it("should change the carousel image with the indicators", () => {
-    const { queryAllByTestId, getAllByTestId } = render(<ImagesCarousel images={IMAGES_MOCK}/>);
+    const { queryAllByTestId, getAllByTestId } = render(<Carousel images={IMAGES_MOCK}/>);
 
     const indicators = getAllByTestId("image-carousel-indicator");
 
