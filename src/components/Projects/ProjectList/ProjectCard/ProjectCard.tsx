@@ -2,7 +2,7 @@ import React from "react";
 
 import Link from "next/link";
 
-import ImagesCarousel from "@/components/Carousel";
+import Carousel from "@/components/Carousel";
 
 import styles from "./ProjectCard.module.scss";
 
@@ -54,7 +54,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
       </div>
 
       <div className={styles.carousel}>
-        <ImagesCarousel images={project.images} />
+        <Carousel images={project.images} />
       </div>
     </div>
   );
