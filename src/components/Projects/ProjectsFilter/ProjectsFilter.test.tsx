@@ -2,7 +2,18 @@ import React from "react";
 
 import { render, fireEvent } from "@testing-library/react";
 
-import ProjectsFilter from "./ProjectsFilter";
+import ProjectsFilter, { getVariables } from "./ProjectsFilter";
+
+const selectBoxComponentMock = jest.fn();
+jest.mock("@/components/Formulary/SelectBox", () => ({ label, availableValues, currentValue, setValue }) => {
+  selectBoxComponentMock({ label, availableValues, currentValue });
+  return availableValues.map((value: string) => {
+    return (
+      <button onClick={() => setValue(value)} key={value}>{ value }</button>
+    );
+  });
+});
+
 
 const TECHNOLOGIES_MOCK = [
   { name: "technology 1" }, 
@@ -16,90 +27,166 @@ const TECHNOLOGY_RESULT_MOCK = {
   }
 } as any;
 
+Object.defineProperty(window, "location", {
+  value: {
+    search: "?"
+  }
+});
+
 describe("src/domain/Projects/Filters", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+
+    changeRouterProperties({});
+
+    window.location.search = "?";
+  });
+
   it("should render correctly", () => {
-    const { queryByText, getByText, getByDisplayValue } = render(
+    render(
       <ProjectsFilter
         technologiesResult={TECHNOLOGY_RESULT_MOCK}
-        handleOnSubmit={jest.fn()}
-        selectedTechnology=""
-        setSelectedTechnology={jest.fn()}
-        search="test search"
-        setSearch={jest.fn()}
+        toTheChangeOfVariables={jest.fn()}
       />
     );
 
-    // Active the SelectBox
-    const selectBoxButton = getByText("Select a technology");
+    const availableValues = TECHNOLOGIES_MOCK.map(technology => technology.name);
 
-    fireEvent.click(selectBoxButton);
+    expect(selectBoxComponentMock).toHaveBeenCalledWith({
+      label: "Select a technology",
+      availableValues,
+      currentValue: ""
+    })
+  });
 
-    TECHNOLOGIES_MOCK.forEach(technology => {
-      expect(queryByText(technology.name)).toBeInTheDocument();
+  describe("useEffect", () => {
+    it("should set selectedTechnology and search and call toTheChangeOfVariables", () => {
+      window.location.search = "?page=100&search=test search&technology=NextJS";
+
+      const toTheChangeOfVariablesMock = jest.fn();
+      const { getByDisplayValue } = render(
+        <ProjectsFilter
+          technologiesResult={TECHNOLOGY_RESULT_MOCK}
+          toTheChangeOfVariables={toTheChangeOfVariablesMock}
+        />
+      );
+
+      expect(toTheChangeOfVariablesMock).toHaveBeenCalledWith({
+        page: 100, search: "test search", technology: "NextJS"
+      });
+
+      // check with the SelectBox if the selectedTechnology changed correctly
+      expect(selectBoxComponentMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          currentValue: "NextJS"
+        })
+      );
+
+      // search input
+      expect(getByDisplayValue("test search")).toBeInTheDocument();
     });
 
-    expect(getByDisplayValue("test search")).toBeInTheDocument();
+    it("should change the variables when we change the router.query variable", () => {
+      window.location.search = "?page=100&search=test search&technology=NextJS";
+
+      const toTheChangeOfVariablesMock = jest.fn();
+      const { getByDisplayValue, rerender } = render(
+        <ProjectsFilter
+          technologiesResult={TECHNOLOGY_RESULT_MOCK}
+          toTheChangeOfVariables={toTheChangeOfVariablesMock}
+        />
+      );
+
+      window.location.search = "?page=2&search=foo&technology=bar";
+
+      // change the router.query variable
+      changeRouterProperties({ query: { test: "test value" } });
+
+      // rerendering the component
+      rerender(
+        <ProjectsFilter
+          technologiesResult={TECHNOLOGY_RESULT_MOCK}
+          toTheChangeOfVariables={toTheChangeOfVariablesMock}
+        />
+      );
+
+      expect(toTheChangeOfVariablesMock).toHaveBeenCalledWith({
+        page: 2, search: "foo", technology: "bar"
+      });
+      expect(toTheChangeOfVariablesMock).toHaveBeenCalledTimes(2);
+
+      expect(selectBoxComponentMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          currentValue: "bar"
+        })
+      );
+
+      // search input
+      expect(getByDisplayValue("foo")).toBeInTheDocument();
+    });
   });
 
-  it("should call setSelectedTechnology function", () => {
-    const setSelectedTechnologyMock = jest.fn();
+  describe("getVariables", () => {
+    it("should return all the variables from the window.location.search", () => {
+      window.location.search = "?search=test search&technology=test technology&page=100";
 
-    const { getByText } = render(
-      <ProjectsFilter
-        technologiesResult={TECHNOLOGY_RESULT_MOCK}
-        handleOnSubmit={jest.fn()}
-        selectedTechnology=""
-        setSelectedTechnology={setSelectedTechnologyMock}
-        search="test search"
-        setSearch={jest.fn()}
-      />
-    );
+      expect(getVariables()).toEqual({
+        page: 100,
+        search: "test search",
+        technology: "test technology"
+      });
+    });
 
-    const selectBoxButton = getByText("Select a technology");
+    it("should return the page variable as 0 when the page query parameter isn't a number", () => {
+      window.location.search = "?page=invalid value";
 
-    fireEvent.click(selectBoxButton);
+      expect(getVariables().page).toBe(0);
+    });
 
-    fireEvent.click(getByText("technology 3"));
+    it("should return all the variables with a default value when the window.location.search is null", () => {
+      window.location.search = "";
 
-    expect(setSelectedTechnologyMock).toHaveBeenCalledWith("technology 3");
+      expect(getVariables()).toEqual({
+        page: 0,
+        search: "",
+        technology: ""
+      });
+    });
   });
 
-  it("should call setSearch function", () => {
-    const setSearchMock = jest.fn();
+  describe("handleOnSubmit", () => {
+    it("should call router.push", () => {
+      // mock router.push
+      const routerPushMock = jest.fn();
+      changeRouterProperties({
+        pathname: "/",
+        push: routerPushMock
+      });
 
-    const { getByDisplayValue } = render(
-      <ProjectsFilter
-        technologiesResult={TECHNOLOGY_RESULT_MOCK}
-        handleOnSubmit={jest.fn()}
-        selectedTechnology=""
-        setSelectedTechnology={jest.fn()}
-        search="test search"
-        setSearch={setSearchMock}
-      />
-    );
+      window.location.search = "?search=test search";
 
-    const searchInput = getByDisplayValue("test search");
-    fireEvent.change(searchInput, { target: { value: "this is a new value" } });
+      const { getByDisplayValue, getByText, getByTestId } = render(
+        <ProjectsFilter
+          technologiesResult={TECHNOLOGY_RESULT_MOCK}
+          toTheChangeOfVariables={jest.fn()}
+        />
+      );
 
-    expect(setSearchMock).toHaveBeenCalledWith("this is a new value");
-  });
+      const searchInput = getByDisplayValue("test search");
+      fireEvent.change(searchInput, { target: { value: "new search" } });
 
-  it("should call handleOnSubmit", () => {
-    const handleOnSubmitMock = jest.fn();
+      // set the technology
+      fireEvent.click(getByText("technology 3"));
 
-    const { getByTestId } = render(
-      <ProjectsFilter
-        technologiesResult={TECHNOLOGY_RESULT_MOCK}
-        handleOnSubmit={handleOnSubmitMock}
-        selectedTechnology=""
-        setSelectedTechnology={jest.fn()}
-        search="test search"
-        setSearch={jest.fn()}
-      />
-    );
+      fireEvent.submit(getByTestId("filters-form"));
 
-    fireEvent.submit(getByTestId("filters-form"));
-
-    expect(handleOnSubmitMock).toHaveBeenCalled();
+      expect(routerPushMock).toHaveBeenCalledWith({
+        pathname: "/",
+        query: {
+          search: "new search",
+          technology: "technology 3"
+        }
+      });
+    });
   });
 });

@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 
 import { ApolloQueryResult } from "@apollo/client";
 
@@ -6,27 +7,63 @@ import { SelectBox } from "@/components/Formulary";
 
 import styles from "./ProjectsFilter.module.scss";
 
-interface TechnologiesResult {
-  technologies: { name: string }[]
+export type IVariables = {
+  page: number
+  search: string
+  technology: string
+}
+
+export const getVariables = (): IVariables => {
+  const query = new URLSearchParams(window.location.search);
+
+  const page = query.get("page") ? parseInt(query.get("page")) || 0 : 0;
+  const search = query.get("search") ?? "";
+  const technology = query.get("technology") ?? "";
+
+  return { page, search, technology }
+}
+
+type ITechnology = {
+  name: string
 }
 
 interface ProjectsFilterProps {
-  technologiesResult: ApolloQueryResult<TechnologiesResult>
-  handleOnSubmit: (e: React.FormEvent) => void
-  selectedTechnology: string
-  setSelectedTechnology: React.Dispatch<string>
-  search: string
-  setSearch: React.Dispatch<string>
+  technologiesResult: ApolloQueryResult<{ technologies: ITechnology[] }>
+  toTheChangeOfVariables: (newVariables: IVariables) => void
 }
 
 const ProjectsFilter = ({
   technologiesResult,
-  handleOnSubmit,
-  selectedTechnology,
-  setSelectedTechnology,
-  search,
-  setSearch
+  toTheChangeOfVariables
 }: ProjectsFilterProps) => {
+  const [search, setSearch] = useState("");
+  const [selectedTechnology, setSelectedTechnology] = useState("");
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const variables = getVariables();
+
+    toTheChangeOfVariables(variables);
+
+    setSearch(variables.search);
+    setSelectedTechnology(variables.technology);
+  }, [router.query]);
+
+  const handleOnSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const query: { [key: string]: string } = {}
+
+    if(search) query.search = search;
+    if(selectedTechnology) query.technology = selectedTechnology;
+
+    router.push({
+      pathname: router.pathname,
+      query
+    });
+  }
+
   const technologies = technologiesResult.data
     ? technologiesResult.data.technologies.map(technology => technology.name)
     : [];

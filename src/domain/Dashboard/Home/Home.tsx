@@ -3,9 +3,7 @@ import React from "react";
 import { gql, NetworkStatus, useLazyQuery } from "@apollo/client";
 
 import Pagination, { PAGINATION_PROPS } from "@/components/Pagination";
-import ProjectsFilter from "@/components/Projects/ProjectsFilter";
-
-import useProjectsFilter, { IVariables } from "@/hooks/useProjectsFilter";
+import ProjectsFilter, { IVariables } from "@/components/Projects/ProjectsFilter";
 
 import withUser from "@/hocs/withUser";
 
@@ -52,14 +50,6 @@ const Home = () => {
     projectsQueryResult.refetch();
   }
 
-  const {
-    search,
-    setSearch,
-    selectedTechnology,
-    setSelectedTechnology,
-    handleOnSubmit
-  } = useProjectsFilter(toTheChangeOfVariables);
-
   const projects = projectsQueryResult.data?.projects.docs;
 
   return (
@@ -67,11 +57,7 @@ const Home = () => {
       <div className={styles.filtercontainer}>
         <ProjectsFilter
           technologiesResult={technologiesQueryResult}
-          handleOnSubmit={handleOnSubmit}
-          selectedTechnology={selectedTechnology}
-          setSelectedTechnology={setSelectedTechnology}
-          search={search}
-          setSearch={setSearch}
+          toTheChangeOfVariables={toTheChangeOfVariables}
         />
       </div>
 

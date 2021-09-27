@@ -6,9 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProjectList from "@/components/Projects/ProjectList";
 import Pagination, { PAGINATION_PROPS } from "@/components/Pagination";
-import Filters from "@/components/Projects/ProjectsFilter";
-
-import useProjectsFilter, { IVariables } from "@/hooks/useProjectsFilter";
+import Filters, { IVariables } from "@/components/Projects/ProjectsFilter";
 
 import styles from "./Projects.module.scss";
 
@@ -52,14 +50,6 @@ const Projects = () => {
     }
   }
 
-  const {
-    search,
-    setSearch,
-    selectedTechnology,
-    setSelectedTechnology,
-    handleOnSubmit
-  } = useProjectsFilter(toTheChangeOfVariables);
-
   return (
     <div className={styles.projects}>
         <Navbar/>
@@ -68,16 +58,16 @@ const Projects = () => {
         <div className={styles.filters}>
           <Filters
             technologiesResult={technologiesResult}
-            handleOnSubmit={handleOnSubmit}
-            selectedTechnology={selectedTechnology}
-            setSelectedTechnology={setSelectedTechnology}
-            search={search}
-            setSearch={setSearch}
+            toTheChangeOfVariables={toTheChangeOfVariables}
           />
         </div>
 
         { projectsResult.called &&
-        <ProjectList projectsResult={projectsResult}/>
+          <ProjectList
+            error={projectsResult.error}
+            loading={projectsResult.loading}
+            data={projectsResult.data}
+          />
         }
 
         { projectsResult.data &&
