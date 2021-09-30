@@ -1,9 +1,31 @@
 import React from "react";
 
-import { render, fireEvent, act } from "@testing-library/react";
+import { render, act } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 
 import Projects, { GET_PROJECTS, GET_TECHNOLOGIES } from "./Projects";
+
+const projectListComponentMock = jest.fn();
+jest.mock("@/components/Projects/ProjectList", () => (props: any) => {
+  projectListComponentMock(props);
+  return null;
+});
+
+const paginationComponentMock = jest.fn();
+jest.mock("@/components/Pagination", () => ({
+  __esModule: true,
+  default: ({ data }) => {
+    paginationComponentMock(data);
+    return null;
+  },
+  PAGINATION_PROPS: ""
+}));
+
+const projectsFilterComponentMock = jest.fn();
+jest.mock("@/components/Projects/ProjectsFilter", () => (props: any) => {
+  projectsFilterComponentMock(props);
+  return null;
+});
 
 const TECHNOLOGIES_MOCK = [
   { name:  "technology 1" },
@@ -56,8 +78,7 @@ const APOLLO_MOCK = [
     result: {
       data: {
         projects: {
-          docs: PROJECTS_MOCK,
-          ...PAGINATION_MOCK
+          docs: PROJECTS_MOCK
         }
       }
     }
@@ -81,84 +102,63 @@ Object.defineProperty(window, "location", {
 
 describe("src/domain/Projects", () => {
   beforeEach(() => {
+    jest.resetAllMocks();
+
+    changeRouterProperties({});
+
     window.location.search = "";
   });
 
   it("should render correctly", async () => {
-    const { queryByText, getByText } = render(
+    render(
       <MockedProvider mocks={APOLLO_MOCK} addTypename={false}>
         <Projects/>
       </MockedProvider>
     );
 
+    // get the toTheChangeOfVariables function from the ProjectsFilter component props
+    // and then execute it to start the application
+    const { toTheChangeOfVariables } = projectsFilterComponentMock.mock.calls[0][0];
+    toTheChangeOfVariables({
+      page: 0,
+      search: "",
+      technology: ""
+    });
+
     await act(() => new Promise(resolve => setTimeout(resolve, 0)));
 
-    PROJECTS_MOCK.forEach(project => {
-      expect(queryByText(project.title)).toBeInTheDocument();
-      expect(queryByText(project.description)).toBeInTheDocument();
+    expect(projectListComponentMock).toHaveBeenCalledWith({
+      error: undefined,
+      loading: false,
+      data: APOLLO_MOCK[0].result.data
     });
 
-    // PAGINATION
-    expect(queryByText("1024")).toBeInTheDocument();
+    expect(paginationComponentMock).toHaveBeenCalledWith(APOLLO_MOCK[0].result.data.projects);
 
-    // TECHNOLOGIES
-    const selectBox = getByText("Select a technology");
-    fireEvent.click(selectBox);
-
-    TECHNOLOGIES_MOCK.forEach(technology => {
-      expect(queryByText(technology.name)).toBeInTheDocument();
-    });
-  });
-
-  it("should render with query parameters", async () => {
-    const mocks = [
-      {
-        ...APOLLO_MOCK[0],
-        // here we are rewriting the request object
-        request: {
-          query: GET_PROJECTS,
-          variables: {
-            page: 50,
-            search: "test search",
-            technology: "test technology"
-          }
+    expect(projectsFilterComponentMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        technologiesData: { 
+          technologies: TECHNOLOGIES_MOCK
         }
-      },
-      {
-        ...APOLLO_MOCK[1]
-      }
-    ];
-
-    window.location.search = "?page=50&search=test search&technology=test technology";
-
-    const { queryByText, getByText } = render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <Projects/>
-      </MockedProvider>
+      })
     );
-
-    await act(() => new Promise(resolve => setTimeout(resolve, 0)));
-
-    PROJECTS_MOCK.forEach(project => {
-      expect(queryByText(project.title)).toBeInTheDocument();
-      expect(queryByText(project.description)).toBeInTheDocument();
-    });
-
-    // PAGINATION
-    expect(queryByText("1024")).toBeInTheDocument();
-
-    // TECHNOLOGIES
-    const selectBox = getByText("test technology");
-    fireEvent.click(selectBox);
-
-    TECHNOLOGIES_MOCK.forEach(technology => {
-      expect(queryByText(technology.name)).toBeInTheDocument();
-    });
   });
 
-  it("should refetch the projects when there's a change on router.query", async () => {
+  it("should refetch the projects when we call toTheChangeOfVariables with new variables", async () => {
+    const projectMock = {
+      _id: "testid",
+      title: "refetch project title",
+      description: "refetch project description",
+      images: ["refetch-1.jpg"],
+      technologies: [
+        { name: "project technology 1" },
+        { name: "project technology 2" }
+      ]
+    }
+
     const mocks = [
       ...APOLLO_MOCK,
+      // we're adding a new mock to the projects
       {
         request: {
           query: GET_PROJECTS,
@@ -171,80 +171,42 @@ describe("src/domain/Projects", () => {
         result: {
           data: {
             projects: {
-              docs: [
-                {
-                  _id: "testid",
-                  title: "refetch project title",
-                  description: "refetch project description",
-                  images: ["refetch-1.jpg"],
-                  technologies: [
-                    { name: "project technology 1" },
-                    { name: "project technology 2" }
-                  ]
-                }
-              ],
-              ...PAGINATION_MOCK
+              docs: [projectMock]
             }
           }
         }
       }
     ];
 
-    const { queryByText, rerender } = render(
+    render(
       <MockedProvider mocks={mocks} addTypename={false}>
         <Projects/>
       </MockedProvider>
     );
 
+    const { toTheChangeOfVariables } = projectsFilterComponentMock.mock.calls[0][0];
+    toTheChangeOfVariables({
+      page: 0,
+      search: "",
+      technology: ""
+    });
     await act(() => new Promise(resolve => setTimeout(resolve, 0)));
 
-    window.location.search = "?page=100&search=test search&technology=test technology";
-
-    changeRouterProperties({ query: {} });
-
-    rerender(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <Projects/>
-      </MockedProvider>
-    );
-
+    toTheChangeOfVariables({
+      page: 100,
+      search: "test search",
+      technology: "test technology"
+    });
     await act(() => new Promise(resolve => setTimeout(resolve, 0)));
 
-    expect(queryByText("refetch project title")).toBeInTheDocument();
-    expect(queryByText("refetch project description")).toBeInTheDocument();
-  });
-
-  describe("handleOnSubmit", () => {
-    it("should call router.push correctly", async () => {
-      const routerPushMock = jest.fn();
-      changeRouterProperties({ push: routerPushMock });
-
-      window.location.search = "?search=test search";
-
-      const { getByDisplayValue, getByText, getByTestId } = render(
-        <MockedProvider mocks={APOLLO_MOCK} addTypename={false}>
-          <Projects/>
-        </MockedProvider>
-      );
-
-      await act(() => new Promise(resolve => setTimeout(resolve, 0)));
-
-      const searchInput = getByDisplayValue("test search");
-      fireEvent.change(searchInput, { target: { value: "changed search" } });
-
-      const selectTechnologyBox = getByText("Select a technology");
-      fireEvent.click(selectTechnologyBox);
-      fireEvent.click(getByText("technology 2"));
-
-      fireEvent.submit(getByTestId("filters-form"));
-
-      expect(routerPushMock).toHaveBeenCalledWith({
-        pathname: "/test/",
-        query: {
-          search: "changed search",
-          technology: "technology 2"
+    expect(projectListComponentMock).toHaveBeenCalledWith({
+      error: undefined,
+      loading: false,
+      data: {
+        projects: {
+          docs: [projectMock]
         }
-      });
+      }
     });
   });
 });

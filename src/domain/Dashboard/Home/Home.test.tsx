@@ -7,6 +7,28 @@ import Home, { GET_PROJECTS, GET_TECHNOLOGIES } from "./Home";
 
 jest.mock("@/hocs/withUser", () => (Component: JSX.Element) => Component);
 
+const paginationComponentMock = jest.fn();
+jest.mock("@/components/Pagination", () => ({
+  __esModule: true,
+  default: ({ data }) => {
+    paginationComponentMock(data);
+    return null;
+  },
+  PAGINATION_PROPS: ""
+}));
+
+const projectCardListComponentMock = jest.fn();
+jest.mock("./ProjectCardList", () => (props: any) => {
+  projectCardListComponentMock(props);
+  return null;
+});
+
+const projectsFilterComponentMock = jest.fn();
+jest.mock("@/components/Projects/ProjectsFilter", () => (props: any) => {
+  projectsFilterComponentMock(props);
+  return null;
+});
+
 const TECHNOLOGIES_MOCK = [
   { name:  "technology 1" },
   { name:  "technology 2" },
@@ -26,15 +48,6 @@ const PROJECTS_MOCK = [
   }
 ];
 
-const PAGINATION_MOCK = {
-  totalPages: 1024,
-  page: 1024,
-  hasPrevPage: true,
-  prevPage: 4,
-  hasNextPage: false,
-  nextPage: null
-}
-
 const MOCKS = [
   {
     request: {
@@ -48,8 +61,7 @@ const MOCKS = [
     result: {
       data: {
         projects: {
-          docs: PROJECTS_MOCK,
-          ...PAGINATION_MOCK
+          docs: PROJECTS_MOCK
         }
       }
     }
@@ -72,73 +84,53 @@ Object.defineProperty(window, "location", {
 
 describe("src/domain/Dashboard/Home", () => {
   beforeEach(() => {
+    jest.resetAllMocks();
+
     window.location.search = "?";
   });
 
   it("should render correctly", async () => {
-    const { queryByText, getByText } = render(
+    render(
       <MockedProvider mocks={MOCKS}>
         <Home/>
       </MockedProvider>
     );
 
+    // get the toTheChangeOfVariables function from the ProjectsFilter component props
+    // and then execute it to start the application
+    const { toTheChangeOfVariables } = projectsFilterComponentMock.mock.calls[0][0];
+    toTheChangeOfVariables({
+      page: 0,
+      search: "",
+      technology: ""
+    });
+
     await act(() => new Promise(resolve => setTimeout(resolve, 0)));
 
-    PROJECTS_MOCK.forEach(project => {
-      expect(queryByText(project.title)).toBeInTheDocument();
-    });
-
-    // PAGINATION
-    expect(queryByText("1024")).toBeInTheDocument();
-
-    // TECHNOLOGIES
-    const selectBox = getByText("Select a technology");
-    fireEvent.click(selectBox);
-
-    TECHNOLOGIES_MOCK.forEach(technology => {
-      expect(queryByText(technology.name)).toBeInTheDocument();
-    });
-  });
-
-
-  it("should render with query parameters", async () => {
-    const mocks = [
-      {
-        ...MOCKS[0],
-        // here we are rewriting the request object
-        request: {
-          query: GET_PROJECTS,
-          variables: {
-            page: 50,
-            search: "test search",
-            technology: "test technology"
-          }
-        }
-      },
-      {
-        ...MOCKS[1]
-      }
-    ];
-
-    window.location.search = "?page=50&search=test search&technology=test technology";
-
-    const { queryByText } = render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <Home/>
-      </MockedProvider>
+    expect(projectCardListComponentMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        projects: PROJECTS_MOCK
+      })
     );
 
-    await act(() => new Promise(resolve => setTimeout(resolve, 0)));
+    expect(paginationComponentMock).toHaveBeenCalledWith(MOCKS[0].result.data.projects);
 
-    PROJECTS_MOCK.forEach(project => {
-      expect(queryByText(project.title)).toBeInTheDocument();
-    });
-
-    // PAGINATION
-    expect(queryByText("1024")).toBeInTheDocument();
+    expect(projectsFilterComponentMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        technologiesData: { 
+          technologies: TECHNOLOGIES_MOCK
+        }
+      })
+    );
   });
 
-  it("should refetch the projects with the new variables", async () => {
+  it("should refetch the projects when we call toTheChangeOfVariables function with the new variables", async () => {
+    const projectMock = {
+      _id: "newid",
+      title: "new project title",
+      images: ["new-test-1.jpg", "new-test-2.jpg"]
+    }
+
     const mocks = [
       ...MOCKS,
       {
@@ -153,51 +145,38 @@ describe("src/domain/Dashboard/Home", () => {
         result: {
           data: {
             projects: {
-              docs: [
-                {
-                  _id: "newid",
-                  title: "new project title",
-                  images: ["new-test-1.jpg", "new-test-2.jpg"]
-                }
-              ],
-              ...PAGINATION_MOCK
+              docs: [projectMock]
             }
           }
         }
       }
     ];
 
-    const { queryByText, rerender } = render(
+    render(
       <MockedProvider mocks={mocks} addTypename={false}>
         <Home/>
       </MockedProvider>
     );
 
+    const { toTheChangeOfVariables } = projectsFilterComponentMock.mock.calls[0][0];
+    toTheChangeOfVariables({
+      page: 0,
+      search: "",
+      technology: ""
+    });
     await act(() => new Promise(resolve => setTimeout(resolve, 0)));
 
-    PROJECTS_MOCK.forEach(project => {
-      expect(queryByText(project.title)).toBeInTheDocument();
+    toTheChangeOfVariables({
+      page: 256,
+      search: "new search",
+      technology: "TestJS"
     });
+    await act(() => new Promise(resolve => setTimeout(resolve, 0)));
 
-    window.location.search = "?page=256&search=new search&technology=TestJS";
-    changeRouterProperties({
-      query: {
-        test: ""
-      }
-    });
-
-    rerender(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <Home/>
-      </MockedProvider>
+    expect(projectCardListComponentMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        projects: [projectMock]
+      })
     );
-
-    await act(() => new Promise(resolve => setTimeout(resolve, 0)));
-
-    PROJECTS_MOCK.forEach(project => {
-      expect(queryByText(project.title)).not.toBeInTheDocument();
-    });
-
-    expect(queryByText("new project title")).toBeInTheDocument();
   });
 });

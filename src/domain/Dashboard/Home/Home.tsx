@@ -56,7 +56,7 @@ const Home = () => {
     <div className={styles.container}>
       <div className={styles.filtercontainer}>
         <ProjectsFilter
-          technologiesResult={technologiesQueryResult}
+          technologiesData={technologiesQueryResult.data}
           toTheChangeOfVariables={toTheChangeOfVariables}
         />
       </div>

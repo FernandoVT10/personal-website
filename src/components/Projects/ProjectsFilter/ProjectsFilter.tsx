@@ -28,12 +28,12 @@ type ITechnology = {
 }
 
 interface ProjectsFilterProps {
-  technologiesResult: ApolloQueryResult<{ technologies: ITechnology[] }>
+  technologiesData: { technologies: ITechnology[] }
   toTheChangeOfVariables: (newVariables: IVariables) => void
 }
 
 const ProjectsFilter = ({
-  technologiesResult,
+  technologiesData,
   toTheChangeOfVariables
 }: ProjectsFilterProps) => {
   const [search, setSearch] = useState("");
@@ -64,8 +64,8 @@ const ProjectsFilter = ({
     });
   }
 
-  const technologies = technologiesResult.data
-    ? technologiesResult.data.technologies.map(technology => technology.name)
+  const technologies = technologiesData
+    ? technologiesData.technologies.map(technology => technology.name)
     : [];
 
   return (

@@ -21,12 +21,6 @@ const TECHNOLOGIES_MOCK = [
   { name: "technology 3" }
 ];
 
-const TECHNOLOGY_RESULT_MOCK = {
-  data: {
-    technologies: TECHNOLOGIES_MOCK
-  }
-} as any;
-
 Object.defineProperty(window, "location", {
   value: {
     search: "?"
@@ -45,7 +39,7 @@ describe("src/domain/Projects/Filters", () => {
   it("should render correctly", () => {
     render(
       <ProjectsFilter
-        technologiesResult={TECHNOLOGY_RESULT_MOCK}
+        technologiesData={{ technologies: TECHNOLOGIES_MOCK }}
         toTheChangeOfVariables={jest.fn()}
       />
     );
@@ -66,7 +60,7 @@ describe("src/domain/Projects/Filters", () => {
       const toTheChangeOfVariablesMock = jest.fn();
       const { getByDisplayValue } = render(
         <ProjectsFilter
-          technologiesResult={TECHNOLOGY_RESULT_MOCK}
+          technologiesData={{ technologies: TECHNOLOGIES_MOCK }}
           toTheChangeOfVariables={toTheChangeOfVariablesMock}
         />
       );
@@ -92,7 +86,7 @@ describe("src/domain/Projects/Filters", () => {
       const toTheChangeOfVariablesMock = jest.fn();
       const { getByDisplayValue, rerender } = render(
         <ProjectsFilter
-          technologiesResult={TECHNOLOGY_RESULT_MOCK}
+          technologiesData={{ technologies: TECHNOLOGIES_MOCK }}
           toTheChangeOfVariables={toTheChangeOfVariablesMock}
         />
       );
@@ -105,7 +99,7 @@ describe("src/domain/Projects/Filters", () => {
       // rerendering the component
       rerender(
         <ProjectsFilter
-          technologiesResult={TECHNOLOGY_RESULT_MOCK}
+          technologiesData={{ technologies: TECHNOLOGIES_MOCK }}
           toTheChangeOfVariables={toTheChangeOfVariablesMock}
         />
       );
@@ -167,7 +161,7 @@ describe("src/domain/Projects/Filters", () => {
 
       const { getByDisplayValue, getByText, getByTestId } = render(
         <ProjectsFilter
-          technologiesResult={TECHNOLOGY_RESULT_MOCK}
+          technologiesData={{ technologies: TECHNOLOGIES_MOCK }}
           toTheChangeOfVariables={jest.fn()}
         />
       );
