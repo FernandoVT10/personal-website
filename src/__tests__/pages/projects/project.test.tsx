@@ -9,6 +9,12 @@ import ProjectPage, { getServerSideProps } from "@/pages/projects/[projectId]";
 
 jest.mock("@/config/apolloClient", () => ({ query: jest.fn() }));
 
+const mockProjectcomponent = jest.fn();
+jest.mock("@/domain/Project", () => (props: any) => {
+  mockProjectcomponent(props);
+  return null;
+});
+
 const PROJECT_MOCK = {
   title: "test title",
   images: ["test-1.jpg", "test-2.jpg"],
@@ -47,15 +53,17 @@ describe("src/pages/projects/[projectId]", () => {
   });
 
   it("should render correctly", () => {
-    const { queryByText } = render(
-      <ProjectPage project={PROJECT_MOCK} relatedProjects={RELATED_PROJECTS_MOCK} error={false}/>
+    const props = {
+      project: PROJECT_MOCK,
+      relatedProjects: RELATED_PROJECTS_MOCK,
+      error: false
+    }
+
+    render(
+      <ProjectPage {...props}/>
     );
 
-    expect(queryByText("test title")).toBeInTheDocument();
-
-    RELATED_PROJECTS_MOCK.forEach(relatedProject => {
-      expect(queryByText(relatedProject.title)).toBeInTheDocument();
-    });
+    expect(mockProjectcomponent).toHaveBeenCalledWith(props);
   });
 
   describe("getServerSideProps", () => {

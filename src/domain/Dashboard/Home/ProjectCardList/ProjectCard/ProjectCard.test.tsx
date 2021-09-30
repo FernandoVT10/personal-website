@@ -4,6 +4,12 @@ import { render, fireEvent, act } from "@testing-library/react";
 
 import ProjectCard from "./ProjectCard";
 
+const carouselComponentMock = jest.fn();
+jest.mock("@/components/Carousel", () => ({ images }) => {
+  carouselComponentMock(images);
+  return null;
+});
+
 const PROJECT_MOCK = {
   _id: "test-id-1",
   title: "test 1",
@@ -11,14 +17,14 @@ const PROJECT_MOCK = {
 }
 
 describe("src/domain/Dashboard/Home/ProjectCardList/ProjectCard", () => {
-  it("should render correctly", () => {
-    const { queryByText, getByText, getAllByTestId } = render(<ProjectCard project={PROJECT_MOCK} deleteProject={jest.fn()}/>);
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
 
-    const carouselImages = getAllByTestId("image-carousel-image");
-    carouselImages.forEach((carouselImage, index) => {
-      const projectImage = PROJECT_MOCK.images[index];
-      expect(carouselImage.style.background).toMatch(projectImage);
-    });
+  it("should render correctly", () => {
+    const { queryByText, getByText } = render(<ProjectCard project={PROJECT_MOCK} deleteProject={jest.fn()}/>);
+
+    expect(carouselComponentMock).toHaveBeenCalledWith(PROJECT_MOCK.images);
 
     expect(queryByText("test 1")).toBeInTheDocument();
 

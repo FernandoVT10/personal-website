@@ -63,7 +63,11 @@ const Home = ({ projectsResult }: { projectsResult: ApolloQueryResult<ProjectsDa
 
       <h2 className={styles.subtitle}>My Projects</h2>
 
-      <ProjectList projectsResult={projectsResult}/>
+      <ProjectList
+        error={projectsResult.error}
+        loading={projectsResult.loading}
+        data={projectsResult.data}
+      />
 
       <div className={styles.contactMe} id="contactme">
         <ContactMe/>

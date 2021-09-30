@@ -4,10 +4,30 @@ import { render } from "@testing-library/react";
 
 import Project from "./Project";
 
+const carouselComponentMock = jest.fn();
+jest.mock("@/components/Carousel", () => ({ images }) => {
+  carouselComponentMock(images);
+  return null;
+});
+
+const errorPageComponentMock = jest.fn();
+jest.mock("@/components/ErrorPage", () => (props: any) => {
+  errorPageComponentMock(props);
+  return null;
+});
+
+jest.mock("@/components/MarkDown", () => ({ content }) => content);
+
+const relatedProjectsComponentMock = jest.fn();
+jest.mock("./RelatedProjects", () => ({ relatedProjects }) => {
+  relatedProjectsComponentMock(relatedProjects);
+  return null;
+});
+
 const PROJECT_MOCK = {
   title: "test title",
   images: ["test-1.jpg", "test-2.jpg"],
-  content: "# Markdown title",
+  content: "Markdown title",
   technologies: [
     { name: "technology 1" },
     { name: "technology 2" },
@@ -29,36 +49,48 @@ const RELATED_PROJECTS_MOCK = [
 ];
 
 describe("src/domain/Project", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
   it("should render correctly", () => {
-    const { queryByText, getAllByTestId } = render(
+    const { queryByText } = render(
       <Project project={PROJECT_MOCK} relatedProjects={RELATED_PROJECTS_MOCK} error={false}/>
     );
+
     // Project
     expect(queryByText("test title")).toBeInTheDocument();
-
-    const carouselImages = getAllByTestId("image-carousel-image");
-    PROJECT_MOCK.images.forEach((image, index) => {
-      expect(carouselImages[index].style.background).toBe(`url(${image})`);
-    });
-
-    expect(queryByText("Markdown title")).toBeInTheDocument();
-
+    expect(carouselComponentMock).toHaveBeenCalledWith(PROJECT_MOCK.images);
+    expect(queryByText(PROJECT_MOCK.content)).toBeInTheDocument();
     PROJECT_MOCK.technologies.forEach(technology => {
       expect(queryByText(technology.name)).toBeInTheDocument();
     });
 
-    // Related Projects
-    RELATED_PROJECTS_MOCK.forEach(relatedProject => {
-      expect(queryByText(relatedProject.title)).toBeInTheDocument();
-    });
+    expect(relatedProjectsComponentMock).toHaveBeenCalledWith(RELATED_PROJECTS_MOCK);
   });
 
   it("should render error message", () => {
-    const { queryByText } = render(
+    render(
       <Project project={PROJECT_MOCK} relatedProjects={RELATED_PROJECTS_MOCK} error={true}/>
     );
 
-    expect(queryByText("404")).toBeInTheDocument();
-    expect(queryByText("Project not found")).toBeInTheDocument();
+    expect(errorPageComponentMock).toHaveBeenCalledWith({ statusCode: "404", error: "Project not found" });
+  });
+
+  it("shouldn't render the relatedProjects component when there're not relatedProjects", () => {
+    render(
+      <Project project={PROJECT_MOCK} relatedProjects={[]} error={false}/>
+    );
+
+    expect(relatedProjectsComponentMock).not.toHaveBeenCalled();
+  });
+
+  it("should add the fullWidth class to the project container when there're not relatedProjects", () => {
+    const { getByTestId } = render(
+      <Project project={PROJECT_MOCK} relatedProjects={[]} error={false}/>
+    );
+
+    const projectContainer = getByTestId("project-container");
+    expect(projectContainer.classList.contains("fullWidth")).toBeTruthy();
   });
 });

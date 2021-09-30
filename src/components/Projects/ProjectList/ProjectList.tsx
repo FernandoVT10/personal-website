@@ -1,6 +1,6 @@
 import React from "react";
 
-import { ApolloQueryResult } from "@apollo/client";
+import { ApolloError } from "@apollo/client";
 
 import MessageCard from "@/components/MessageCard";
 
@@ -16,8 +16,13 @@ export interface ProjectsData {
   }
 }
 
-const ProjectList = ({ projectsResult }: { projectsResult: ApolloQueryResult<ProjectsData> }) => {
-  const { error, data, loading } = projectsResult;
+interface IProjectListProps {
+  error: ApolloError
+  loading: boolean
+  data: ProjectsData
+}
+
+const ProjectList = ({ error, loading, data }: IProjectListProps) => {
 
   if(loading) {
     return (

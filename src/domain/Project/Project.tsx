@@ -36,7 +36,7 @@ const Project = ({ project, relatedProjects, error }: ProjectProps) => {
       <Navbar/>
 
       <div className={styles.container}>
-        <div className={`${styles.projectContainer} ${projectContainerClass}`}>
+        <div className={`${styles.projectContainer} ${projectContainerClass}`} data-testid="project-container">
           <Carousel images={project.images}/>
 
           <h1 className={styles.title}>{ project.title }</h1>
