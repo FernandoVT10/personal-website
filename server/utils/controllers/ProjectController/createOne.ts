@@ -3,9 +3,11 @@ import { Error as MongooseError } from "mongoose";
 import { AuthenticationError, ApolloError, UserInputError } from "apollo-server-express";
 import { FileUpload } from "graphql-upload";
 
-import ImageController from "../ImageController";
+import { uploadImagesWithDifferentDimensions } from "../ImageController";
 
 import { Project, IProject, Technology } from "../../../models";
+
+import { PROJECT_IMAGES_SIZES } from "./";
 
 interface Parameters {
   project: {
@@ -26,13 +28,12 @@ export default async (_: null, args: Parameters, context: { loggedIn: boolean })
     throw new UserInputError("You need at least add one image");
   }
 
-  const filesUpload = [];
-
-  for(const file of images) {
-    filesUpload.push(await file.promise);
-  }
-
   try {
+    const filesUpload = [];
+    for(const file of images) {
+      filesUpload.push(await file.promise);
+    }
+    
     const technologiesDocuments = await Technology.find({ name: { $in: technologies } });
 
     const project = new Project({
@@ -45,9 +46,13 @@ export default async (_: null, args: Parameters, context: { loggedIn: boolean })
 
     await project.validate();
 
-    const imagesURL = await ImageController.uploadImages(filesUpload, "/projects/");
+    const imagesSpecs = await uploadImagesWithDifferentDimensions(
+      filesUpload, "/projects/", PROJECT_IMAGES_SIZES
+    );
 
-    project.images = imagesURL;
+    imagesSpecs.forEach(imageSpecs => {
+      project.images.push({ imageSpecs });
+    });
 
     return await project.save();
   } catch (err) {

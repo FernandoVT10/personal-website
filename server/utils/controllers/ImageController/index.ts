@@ -20,6 +20,8 @@ export const getWebsiteURL = (imagePath: string): string => {
   return path.join(WEBSITE_URL, UPLOADS_DIRECTORY, imageBasePath).replace(":/", "://");
 }
 
+export type { IImageSpec, ISize } from "./uploadImageWithDifferentDimensions";
+
 export { default as uploadImage } from "./uploadImage";
 export { default as uploadImageWithDifferentDimensions } from "./uploadImageWithDifferentDimensions";
 export { default as uploadImagesWithDifferentDimensions } from "./uploadImagesWithDifferentDimensions";

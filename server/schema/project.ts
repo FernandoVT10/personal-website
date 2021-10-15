@@ -3,10 +3,21 @@ import { gql } from "apollo-server-express";
 import ProjectController from "../utils/controllers/ProjectController";
 
 export const ProjectSchema = gql`
+  type ProjectImageSpec {
+    width: Int
+    height: Int
+    url: String
+  }
+
+  type ProjectImageObject {
+    _id: ID
+    imageSpecs: [ProjectImageSpec]
+  }
+
   type Project {
     _id: ID,
     title: String,
-    images: [String]
+    images: [ProjectImageObject]
     description: String
     content: String
     technologies: [Technology]
@@ -41,7 +52,7 @@ export const ProjectSchema = gql`
 
   input UpdateProjectInput {
     title: String!
-    imagesToDelete: [String!]
+    imagesIdsToDelete: [ID!]
     newImages: [Upload!]
     description: String!
     content: String!
