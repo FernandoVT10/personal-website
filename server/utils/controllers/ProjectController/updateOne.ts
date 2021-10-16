@@ -39,7 +39,7 @@ export default async (_: null, args: Parameters, context: { loggedIn: boolean })
 
   if(imagesIdsToDelete?.length) {
     imagesIdsToDelete.forEach(imageId => {
-      const imageToDelete = project.images.find(image => image._id == imageId);
+      const imageToDelete = project.images.find(image => image._id.toString() === imageId);
       if(imageToDelete) {
         const imageURLs = imageToDelete.imageSpecs.map(imageSpec => imageSpec.url);
         imagesURLsToDelete.push(...imageURLs);
