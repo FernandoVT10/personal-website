@@ -12,17 +12,25 @@ const generateText = (n: number) => {
 }
 
 describe("server/models/Project", () => {
-  it("should create a project correctly", async () => {
+  it("should create a project", async () => {
+    const imageSpecsMock = [
+      { width: 100, height: 100, url: "https://test/test.webp" }
+    ];
+    
     const project = await Project.create({
       title: "test title",
-      images: ["test-1.jpg", "test-2.jpg"],
+      images: [
+        {
+          imageSpecs: imageSpecsMock
+        }
+      ],
       description: "test description",
       content: "test content",
       technologies: []
-    });
+    } as any);
 
     expect(project.title).toBe("test title");
-    expect([...project.images]).toEqual(["test-1.jpg", "test-2.jpg"]);
+    expect(project.toObject().images[0].imageSpecs).toEqual(imageSpecsMock);
     expect(project.description).toBe("test description");
     expect(project.content).toBe("test content");
   });
@@ -34,7 +42,7 @@ describe("server/models/Project", () => {
           title: generateText(101),
           description: "description",
           content: "content"
-        });
+        } as any);
       } catch (err) {
         expect(err.errors.title.toString()).toBe("The title must be less than 100 characters");
       }
@@ -46,7 +54,7 @@ describe("server/models/Project", () => {
           title: "",
           description: "description",
           content: "content"
-        });
+        } as any);
       } catch (err) {
         expect(err.errors.title.toString()).toBe("The title is required");
       }
@@ -60,7 +68,7 @@ describe("server/models/Project", () => {
           title: "title",
           description: generateText(251),
           content: "content"
-        });
+        } as any);
       } catch (err) {
         expect(err.errors.description.toString()).toBe("The description must be less than 250 characters");
       }
@@ -72,7 +80,7 @@ describe("server/models/Project", () => {
           title: "title",
           description: "",
           content: "content"
-        });
+        } as any);
       } catch (err) {
         expect(err.errors.description.toString()).toBe("The description is required");
       }
@@ -86,7 +94,7 @@ describe("server/models/Project", () => {
           title: "title",
           description: "description",
           content: ""
-        });
+        } as any);
       } catch (err) {
         expect(err.errors.content.toString()).toBe("The content is required");
       }
