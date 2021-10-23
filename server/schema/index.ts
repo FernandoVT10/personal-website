@@ -20,9 +20,24 @@ const Query = gql`
   }
 `;
 
-const typeDefs = [ Query, ProjectSchema, ContactMe, TechnologySchema, Login, CheckLoginStatus, UploadImageSchema ];
+const typeDefs = [
+  Query,
+  ProjectSchema,
+  ContactMe,
+  TechnologySchema,
+  Login,
+  CheckLoginStatus,
+  UploadImageSchema
+];
 
-const resolvers = merge(ProjectResolvers, contactMeResolvers, technologyResolvers, loginResolvers, checkLoginStatusResolvers, UploadImageResolvers);
+const resolvers = merge(
+  ProjectResolvers,
+  contactMeResolvers,
+  technologyResolvers,
+  loginResolvers, 
+  checkLoginStatusResolvers,
+  UploadImageResolvers
+);
 
 export default makeExecutableSchema({
   typeDefs,
