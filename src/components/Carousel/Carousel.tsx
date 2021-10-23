@@ -1,9 +1,19 @@
 import React, { useState } from "react";
-import Image from "next/image";
+
+import ResponsiveImage, { ImageSpec } from "@/components/ResponsiveImage";
 
 import styles from "./Carousel.module.scss";
 
-const ImagesCarousel = ({ images }: { images: string[] }) => {
+export type ImageObject = {
+  imageSpecs: ImageSpec[]
+}
+
+interface CarouselProps {
+  images: ImageObject[]
+  sizes?: string
+}
+
+const Carousel = ({ images, sizes }: CarouselProps) => {
   const [activeImage, setActiveImage] = useState(0);
 
   const goToRight = () => {
@@ -35,7 +45,18 @@ const ImagesCarousel = ({ images }: { images: string[] }) => {
               data-testid="image-carousel-image"
               key={index}
             >
-              <Image src={image} objectFit="cover" objectPosition="center" layout="fill" />
+
+              <ResponsiveImage
+                imageSpecs={image.imageSpecs}
+                sizes={sizes}
+                style={{
+                  height: "100%",
+                  width: "100%",
+                  objectFit: "cover",
+                  objectPosition: "center"
+                }}
+                alt="Carousel Image"
+              />
             </div>
           );
         })}
@@ -75,4 +96,4 @@ const ImagesCarousel = ({ images }: { images: string[] }) => {
   );
 }
 
-export default ImagesCarousel;
+export default Carousel;

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import Link from "next/link";
 
-import Carousel from "@/components/Carousel";
+import Carousel, { ImageObject } from "@/components/Carousel";
 import Loader from "@/components/Loader";
 
 import styles from "./ProjectCard.module.scss";
@@ -10,7 +10,7 @@ import styles from "./ProjectCard.module.scss";
 export type IProject = {
   _id: string
   title: string
-  images: string[]
+  images: ImageObject[]
 }
 
 interface IProjectCardProps {

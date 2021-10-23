@@ -7,7 +7,7 @@ import MarkDown from "@/components/MarkDown";
 import ErrorPage from "@/components/ErrorPage";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
-import Carousel from "@/components/Carousel";
+import Carousel, { ImageObject } from "@/components/Carousel";
 
 import RelatedProjects, { IRelatedProject } from "./RelatedProjects";
 
@@ -16,7 +16,7 @@ import styles from "./Project.module.scss";
 export interface ProjectProps {
   project: {
     title: string
-    images: string[]
+    images: ImageObject[]
     content: string,
     technologies: { name: string }[]
   },
