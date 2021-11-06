@@ -1,5 +1,9 @@
-.carousel {
+.imagesEditor {
   position: relative;
+  user-drag: none;
+  -webkit-user-drag: none;
+
+  &.error { border: dashed 2px var(--red); }
 
   & .dragMark {
     z-index: 10;
@@ -44,6 +48,7 @@
     background: rgba(0, 0, 0, .8);
 
     & .message {
+      color: var(--blue);
       font-weight: bold;
       font-size: 20px;
     }
@@ -51,25 +56,48 @@
 
   & .errorMessage {
     color: var(--red);
+    text-align: center;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 18px;
+
+    & .imagesIcon {
+      margin-right: 10px;
+    }
   }
 
   & .inputFile { display: none }
 
-  & .addImageButton {
-    cursor: pointer;
-    background: var(--black-gray);
-    padding: 20px 40px;
-    color: var(--white);
-    border: solid 2px var(--black-gray);
-    font-size: 30px;
-    transition: .3s;
+  & .noImagesDiv {
+    text-align: center;
 
-    &:hover {
-      color: var(--blue);
-      background: var(--black);
-      border-color: var(--blue);
+    & .imagesIcon {
+      width: 80px;
+      stroke-width: 2px;
+    }
+
+    & .text {
+      font-size: 25px;
+      margin: 20px 0;
+    }
+
+    & .addImageButton {
+      display: block;
+      cursor: pointer;
+      background: var(--black-gray);
+      padding: 20px 40px;
+      color: var(--white);
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      transition: .3s;
+
+      & i {
+        margin-right: 10px;
+      }
+
+      &:hover {
+        background: var(--black);
+      }
     }
   }
 

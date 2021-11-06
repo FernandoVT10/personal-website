@@ -2,30 +2,21 @@ import React, { useRef } from "react";
 
 import styles from "./ImageList.module.scss";
 
-type IPreviewImage = {
-  fileId: number
+type IImage = {
+  id: string
   imageURL: string
 }
 
-export type INewImage = {
-  fileId: number
-  file: File[]
-}
-
 interface IImageListProps {
-  setImagesToDelete: React.Dispatch<React.SetStateAction<string[]>>
-  previewImages: IPreviewImage[]
-  setPreviewImages: React.Dispatch<React.SetStateAction<IPreviewImage[]>>
-  setNewImages: React.Dispatch<React.SetStateAction<INewImage[]>>
+  images: IImage[]
+  deleteImage: (imageId: string) => void
   currentPreviewImage: number
   setCurrentPreviewImage: React.Dispatch<number>
 }
 
 const ImageList = ({
-  setImagesToDelete,
-  previewImages,
-  setPreviewImages,
-  setNewImages,
+  images,
+  deleteImage,
   currentPreviewImage,
   setCurrentPreviewImage,
 }: IImageListProps) => {
@@ -51,34 +42,11 @@ const ImageList = ({
     }
   }
 
-  const deleteImage = (previewImage: IPreviewImage, index: number) => {
-    setPreviewImages(previewImages.filter(
-      (_, previewImageIndex) => previewImageIndex !== index
-    ));
-
-    // if the last image is selected we need to substract 1 to the currentPreviewImage
-    if(currentPreviewImage === previewImages.length - 1) {
-      setCurrentPreviewImage(index - 1);
-    }
-
-    if(previewImage.fileId !== null) {
-      // if the fileId exists we need to delete the corresponding file from the newImages array
-      setNewImages(prevNewImages => prevNewImages.filter(
-        newImage => newImage.fileId !== previewImage.fileId
-      ));
-    } else {
-      // if it doesn't exist it means this is a image that we need to delete in the server
-      setImagesToDelete(prevImages => [...prevImages, previewImage.imageURL]);
-    }
-  }
-
-
   return (
     <div className={styles.imageList}>
       <button
         className={styles.controlButton}
         onClick={handleLeftArrowButton}
-        data-testid="image-list-left-arrow-button"
       >
         <i className="fas fa-arrow-left" aria-hidden="true"></i>
       </button>
@@ -86,15 +54,14 @@ const ImageList = ({
       <div
         className={styles.imagesContainer}
         ref={imagesContainer}
-        data-testid="image-list-images-container"
       >
-        {previewImages.map((previewImage, index) => {
+        {images.map((image, index) => {
           const imagesContainerClass = index === currentPreviewImage ? styles.active : "";
 
           return (
             <div className={`${styles.imageContainer} ${imagesContainerClass}`} key={index}>
               <img
-                src={previewImage.imageURL}
+                src={image.imageURL}
                 alt="Image List Image"
                 className={styles.image}
               />
@@ -111,7 +78,7 @@ const ImageList = ({
 
                 <button
                   className={styles.actionButton}
-                  onClick={() => deleteImage(previewImage, index)}
+                  onClick={() => deleteImage(image.id)}
                   title="Delete Image"
                   data-testid="image-list-delete-button"
                 >
@@ -121,12 +88,17 @@ const ImageList = ({
             </div>
           );
         })}
+
         <div className={styles.addImageButtonContainer}>
           <label
             className={styles.addImageButton}
-            htmlFor="carousel-input-file"
+            htmlFor="images-editor-input-file"
           >
-            <i className="fas fa-plus" aria-hidden="true"></i>
+            <img
+              className={styles.addImagesIcon}
+              src="/img/icons/add-images.svg"
+              alt="Add Images Icon"
+            />
           </label>
         </div>
       </div>
@@ -134,7 +106,6 @@ const ImageList = ({
       <button
         className={styles.controlButton}
         onClick={handleRightArrowButton}
-        data-testid="image-list-right-arrow-button"
       >
         <i className="fas fa-arrow-right" aria-hidden="true"></i>
       </button>

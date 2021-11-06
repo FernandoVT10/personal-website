@@ -1,22 +1,23 @@
-import React from "react";
+import React, {useReducer, useState} from "react";
 
 import { Input, TextArea } from "@/components/Formulary";
 
 import { inputValidators } from "@/utils/validators";
 
-import Carousel from "./Carousel";
-import { INewImage } from "./Carousel/ImageList";
+import ImagesEditor, { ImagesObjects } from "./ImagesEditor";
 import Content from "./Content";
 import Technologies from "./Technologies";
 
 import Loader from "../Loader";
 
+import { reducer, initialState } from "./reducer";
+
 import styles from "./ProjectEditor.module.scss";
 
 export interface IProjectEditorProps {
-  images: string[]
+  imagesObjects: ImagesObjects
   setImagesToDelete?: React.Dispatch<string[]>
-  setNewImages: React.Dispatch<INewImage[]>
+  setNewImages: React.Dispatch<any[]>
   title: string
   setTitle: React.Dispatch<string>
   description: string
@@ -32,7 +33,7 @@ export interface IProjectEditorProps {
 }
 
 const ProjectEditor = ({
-  images,
+  imagesObjects,
   setImagesToDelete,
   setNewImages,
   title,
@@ -48,6 +49,27 @@ const ProjectEditor = ({
   loading,
   error
 }: IProjectEditorProps) => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const [validation, setValidation] = useState<{[key: string]: boolean}>({});
+
+  const notify = (name: string, isValid: boolean) => {
+    setValidation({[name]: isValid, ...validation});
+  }
+
+  const validateForm = (): boolean => {
+    let isValid = true;
+
+    for(const key in validation) {
+      if(!validation[key]) {
+        isValid = false;
+        break;
+      }
+    }
+
+    return isValid;
+  }
+
   const handleOnClick = () => {
     if(!title.length) return document.getElementById("title-input").focus();
     if(!description.length) return document.getElementById("description-textarea").focus();
@@ -56,12 +78,13 @@ const ProjectEditor = ({
     onSave();
   }
 
+  console.log(state);
+
   return (
     <div className={styles.projectEditor}>
-      <Carousel
-        images={images}
-        setImagesToDelete={setImagesToDelete}
-        setNewImages={setNewImages}
+      <ImagesEditor
+        imagesObjects={imagesObjects}
+        dispatch={dispatch}
       />
 
       <Input
@@ -72,44 +95,61 @@ const ProjectEditor = ({
         maxLength={100}
         validator={inputValidators.requiredInput("title")}
       />
-
-      <TextArea
-        label="Description"
-        prefix="description"
-        value={description}
-        setValue={setDescription}
-        maxLength={250}
-        validator={inputValidators.requiredInput("description")}
-      />
-
-      <Content content={content} setContent={setContent} />
-
-      <Technologies selectedTechnologies={selectedTechnologies} setSelectedTechnologies={setSelectedTechnologies} />
-
-      { error &&
-      <p className={styles.errorMessage}>
-        <i className="fas fa-times-circle" aria-hidden="true"></i>
-        { error }
-      </p>
-      }
-
-      { loading ?
-        <div className={styles.loaderContainer}>
-          <Loader/>
-        </div>
-        :
-
-        <div className={styles.buttons}>
-          <button className={styles.button} onClick={handleOnClick}>Save Project</button>
-
-          <button className={`${styles.button} ${styles.secondary}`} onClick={goBack}>
-            Go Back
-          </button>
-        </div>
-
-      }
     </div>
   );
+
+  // return (
+  //   <div className={styles.projectEditor}>
+  //     <Carousel
+  //       images={images}
+  //     />
+
+  //     <Input
+  //       label="Title"
+  //       prefix="title"
+  //       value={title}
+  //       setValue={setTitle}
+  //       maxLength={100}
+  //       validator={inputValidators.requiredInput("title")}
+  //     />
+
+  //     <TextArea
+  //       label="Description"
+  //       prefix="description"
+  //       value={description}
+  //       setValue={setDescription}
+  //       maxLength={250}
+  //       validator={inputValidators.requiredInput("description")}
+  //     />
+
+  //     <Content content={content} setContent={setContent} />
+
+  //     <Technologies selectedTechnologies={selectedTechnologies} setSelectedTechnologies={setSelectedTechnologies} />
+
+  //     { error &&
+  //     <p className={styles.errorMessage}>
+  //       <i className="fas fa-times-circle" aria-hidden="true"></i>
+  //       { error }
+  //     </p>
+  //     }
+
+  //     { loading ?
+  //       <div className={styles.loaderContainer}>
+  //         <Loader/>
+  //       </div>
+  //       :
+
+  //       <div className={styles.buttons}>
+  //         <button className={styles.button} onClick={handleOnClick}>Save Project</button>
+
+  //         <button className={`${styles.button} ${styles.secondary}`} onClick={goBack}>
+  //           Go Back
+  //         </button>
+  //       </div>
+
+  //     }
+  //   </div>
+  // );
 }
 
 export default ProjectEditor;
