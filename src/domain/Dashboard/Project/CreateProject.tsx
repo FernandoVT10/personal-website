@@ -70,7 +70,7 @@ const Create = () => {
   }
 
   const projectEditorProps = {
-    images: [],
+    imagesObjects: [],
     setNewImages: setImages,
     title, setTitle,
     description, setDescription,

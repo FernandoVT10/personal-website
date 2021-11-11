@@ -1,8 +1,6 @@
-import React, {useReducer, useState} from "react";
+import React, { useReducer, useState } from "react";
 
 import { Input, TextArea } from "@/components/Formulary";
-
-import { inputValidators } from "@/utils/validators";
 
 import ImagesEditor, { ImagesObjects } from "./ImagesEditor";
 import Content from "./Content";
@@ -15,6 +13,11 @@ import { reducer, initialState } from "./reducer";
 import styles from "./ProjectEditor.module.scss";
 
 export interface IProjectEditorProps {
+  project: {
+    title: string
+    description: string
+  }
+
   imagesObjects: ImagesObjects
   setImagesToDelete?: React.Dispatch<string[]>
   setNewImages: React.Dispatch<any[]>
@@ -33,6 +36,7 @@ export interface IProjectEditorProps {
 }
 
 const ProjectEditor = ({
+  project,
   imagesObjects,
   setImagesToDelete,
   setNewImages,
@@ -54,7 +58,7 @@ const ProjectEditor = ({
   const [validation, setValidation] = useState<{[key: string]: boolean}>({});
 
   const notify = (name: string, isValid: boolean) => {
-    setValidation({[name]: isValid, ...validation});
+    setValidation({ ...validation, [name]: isValid });
   }
 
   const validateForm = (): boolean => {
@@ -78,6 +82,10 @@ const ProjectEditor = ({
     onSave();
   }
 
+  const handleInputOnChange = (value: string, name: string) => {
+    dispatch({ type: "set-input-value", payload: { value, name } });
+  }
+
   console.log(state);
 
   return (
@@ -88,13 +96,30 @@ const ProjectEditor = ({
       />
 
       <Input
+        defaultValue={project.title}
+        inputProps={{
+          maxLength: 100,
+          required: true
+        }}
         label="Title"
-        prefix="title"
-        value={title}
-        setValue={setTitle}
-        maxLength={100}
-        validator={inputValidators.requiredInput("title")}
+        name="title"
+        notify={notify}
+        onChange={handleInputOnChange}
       />
+
+      <TextArea
+        defaultValue={project.description}
+        label="Description"
+        name="description"
+        notify={notify}
+        onChange={handleInputOnChange}
+        textareaProps={{
+          maxLength: 250,
+          required: true
+        }}
+      />
+
+      <Content content={content} setContent={setContent} />
     </div>
   );
 

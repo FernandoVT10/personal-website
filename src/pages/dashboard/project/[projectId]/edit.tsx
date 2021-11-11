@@ -14,7 +14,13 @@ export const GET_PROJECT = gql`
     project(projectId: $projectId) {
       _id
       title
-      images
+      images {
+        _id
+        imageSpecs {
+          width
+          url
+        }
+      }
       description
       content
       technologies {

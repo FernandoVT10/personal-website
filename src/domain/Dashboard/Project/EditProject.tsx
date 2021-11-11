@@ -4,9 +4,7 @@ import { gql, useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
 
 import ErrorPage from "@/components/ErrorPage";
-import ProjectEditor from "@/components/ProjectEditor";
-
-import { INewImage } from "@/components/ProjectEditor/Carousel/ImageList";
+import ProjectEditor, {IProjectEditorProps} from "@/components/ProjectEditor";
 
 import withUser from "@/hocs/withUser";
 
@@ -24,7 +22,7 @@ interface IEditProjectProps {
   project: {
     _id: string
     title: string
-    images: string[]
+    images: IProjectEditorProps["imagesObjects"]
     description: string
     content: string
     technologies: {
@@ -44,7 +42,7 @@ const EditProject = ({ project, error }: IEditProjectProps) => {
   const [updateProject, updateProjectResult] = useMutation<IUpdateProjectResult>(UPDATE_PROJECT);
 
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
-  const [newImages, setNewImages] = useState<INewImage[]>([]);
+  const [newImages, setNewImages] = useState<any[]>([]);
   const [title, setTitle] = useState(project.title);
   const [description, setDescription] = useState(project.description);
   const [content, setContent] = useState(project.content);
@@ -64,15 +62,15 @@ const EditProject = ({ project, error }: IEditProjectProps) => {
 
   const onSave = async () => {
     // here i get the images that aren't deleted
-    const numberOfImagesNotDeleted = project.images.reduce((acc, image) => {
-      // if the image is included on te imagesToDelete array it means that the image is already deleted
-      if(imagesToDelete.includes(image)) acc--;
-      return acc;
-    }, project.images.length);
+    // const numberOfImagesNotDeleted = project.images.reduce((acc, image) => {
+    //   // if the image is included on te imagesToDelete array it means that the image is already deleted
+    //   if(imagesToDelete.includes(image)) acc--;
+    //   return acc;
+    // }, project.images.length);
 
-    if(!newImages.length && numberOfImagesNotDeleted < 1) {
-      return setErrorMessage("You need to add at least one image to the carousel");
-    }
+    // if(!newImages.length && numberOfImagesNotDeleted < 1) {
+    //   return setErrorMessage("You need to add at least one image to the carousel");
+    // }
 
     setErrorMessage("");
 
@@ -101,7 +99,8 @@ const EditProject = ({ project, error }: IEditProjectProps) => {
   }
 
   const projectEditorProps = {
-    images: project.images,
+    project,
+    imagesObjects: project.images,
     setImagesToDelete,
     setNewImages,
     title, setTitle,
