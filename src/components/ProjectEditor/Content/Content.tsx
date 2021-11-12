@@ -1,78 +1,45 @@
 import React, { useRef, useState } from "react";
-import { gql, useMutation } from "@apollo/client";
 
 import MarkDown from "@/components/MarkDown";
 import Modal from "@/components/Modal";
-import Loader from "@/components/Loader";
 
-import { imageValidator } from "@/utils/validators";
+import UploadImageButton from "./UploadImageButton";
 
 import styles from "./Content.module.scss";
 
-export const UPLOAD_IMAGE = gql`
-  mutation UploadImage($image: Upload!) {
-    uploadImage(image: $image)
-  }
-`;
-
 interface IContentProps {
-  content: string
-  setContent: React.Dispatch<string>
+  onChange: (value: string, name: string) => void
+  defaultValue: string
+  notify: (name: string, isValid: boolean) => void
 }
 
-interface IMutationResult {
-  uploadImage: string
-}
-
-const Content = ({ content, setContent }: IContentProps) => {
-  const [uploadImage, uploadImageResult] = useMutation<IMutationResult>(UPLOAD_IMAGE);
-
+const Content = ({ onChange, defaultValue, notify}: IContentProps) => {
+  const [content, setContent] = useState(defaultValue);
   const [isActive, setIsActive] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const editor = useRef<HTMLTextAreaElement>(undefined);
 
   const handleTextAreaOnChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.target.value);
+    const { value } = e.target;
+
+    setContent(value);
     setErrorMessage("");
+
+    onChange(value, "content");
+    notify("content", content.length > 0);
   }
 
   const handleTextAreaOnBlur = () => {
-    if(!content) {
-      setErrorMessage("The content is required");
-    }
+    if(!content.length) setErrorMessage("The content is required");
   }
 
   const setImageOnTheTextArea = (imageName: string, imageURL: string) => {
-    const start = editor.current.selectionStart;
     const end = editor.current.selectionEnd;
-
-    editor.current.setRangeText(`\n![${imageName}](${imageURL})`, start, end, "select");
+    editor.current.setRangeText(`\n![${imageName}](${imageURL})`, end, end, "select");
 
     const event = new Event("input", { bubbles: true });
     editor.current.dispatchEvent(event);
-  }
-
-  const handleInputFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files[0];
-
-    if(!file) return;
-
-    if(!imageValidator(file.type)) return setErrorMessage("The file must be a .jpg, .png or .jpeg image.");
-
-    try {
-      const result = await uploadImage({
-        variables: {
-          image: file
-        }
-      }); 
-
-      const imageName = file.name;
-
-      setImageOnTheTextArea(imageName, result.data.uploadImage);
-    } catch(err) {
-      setErrorMessage(err.message);
-    }
   }
 
   const contentClass = errorMessage.length > 0 ? styles.error : "";
@@ -85,21 +52,6 @@ const Content = ({ content, setContent }: IContentProps) => {
         </div>
       </Modal>
 
-      <input
-        type="file"
-        id="content-editor-input-file"
-        className={styles.inputFile}
-        onChange={handleInputFile}
-        accept="image/*"
-        data-testid="content-editor-input-file"
-      />
-
-      { uploadImageResult.loading && 
-      <div className={styles.loaderContainer}>
-        <Loader/>
-        <p className={styles.text}>Uploading Image</p>
-      </div>
-      }
 
       <div className={styles.actions}>
         <button className={styles.action} onClick={() => setIsActive(true)}>
@@ -107,11 +59,7 @@ const Content = ({ content, setContent }: IContentProps) => {
           See the preview
         </button>
 
-        <label htmlFor="content-editor-input-file" className={`${styles.action} ${styles.uploadImageAction}`}>
-          <i className="fas fa-image" aria-hidden="true"></i>
-          Upload Image
-        </label>
-
+        <UploadImageButton setErrorMessage={setErrorMessage} setImageOnTheTextArea={setImageOnTheTextArea}/>
       </div>
 
       <div className={styles.contentEditor}>

@@ -16,6 +16,7 @@ export interface IProjectEditorProps {
   project: {
     title: string
     description: string
+    content: string
   }
 
   imagesObjects: ImagesObjects
@@ -119,7 +120,11 @@ const ProjectEditor = ({
         }}
       />
 
-      <Content content={content} setContent={setContent} />
+      <Content
+        onChange={handleInputOnChange}
+        defaultValue={project.content}
+        notify={notify}
+      />
     </div>
   );
 
