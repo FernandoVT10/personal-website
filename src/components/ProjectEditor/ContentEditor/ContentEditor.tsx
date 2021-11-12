@@ -5,15 +5,15 @@ import Modal from "@/components/Modal";
 
 import UploadImageButton from "./UploadImageButton";
 
-import styles from "./Content.module.scss";
+import styles from "./ContentEditor.module.scss";
 
-interface IContentProps {
+interface ContentEditorProps {
   onChange: (value: string, name: string) => void
   defaultValue: string
   notify: (name: string, isValid: boolean) => void
 }
 
-const Content = ({ onChange, defaultValue, notify}: IContentProps) => {
+const ContentEditor = ({ onChange, defaultValue, notify}: ContentEditorProps) => {
   const [content, setContent] = useState(defaultValue);
   const [isActive, setIsActive] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -85,4 +85,4 @@ const Content = ({ onChange, defaultValue, notify}: IContentProps) => {
   );
 }
 
-export default Content;
+export default ContentEditor;

@@ -3,7 +3,7 @@ import React, { useReducer, useState } from "react";
 import { Input, TextArea } from "@/components/Formulary";
 
 import ImagesEditor, { ImagesObjects } from "./ImagesEditor";
-import Content from "./Content";
+import ContentEditor from "./ContentEditor";
 import Technologies from "./Technologies";
 
 import Loader from "../Loader";
@@ -120,11 +120,13 @@ const ProjectEditor = ({
         }}
       />
 
-      <Content
+      <ContentEditor
         onChange={handleInputOnChange}
         defaultValue={project.content}
         notify={notify}
       />
+
+      <Technologies selectedTechnologies={selectedTechnologies} setSelectedTechnologies={setSelectedTechnologies} />
     </div>
   );
 

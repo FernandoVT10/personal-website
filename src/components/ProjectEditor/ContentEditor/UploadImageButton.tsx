@@ -6,7 +6,7 @@ import Loader from "@/components/Loader";
 
 import { imageValidator } from "@/utils/validators";
 
-import styles from "./Content.module.scss";
+import styles from "./ContentEditor.module.scss";
 
 export const UPLOAD_IMAGE = gql`
   mutation UploadImage($image: Upload!) {
