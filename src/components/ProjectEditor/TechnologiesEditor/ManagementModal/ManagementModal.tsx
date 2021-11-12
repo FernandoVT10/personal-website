@@ -39,7 +39,7 @@ const ManagementModal = ({
 }: IManagementModalProps) => {
   const [getTechnologies, getTechnologiesResult] = useLazyQuery<IGetTechnologiesResult>(GET_TECHNOLOGIES);
 
-  const [searchTechnology, setSearchTechnology] = useState("");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     if(isActive && !getTechnologiesResult.called) {
@@ -53,9 +53,9 @@ const ManagementModal = ({
 
     const { technologies } = getTechnologiesResult.data;
 
-    if(searchTechnology.length) {
+    if(search.length) {
       return technologies.filter(
-        technology => technology.name.toLowerCase().startsWith(searchTechnology.toLowerCase())
+        technology => technology.name.toLowerCase().startsWith(search.toLowerCase())
       );
     }
 
@@ -71,8 +71,8 @@ const ManagementModal = ({
           type="text"
           placeholder="Search a technology"
           className={styles.searchInput}
-          value={searchTechnology}
-          onChange={({ target: { value } }) => setSearchTechnology(value)}
+          value={search}
+          onChange={({ target: { value } }) => setSearch(value)}
           data-testid="search-technology"
         />
 

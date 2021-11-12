@@ -4,9 +4,9 @@ import { Input, TextArea } from "@/components/Formulary";
 
 import ImagesEditor, { ImagesObjects } from "./ImagesEditor";
 import ContentEditor from "./ContentEditor";
-import Technologies from "./Technologies";
+import TechnologiesEditor from "./TechnologiesEditor";
 
-import Loader from "../Loader";
+// import Loader from "../Loader";
 
 import { reducer, initialState } from "./reducer";
 
@@ -17,6 +17,9 @@ export interface IProjectEditorProps {
     title: string
     description: string
     content: string
+    technologies: {
+      name: string
+    }[]
   }
 
   imagesObjects: ImagesObjects
@@ -75,19 +78,21 @@ const ProjectEditor = ({
     return isValid;
   }
 
-  const handleOnClick = () => {
-    if(!title.length) return document.getElementById("title-input").focus();
-    if(!description.length) return document.getElementById("description-textarea").focus();
-    if(!content.length) return document.getElementById("content-textarea").focus();
+  // const handleOnClick = () => {
+  //   if(!title.length) return document.getElementById("title-input").focus();
+  //   if(!description.length) return document.getElementById("description-textarea").focus();
+  //   if(!content.length) return document.getElementById("content-textarea").focus();
 
-    onSave();
-  }
+  //   onSave();
+  // }
 
   const handleInputOnChange = (value: string, name: string) => {
     dispatch({ type: "set-input-value", payload: { value, name } });
   }
 
   console.log(state);
+
+  const defaultTechnologies = project.technologies.map(({ name }) => name);
 
   return (
     <div className={styles.projectEditor}>
@@ -126,7 +131,10 @@ const ProjectEditor = ({
         notify={notify}
       />
 
-      <Technologies selectedTechnologies={selectedTechnologies} setSelectedTechnologies={setSelectedTechnologies} />
+      <TechnologiesEditor
+        defaultTechnologies={defaultTechnologies}
+        dispatch={dispatch}
+      />
     </div>
   );
 

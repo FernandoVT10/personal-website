@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { gql, Reference, useMutation } from "@apollo/client";
 
-import { Input } from "@/components/Formulary";
+import { ControlledInput } from "@/components/Formulary";
 import Loader from "@/components/Loader";
 
 import styles from "./CreateTechnology.module.scss";
@@ -58,23 +58,26 @@ const CreateTechnology = () => {
     
   }
 
+  const handleCancelButton = () => {
+    setIsActive(false);
+    setErrorMessage("");
+  }
+
   if(isActive) {
     return (
       <div className={styles.createTechnology}>
         <form onSubmit={handleForm}>
           <div className={styles.form}>
-            <Input
-              prefix="create-technology-name"
+            <ControlledInput
+              name="technology-name"
               label="Name"
-              value={technologyName}
-              setValue={setTechnologyName}
+              onChange={value => setTechnologyName(value)}
+              inputProps={{
+                required: true
+              }}
+              errorMessage={errorMessage}
+              setErrorMessage={setErrorMessage}
             />
-
-            { errorMessage.length > 0 &&
-            <p className={styles.errorMessage}>
-              { errorMessage }
-            </p>
-            }
 
             { createTechnologyResult.loading ?
               <div className={styles.loaderContainer}>
@@ -85,7 +88,7 @@ const CreateTechnology = () => {
                 <button
                   type="button"
                   className={styles.button}
-                  onClick={() => setIsActive(false)}
+                  onClick={handleCancelButton}
                 >
                   Cancel
                 </button>

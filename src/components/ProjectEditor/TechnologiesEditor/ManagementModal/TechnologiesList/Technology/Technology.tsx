@@ -95,7 +95,7 @@ const Technology = ({
           </button>
         </div>
 
-        { errorMessage.length > -1 &&
+        { errorMessage.length > 0 &&
         <p className={styles.errorMessage}>{ errorMessage }</p>
         }
       </form>

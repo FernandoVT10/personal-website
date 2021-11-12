@@ -16,8 +16,12 @@
   }
 
   & .errorMessage {
+    margin: 0;
     font-weight: bold;
     color: var(--red);
+    background: var(--red);
+    color: var(--black);
+    padding: 10px;
 
     & i {
       margin-right: 5px;

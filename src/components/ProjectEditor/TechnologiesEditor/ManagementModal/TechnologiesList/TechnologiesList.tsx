@@ -107,31 +107,35 @@ const TechnologiesList = ({ technologies, selectedTechnologies, setSelectedTechn
   const handleEditTechnology = async (technologyId: string, newName: string, oldName: string) => {
     setErrorMessage("");
 
-    const result = await updateTechnology({
-      variables: { technologyId, name: newName }
-    });
+    try {
+      const result = await updateTechnology({
+        variables: { technologyId, name: newName }
+      });
 
-    const updatedTechnology = result.data.updateTechnology;
+      const updatedTechnology = result.data.updateTechnology;
 
-    if(selectedTechnologies.includes(oldName)) {
-      setSelectedTechnologies(
-        selectedTechnologies.map(technologyName => {
-          if(technologyName === oldName) {
-            return updatedTechnology.name;
-          }
+      if(selectedTechnologies.includes(oldName)) {
+        setSelectedTechnologies(
+          selectedTechnologies.map(technologyName => {
+            if(technologyName === oldName) {
+              return updatedTechnology.name;
+            }
 
-          return technologyName;
-        })
-      );
+            return technologyName;
+          })
+        );
+      } 
+    } catch (err) {
+      // here we're throwing the error again because we need to show
+      // it inside of the technology component
+      throw err;
     }
   }
 
   return (
     <div className={styles.technologiesList}>
-
       { errorMessage.length > 0 &&
       <p className={styles.errorMessage}>
-        <i className="fas fa-times-circle"></i>
         { errorMessage }
       </p>
       }
@@ -157,7 +161,7 @@ const TechnologiesList = ({ technologies, selectedTechnologies, setSelectedTechn
             editTechnology={handleEditTechnology}
             toggleTechnology={toggleTechnology}
             key={index}
-            />
+          />
         );
       })}
 

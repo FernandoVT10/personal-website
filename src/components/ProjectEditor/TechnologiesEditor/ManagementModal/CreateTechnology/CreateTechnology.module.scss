@@ -2,12 +2,6 @@
   & .form {
     padding: 0 20px;
 
-    & .errorMessage {
-      font-weight: bold;
-      font-size: 14px;
-      color: var(--red);
-    }
-
     & .buttons {
       display: flex;
       justify-content: space-between;
