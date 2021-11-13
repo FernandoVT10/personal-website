@@ -2,7 +2,7 @@ import { UserInputError, AuthenticationError } from "apollo-server-express";
 
 import { Project, IProject } from "../../../models";
 
-import ImageController from "../ImageController";
+import { deleteImages } from "../ImageController";
 
 interface Parameters {
   projectId: string
@@ -18,7 +18,14 @@ export default async (_: null, args: Parameters, context: { loggedIn: boolean })
     throw new UserInputError(`The project with the ID '${projectId}' doesn't exist.`);
   }
 
-  await ImageController.deleteImages(project.images);
+  const imagesURLs: string[] =  [];
+  project.images.forEach(image => 
+    image.imageSpecs.forEach(
+      imageSpec => imagesURLs.push(imageSpec.url)
+    )
+  );
+
+  await deleteImages(imagesURLs);
 
   return await project.delete();
 }

@@ -1,0 +1,117 @@
+.imagesEditor {
+  position: relative;
+  user-drag: none;
+  -webkit-user-drag: none;
+
+  &.error { border: dashed 2px var(--red); }
+
+  & .dragMark {
+    z-index: 10;
+    position: absolute;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, .8);
+    border: dashed 2px var(--blue);
+    color: var(--blue);
+
+    &.active { display: flex; }
+
+    & .text {
+      pointer-events: none;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    & i {
+      pointer-events: none;
+      font-size: 50px;
+    }
+  }
+
+  & .loaderContainer {
+    z-index: 100;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, .8);
+
+    & .message {
+      color: var(--blue);
+      font-weight: bold;
+      font-size: 20px;
+    }
+  }
+
+  & .errorMessage {
+    color: var(--red);
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+
+    & .imagesIcon {
+      margin-right: 10px;
+    }
+  }
+
+  & .inputFile { display: none }
+
+  & .noImagesDiv {
+    text-align: center;
+
+    & .imagesIcon {
+      width: 80px;
+      stroke-width: 2px;
+    }
+
+    & .text {
+      font-size: 25px;
+      margin: 20px 0;
+    }
+
+    & .addImageButton {
+      display: block;
+      cursor: pointer;
+      background: var(--black-gray);
+      padding: 20px 40px;
+      color: var(--white);
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      transition: .3s;
+
+      & i {
+        margin-right: 10px;
+      }
+
+      &:hover {
+        background: var(--black);
+      }
+    }
+  }
+
+  & .previewContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 350px;
+
+    & .previewImage {
+      width: 100%;
+      height: 350px;
+      object-fit: cover;
+    }
+  }
+}

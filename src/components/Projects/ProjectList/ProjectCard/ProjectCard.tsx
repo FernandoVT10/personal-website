@@ -2,7 +2,7 @@ import React from "react";
 
 import Link from "next/link";
 
-import Carousel from "@/components/Carousel";
+import Carousel, { ImageObject } from "@/components/Carousel";
 
 import styles from "./ProjectCard.module.scss";
 
@@ -10,7 +10,7 @@ export interface Project {
   _id: string,
   title: string,
   description: string,
-  images: string[],
+  images: ImageObject[],
   technologies: {
     name: string
   }[]
@@ -54,7 +54,10 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
       </div>
 
       <div className={styles.carousel}>
-        <Carousel images={project.images} />
+        <Carousel
+          images={project.images}
+          sizes="(min-width: 1200px) 50vw, 100vw"
+        />
       </div>
     </div>
   );

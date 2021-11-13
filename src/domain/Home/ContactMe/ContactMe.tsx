@@ -4,7 +4,9 @@ import { gql, useMutation } from "@apollo/client";
 
 import { Input, TextArea } from "@/components/Formulary";
 
-import { inputValidators, email as emailValidator } from "@/utils/validators";
+import useForm from "@/hooks/useForm";
+
+import { inputValidators } from "@/utils/validators";
 
 import Loader from "@/components/Loader";
 
@@ -16,22 +18,37 @@ export const SEND_MESSAGE = gql`
   }
 `;
 
+type Values = {
+  name: string
+  email: string
+  subject: string
+  message: string
+}
+
 const ContactMe = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [subject, setSubject] = useState("");
-  const [message, setMessage] = useState("");
+  const [values, setValues] = useState<Values>({
+    name: "",
+    email: "",
+    subject: "",
+    message: ""
+  });
 
   const [sendMessage, { loading, data, error }] = useMutation(SEND_MESSAGE);
+
+  const { notify, validateForm } = useForm();
 
   const handleOnSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if(!emailValidator(email)) return;
+    if(!validateForm()) return console.log("holi");
 
     sendMessage({
-      variables: { name, email, subject, message }
+      variables: values
     });
+  }
+
+  const handleInputOnChange = (value: string, name: string) => {
+    setValues({...values, [name]: value});
   }
 
   return (
@@ -47,41 +64,54 @@ const ContactMe = () => {
 
         <form onSubmit={handleOnSubmit}>
           <Input
-            prefix="name"
+            name="name"
             label="Name"
-            value={name}
-            setValue={setName}
+            notify={notify}
+            onChange={handleInputOnChange}
+            inputProps={{
+              required: true
+            }}
           />
 
           <Input
-            prefix="email"
+            name="email"
             label="Email"
-            value={email}
-            setValue={setEmail}
+            notify={notify}
+            onChange={handleInputOnChange}
+            inputProps={{
+              required: true
+            }}
             validator={inputValidators.email}
           />
 
           <Input
-            prefix="subject"
+            name="subject"
             label="Subject"
-            value={subject}
-            setValue={setSubject}
+            notify={notify}
+            onChange={handleInputOnChange}
+            inputProps={{
+              required: true
+            }}
           />
 
           <TextArea
-            prefix="message"
+            name="message"
             label="Message"
-            value={message}
-            setValue={setMessage}
+            notify={notify}
+            onChange={handleInputOnChange}
+            textareaProps={{
+              required: true
+            }}
           />
 
-          {error && 
+          { error && 
           <div className={styles.error}>
             <i className="fas fa-times-circle"></i>
             There was an error trying to send the message. Try it again later.
           </div>
           }
-          {data ?
+
+          { data ?
             <p className={styles.successMessage}>Your message has been sent correctly.</p>
             :
             <button type="submit" className={`${styles.submitButton} submit-button`}>Send Message</button>

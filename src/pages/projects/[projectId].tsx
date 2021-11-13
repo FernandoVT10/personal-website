@@ -15,7 +15,12 @@ export const GET_PROJECT = gql`
   query GetProject($projectId: ID!, $limit: Int) {
     project(projectId: $projectId) {
       title
-      images
+      images {
+        imageSpecs {
+          width
+          url
+        }
+      }
       content
       technologies {
         name
@@ -25,7 +30,12 @@ export const GET_PROJECT = gql`
     relatedProjects(projectId: $projectId, limit: $limit) {
       _id
       title
-      images
+      images {
+        imageSpecs {
+          width
+          url
+        }
+      }
     }
   }
 `;

@@ -19,7 +19,12 @@ export const GET_PROJECTS = gql`
       docs {
         _id
         title
-        images
+        images {
+          imageSpecs {
+            width
+            url
+          }
+        }
       }
     }
   }

@@ -3,61 +3,66 @@
   margin-bottom: 40px;
   background: var(--black);
 
-  & .errorMessage {
+  & .inputContainer {
     margin-top: 40px;
+  }
+
+  & .loaderContainer {
+    display: inline-block;
+    color: var(--blue);
+    font-weight: bold;
+    text-align: center;
+    font-size: 14px;
+  }
+
+  & .errorMessage {
+    margin-top: 20px;
     color: var(--red);
     font-weight: bold;
-    font-size: 18px;
+    font-size: 15px;
 
     & i {
       margin-right: 5px;
     }
   }
 
-  & .loaderContainer {
-    margin-top: 20px;
-    display: inline-block;
-  }
-
   & .buttons {
-    margin-top: 20px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: solid 2px var(--black-gray);
 
     & .button {
       cursor: pointer;
-      background: var(--blue);
-      border: solid 1px var(--blue);
-      border-radius: 5px;
-      color: var(--black);
-      padding: 15px 30px;
       font-weight: bold;
+      border: none;
+      background: transparent;
       font-size: 16px;
-      margin-top: 20px;
+      padding: 15px 30px;
+      color: var(--blue);
+      text-align: center;
       transition: .3s;
 
+      &:hover {
+        background: rgba(100, 223, 223, 10%);
+      }
+
       &.secondary {
-        background: var(--black);
-        color: var(--blue);
         margin-left: 20px;
+        color: var(--red);
 
         &:hover {
-          background: var(--blue);
-          color: var(--black);
+          background: rgb(223, 100, 100, 10%);
         }
       }
     }
+
   }
 
-  @media screen and (max-width: 400px) {
+  @media screen and (max-width: 575px) {
     & .buttons {
-      & .button {
-        display: block;
-        width: 100%;
+      display: flex;
 
-        &.secondary {
-          margin: 0;
-          margin-top: 20px;
-        }
-      }
+      & .button { width: 50%; }
     }
   }
 }

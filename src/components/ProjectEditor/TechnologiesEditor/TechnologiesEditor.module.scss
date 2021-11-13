@@ -1,0 +1,39 @@
+.technologiesEditor {
+  margin-top: 20px;
+
+  & .title {
+    font-weight: bold;
+    font-size: 18px;
+
+    & i {
+      margin-left: 10px;
+      font-size: 14px;
+    }
+
+    & .editButton {
+      cursor: pointer;
+      color: var(--white);
+      transition: .3s;
+
+      &:hover { color: var(--blue); }
+    }
+  }
+
+  & .technologies {
+    & .technology {
+      display: inline-block;
+      margin: 10px;;
+      margin-top: 0;
+      font-size: 14px;
+      color: var(--blue);
+      font-weight: bold;
+    }
+  }
+
+  & .infoMessage {
+    color: var(--blue);
+    font-weight: bold;
+    font-size: 14px;
+    margin-left: 10px;
+  }
+}

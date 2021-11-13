@@ -4,7 +4,7 @@ import { mocked } from "ts-jest/utils";
 
 import { Project } from "../../../../models";
 
-import ImageController from "../../ImageController";
+import { deleteImages } from "../../ImageController";
 
 import deleteOne from "../deleteOne";
 
@@ -15,31 +15,41 @@ const PROJECT_MOCK = {
   description: "test description",
   content: "test content",
   technologies: [],
-  images: ["test-1.jpg", "test-2.jpg"]
+  images: [{
+    imageSpecs: [
+      { width: 100, height: 100, url: "https://test/test-100.webp" },
+      { width: 500, height: 500, url: "https://test/test-500.webp" },
+      { width: 1000, height: 1000, url: "https://test/test-1000.webp" }
+    ]
+  }]
 }
 
-setupTestDB("test_utils_controller_project_deleteOne");
-
-const deleteImagesMocked = mocked(ImageController.deleteImages);
+setupTestDB("test_utils_controllers_project_deleteOne");
 
 describe("server/utils/controllers/ProjectController/deleteOne", () => {
+  const deleteImagesMocked = mocked(deleteImages);
+
   let projectId: string;
 
   beforeEach(async () => {
-    const project = await Project.create(PROJECT_MOCK);
+    jest.resetAllMocks();
 
+    const project = await Project.create(PROJECT_MOCK);
     projectId = project._id;
   });
 
-  it("should delete a project correctly", async () => {
-    const project = await deleteOne(null, { projectId }, { loggedIn: true });
+  it("should delete a project with its images", async () => {
+    await deleteOne(null, { projectId }, { loggedIn: true });
 
     expect(await Project.exists({ _id: projectId })).toBeFalsy();
 
-    expect(project.title).toBe("test title");
-
-    const deletedImageArray = deleteImagesMocked.mock.calls[0][0];
-    expect([...deletedImageArray]).toEqual(["test-1.jpg", "test-2.jpg"]);
+    expect(deleteImagesMocked).toHaveBeenCalledWith(
+      [
+        "https://test/test-100.webp",
+        "https://test/test-500.webp",
+        "https://test/test-1000.webp"
+      ]
+    );
   });
 
   it("should throw an error when the user isn't logged in", async () => {

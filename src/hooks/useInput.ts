@@ -1,39 +1,55 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 
-const useInput = (
-  setValue: React.Dispatch<React.SetStateAction<string>>,
-  validator: (newValue: string) => string,
-): [
-  string,
-  {
-    onChange: (newValue: string) => void,
-    onBlur: (value: string) => void
-  }
-  
-] => {
+interface IUseInput {
+  defaultValue: string
+  name: string
+  validator: (value: string) => string
+  notify: (name: string, isValid: boolean) => void
+  isRequired: boolean
+  handleOnChange: (value: string, name: string) => void
+}
+
+const useInput = ({ defaultValue, name, validator, notify, isRequired, handleOnChange }: IUseInput) => {
+  const [value, setValue] = useState(defaultValue || "");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const onChange = (newValue: string) => {
-    const validatorMessage = validator ? validator(newValue) : "";
+  useEffect(() => {
+    notify(name, isValueValid(defaultValue || ""));
+  }, []);
 
-    if(!validatorMessage) {
-      setErrorMessage("");
+  const isValueValid = (value: string): boolean => {
+    if(validator) {
+      // if the validator returns null it means that the value is valid
+      const validatorResult = validator(value);
+      if(validatorResult) return false;
     }
+
+    if(isRequired) return value.length > 0;
+    return true;
+  }
+
+  const onChange = (newValue: string) => {
+    const isValid = isValueValid(newValue);
+    notify(name, isValid);
+
+    if(isValid) setErrorMessage("");
 
     setValue(newValue);
+    handleOnChange(newValue, name);
   }
 
-  const onBlur = (value: string) => {
-    const validatorMessage = validator ? validator(value) : "";
+  const onBlur = () => {
+    if(!isValueValid(value)) {
+      if(isRequired) {
+        if(value.length < 1) return setErrorMessage(`This field is required`);
+      }
 
-    if(validatorMessage) {
-      setErrorMessage(validatorMessage);
-    } else {
-      setErrorMessage("");
+      const validatorMessage = validator(value);
+      setErrorMessage(validatorMessage || "");
     }
   }
 
-  return [errorMessage, { onChange, onBlur }];
+  return { value, errorMessage, onChange, onBlur };
 }
 
 export default useInput;

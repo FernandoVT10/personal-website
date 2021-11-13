@@ -6,11 +6,19 @@ import { mocked } from "ts-jest/utils";
 
 import { Project, Technology } from "../../../../models";
 
-import ImageController from "../../ImageController";
+import { uploadImagesWithDifferentDimensions } from "../../ImageController";
 
 import createOne from "../createOne";
 
 jest.mock("../../ImageController");
+
+jest.mock("../", () => ({
+  PROJECT_IMAGES_SIZES: [
+    { width: 100, height: 100 },
+    { width: 500, height: 500 },
+    { width: 1000, height: 1000 }
+  ]
+}));
 
 setupTestDB("test_utils_controllers_project_createOne");
 
@@ -36,18 +44,31 @@ const PROJECT_MOCK = {
   ]
 }
 
-const uploadImagesMocked = mocked(ImageController.uploadImages);
-
 // deactivate the console.log
 console.log = () => {}
 
 describe("server/utils/controllers/ProjectController/createOne", () => {
-  beforeEach(async () => {
-    await Technology.insertMany(MOCK_TECHNOLOGIES);
+  const PROJECT_IMAGES_SIZES_MOCK = [
+    { width: 100, height: 100 },
+    { width: 500, height: 500 },
+    { width: 1000, height: 1000 }
+  ];
 
+  const UPLOAD_IMAGES_WDD_RESPONSE_MOCK = [
+    [
+      { width: 100, height: 100, url: "https://test/test-100.webp" },
+      { width: 500, height: 500, url: "https://test/test-500.webp" },
+      { width: 1000, height: 1000, url: "https://test/test-1000.webp" }
+    ]
+  ];
+
+  const uploadImagesWDDMocked = mocked(uploadImagesWithDifferentDimensions);
+
+  beforeEach(async () => {
     jest.resetAllMocks();
 
-    uploadImagesMocked.mockResolvedValue(["test-1.jpg", "test-2.jpg"]);
+    await Technology.insertMany(MOCK_TECHNOLOGIES);
+    uploadImagesWDDMocked.mockResolvedValue(UPLOAD_IMAGES_WDD_RESPONSE_MOCK);
   });
 
   it("should create a project", async () => {
@@ -59,13 +80,19 @@ describe("server/utils/controllers/ProjectController/createOne", () => {
     expect(project.description).toBe("test description");
     expect(project.content).toBe("test content");
 
-    expect(project.technologies).toHaveLength(2);
     expect(project.technologies[0].name).toBe("technology 1");
     expect(project.technologies[1].name).toBe("technology 2");
+    expect(project.technologies).toHaveLength(2);
 
-    expect([...project.images]).toEqual(["test-1.jpg", "test-2.jpg"]);
+    // here it's important to convert the project to a object,
+    // to avoid problems with the types
+    expect(project.toObject().images[0].imageSpecs).toEqual(
+      UPLOAD_IMAGES_WDD_RESPONSE_MOCK[0]
+    );
 
-    expect(uploadImagesMocked).toHaveBeenCalledWith([FILE_UPLOAD_MOCK], "/projects/");
+    expect(uploadImagesWDDMocked).toHaveBeenCalledWith(
+      [FILE_UPLOAD_MOCK], "/projects/", PROJECT_IMAGES_SIZES_MOCK
+    );
   });
 
   it("should throw an error when the user isn't logged in", async () => {
@@ -99,13 +126,12 @@ describe("server/utils/controllers/ProjectController/createOne", () => {
       }, { loggedIn: true });
     } catch(err) {
       expect(err).toBeInstanceOf(MongooseError.ValidationError);
-      expect(uploadImagesMocked).not.toHaveBeenCalled();
+      expect(uploadImagesWDDMocked).not.toHaveBeenCalled();
     }
   });
 
   it("should throw an error when there's an error uploading the images", async () => {
-    uploadImagesMocked.mockReset();
-    uploadImagesMocked.mockRejectedValue(new Error("test"));
+    uploadImagesWDDMocked.mockRejectedValue(new Error("test"));
 
     try {
       await createOne(null, {

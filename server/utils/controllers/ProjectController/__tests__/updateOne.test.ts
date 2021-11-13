@@ -2,65 +2,96 @@ import { Error as MongooseError } from "mongoose";
 import { ApolloError, AuthenticationError, UserInputError } from "apollo-server-errors";
 import { mocked } from "ts-jest/utils";
 
-import { Project, Technology } from "../../../../models";
+import { Project, IProject, Technology } from "../../../../models";
 
-import ImageController from "../../ImageController";
+import { uploadImagesWithDifferentDimensions, deleteImages } from "../../ImageController";
 
 import updateOne from "../updateOne";
 
+import { PROJECT_IMAGES_SIZES } from "../";
+
 jest.mock("../../ImageController");
 
+jest.mock("../", () => ({
+  PROJECT_IMAGES_SIZES: [
+    { width: 100, height: 100 },
+    { width: 500, height: 500 },
+    { width: 1000, height: 1000 }
+  ]
+}));
+
 setupTestDB("test_utils_controllers_project_updateOne");
-
-const MOCK_TECHNOLOGIES = [
-  { name: "technology 1" },
-  { name: "technology 2" },
-  { name: "technology 3" }
-];
-
-const FILE_UPLOAD_MOCK = {
-  filename: "test.jpg"
-} as any;
-
-const PROJECT_MOCK = {
-  title: "test title",
-  description: "test description",
-  content: "test content",
-  technologies: [],
-  images: ["test-1.jpg", "test-2.jpg", "test-3.jpg"]
-}
 
 // deactivate the console.log
 console.log = () => {}
 
 describe("server/utils/controllers/ProjectController/updateOne", () => {
-  const uploadImagesMocked = mocked(ImageController.uploadImages);
-  const deleteImagesMocked = mocked(ImageController.deleteImages);
+  const MOCK_TECHNOLOGIES = [
+    { name: "technology 1" },
+    { name: "technology 2" },
+    { name: "technology 3" }
+  ];
 
-  let projectId: string;
+  const FILE_UPLOAD_MOCK = {
+    filename: "test.jpg"
+  } as any;
+
+  const PROJECT_MOCK = {
+    title: "test title",
+    description: "test description",
+    content: "test content",
+    technologies: [],
+    images: [
+      {
+        imageSpecs: [
+          { width: 100, height: 100, url: "https://test/original-100.webp" },
+          { width: 500, height: 500, url: "https://test/original-500.webp" },
+          { width: 1000, height: 1000, url: "https://test/original-1000.webp" }
+        ]
+      }
+    ]
+  }
+
+  const UPLOAD_IMAGES_WDD_RESPONSE_MOCK = [
+    [
+      { width: 100, height: 100, url: "https://test/test-100.webp" },
+      { width: 500, height: 500, url: "https://test/test-500.webp" },
+      { width: 1000, height: 1000, url: "https://test/test-1000.webp" }
+    ]
+  ];
+
+  const uploadImagesWDDMocked = mocked(uploadImagesWithDifferentDimensions);
+  const deleteImagesMocked = mocked(deleteImages);
+
+  let project: IProject;
 
   beforeEach(async () => {
-    const technologies = await Technology.create(MOCK_TECHNOLOGIES);
-
-    PROJECT_MOCK.technologies = [technologies[0], technologies[1]];
-
-    const project = await Project.create(PROJECT_MOCK);
-    projectId = project._id;
-
     jest.resetAllMocks();
 
-    uploadImagesMocked.mockResolvedValue(["updated.jpg"]);
+    const technologies = await Technology.create(MOCK_TECHNOLOGIES);
+
+    PROJECT_MOCK.technologies = [
+      technologies.find(({ name }) => name === "technology 1"),
+      technologies.find(({ name }) => name === "technology 2")
+    ];
+
+    project = await Project.create(PROJECT_MOCK);
+
+    uploadImagesWDDMocked.mockResolvedValue(UPLOAD_IMAGES_WDD_RESPONSE_MOCK);
   });
 
   it("should update a project correctly", async () => {
+    // get all the images ids from the project
+    const imagesIdsToDelete = project.images.map(image => image._id.toString());
+
     const updatedProject = await updateOne(null, {
-      projectId,
+      projectId: project._id,
       project: {
         title: "updated title",
         description: "updated description",
         content: "updated content",
-        technologies: ["technology 1", "technology 3"],
-        imagesToDelete: ["test-2.jpg", "test-3.jpg"],
+        technologies: ["technology 3"],
+        imagesIdsToDelete,
         newImages: [
           { promise: Promise.resolve(FILE_UPLOAD_MOCK) }
         ]
@@ -71,54 +102,43 @@ describe("server/utils/controllers/ProjectController/updateOne", () => {
     expect(updatedProject.description).toBe("updated description");
     expect(updatedProject.content).toBe("updated content");
 
-    expect(updatedProject.technologies[0].name).toBe("technology 1");
-    expect(updatedProject.technologies[1].name).toBe("technology 3");
+    expect(updatedProject.technologies[0].name).toBe("technology 3");
+    expect(updatedProject.technologies).toHaveLength(1);
 
-    expect([...updatedProject.images]).toEqual(["test-1.jpg", "updated.jpg"]);
+    expect(updatedProject.toObject().images[0].imageSpecs).toEqual(
+      UPLOAD_IMAGES_WDD_RESPONSE_MOCK[0]
+    );
 
-    expect(uploadImagesMocked).toHaveBeenCalledWith([FILE_UPLOAD_MOCK], "/projects/");
-    expect(deleteImagesMocked).toHaveBeenCalledWith(["test-2.jpg", "test-3.jpg"]);
-  });
+    expect(uploadImagesWDDMocked).toHaveBeenCalledWith(
+      [FILE_UPLOAD_MOCK], "/projects/", PROJECT_IMAGES_SIZES
+    );
 
-  it("should update a project correctly without newImages parameter", async () => {
-    uploadImagesMocked.mockResolvedValue([]);
-
-    const updatedProject = await updateOne(null, {
-      projectId,
-      project: {
-        title: "updated title",
-        description: "updated description",
-        content: "updated content",
-        technologies: ["technology 1", "technology 3"],
-        imagesToDelete: ["test-1.jpg"],
-        newImages: []
-      }
-    }, { loggedIn: true });
-
-    expect([...updatedProject.images]).toEqual(["test-2.jpg", "test-3.jpg"]);
-
-    expect(uploadImagesMocked).toHaveBeenCalledWith([], "/projects/");
-    expect(deleteImagesMocked).toHaveBeenCalledWith(["test-1.jpg"]);
+    // here i wanna get the imageURLs from the project mock
+    // and check that deleteImages was called correctly
+    const imageURLs = PROJECT_MOCK.images[0].imageSpecs.map(imageSpec => imageSpec.url);
+    expect(deleteImagesMocked).toHaveBeenCalledWith(imageURLs);
   });
 
   it("shouldn't call deleteImages when the imagesToDelete array is empty", async () => {
-    uploadImagesMocked.mockResolvedValue([]);
+    uploadImagesWDDMocked.mockResolvedValue([]);
 
     const updatedProject = await updateOne(null, {
-      projectId,
+      projectId: project._id,
       project: {
         title: "updated title",
         description: "updated description",
         content: "updated content",
         technologies: ["technology 1", "technology 3"],
-        imagesToDelete: [],
+        imagesIdsToDelete: [],
         newImages: []
       }
     }, { loggedIn: true });
 
-    expect([...updatedProject.images]).toEqual(["test-1.jpg", "test-2.jpg", "test-3.jpg"]);
+    expect(updatedProject.toObject().images[0].imageSpecs).toEqual(
+      PROJECT_MOCK.images[0].imageSpecs
+    );
 
-    expect(deleteImagesMocked).not.toHaveBeenCalled();
+    expect(deleteImagesMocked).toHaveBeenCalledWith([]);
   });
 
   it("should throw an error when user isn't logged in", async () => {
@@ -137,16 +157,16 @@ describe("server/utils/controllers/ProjectController/updateOne", () => {
     }
   });
 
-  it("should upload the new images and shouldn't delete the images on the imagesToDelete array when it throws a validation error", async () => {
+  it("should throws a validation error", async () => {
     try {
       await updateOne(null, {
-        projectId,
+        projectId: project._id,
         project: {
           title: "",
           description: "updated description",
           content: "updated content",
           technologies: ["technology 1", "technology 3"],
-          imagesToDelete: ["test-1.jpg"],
+          imagesIdsToDelete: [],
           newImages: [
             { promise: Promise.resolve(FILE_UPLOAD_MOCK) }
           ]
@@ -154,7 +174,7 @@ describe("server/utils/controllers/ProjectController/updateOne", () => {
       }, { loggedIn: true });   
     } catch(err) {
       // images on the newImages array
-      expect(uploadImagesMocked).not.toHaveBeenCalled();
+      expect(uploadImagesWDDMocked).not.toHaveBeenCalled();
 
       // images on the imagesToDelete array
       expect(deleteImagesMocked).not.toHaveBeenCalled();
@@ -164,27 +184,23 @@ describe("server/utils/controllers/ProjectController/updateOne", () => {
   });
 
   it("should throw an error when there's an error uploading the images", async () => {
-    uploadImagesMocked.mockReset();
-    uploadImagesMocked.mockRejectedValue(new Error("test error"));
+    uploadImagesWDDMocked.mockReset();
+    uploadImagesWDDMocked.mockRejectedValue(new Error("test error"));
 
     try {
       await updateOne(null, {
-        projectId,
+        projectId: project._id,
         project: {
           title: "updated title",
           description: "updated description",
           content: "updated content",
           technologies: ["technology 1", "technology 3"],
-          imagesToDelete: ["test-1.jpg"],
           newImages: [
             { promise: Promise.resolve(FILE_UPLOAD_MOCK) }
           ]
         }
       }, { loggedIn: true });   
     } catch(err) {
-      // images on the imagesToDelete array
-      expect(deleteImagesMocked).not.toHaveBeenCalled();
-
       expect(err).toEqual(new ApolloError("An error has appeared creating the project"));
     }
   });
