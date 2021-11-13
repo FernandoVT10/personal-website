@@ -1,7 +1,9 @@
-import React, { useReducer, useState } from "react";
+import React, { useReducer } from "react";
 import { useRouter } from "next/router";
 
 import { Input, TextArea } from "@/components/Formulary";
+
+import useForm from "@/hooks/useForm";
 
 import ImagesEditor, { ImagesObjects } from "./ImagesEditor";
 import ContentEditor from "./ContentEditor";
@@ -64,28 +66,11 @@ const ProjectEditor = ({
     technologies: defaultTechnologies
   }
 
+  const { notify, validateForm } = useForm();
+
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const [validation, setValidation] = useState<{[key: string]: boolean}>({});
-
   const router = useRouter();
-
-  const notify = (name: string, isValid: boolean) => {
-    setValidation({ ...validation, [name]: isValid });
-  }
-
-  const validateForm = (): boolean => {
-    let isValid = true;
-
-    for(const key in validation) {
-      if(!validation[key]) {
-        isValid = false;
-        break;
-      }
-    }
-
-    return isValid;
-  }
 
   const handleInputOnChange = (value: string, name: string) => {
     dispatch({ type: "set-input-value", payload: { value, name } });
@@ -96,8 +81,6 @@ const ProjectEditor = ({
     if(!validateForm()) return;
     onSubmit(state);
   }
-  
-  console.log(state);
 
   return (
     <div className={styles.projectEditor}>

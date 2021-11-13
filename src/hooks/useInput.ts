@@ -14,7 +14,7 @@ const useInput = ({ defaultValue, name, validator, notify, isRequired, handleOnC
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    notify(name, isValueValid(defaultValue));
+    notify(name, isValueValid(defaultValue || ""));
   }, []);
 
   const isValueValid = (value: string): boolean => {

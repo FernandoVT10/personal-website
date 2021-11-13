@@ -10,5 +10,4 @@ export const email = (value: string) => EMAIL_VALIDATOR_REGEX.test(value);
 
 export const inputValidators = {
   email: (value: string) => email(value) ? null : "The email is invalid",
-  requiredInput: (name: string) => (value: string) => value.length ? null : `The ${name} is required`
 }
