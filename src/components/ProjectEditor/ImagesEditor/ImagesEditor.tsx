@@ -32,7 +32,7 @@ const ImagesEditor = ({ imagesObjects, dispatch }: ImagesEditorProps) => {
   return (
     <div
       className={`${styles.imagesEditor} ${errorMessage.length && styles.error}`}
-      onDragEnter={e => { setIsDragging(true); console.log(e) }}
+      onDragEnter={() => setIsDragging(true)}
       onDrop={handleOnDrop}
       onDragOver={e => e.preventDefault()}
     >

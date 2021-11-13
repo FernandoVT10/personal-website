@@ -7,13 +7,11 @@ type TechnologiesState = {
   technologies: string[]
 }
 
-type State = CarouselState & TechnologiesState;
-
-export const initialState: State = {
-  newImages: [],
-  imagesIdsToDelete: [],
-  technologies: []
-}
+export type State = CarouselState & TechnologiesState & {
+  title: string
+  description: string
+  content: string
+};
 
 export type Actions = 
   | { type: "set-images-editor-data", payload: CarouselState }

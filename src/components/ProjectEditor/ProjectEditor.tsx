@@ -1,4 +1,5 @@
 import React, { useReducer, useState } from "react";
+import { useRouter } from "next/router";
 
 import { Input, TextArea } from "@/components/Formulary";
 
@@ -6,57 +7,53 @@ import ImagesEditor, { ImagesObjects } from "./ImagesEditor";
 import ContentEditor from "./ContentEditor";
 import TechnologiesEditor from "./TechnologiesEditor";
 
-// import Loader from "../Loader";
+import Loader from "../Loader";
 
-import { reducer, initialState } from "./reducer";
+import { reducer, State } from "./reducer";
 
 import styles from "./ProjectEditor.module.scss";
 
-export interface IProjectEditorProps {
+export type SubmitFunctionData = {
+  newImages: File[]
+  imagesIdsToDelete: string[]
+  title: string
+  description: string
+  content: string
+  technologies: string[]
+}
+
+interface IProjectEditorProps {
   project: {
     title: string
+    images: ImagesObjects
     description: string
     content: string
     technologies: {
       name: string
     }[]
   }
-
-  imagesObjects: ImagesObjects
-  setImagesToDelete?: React.Dispatch<string[]>
-  setNewImages: React.Dispatch<any[]>
-  title: string
-  setTitle: React.Dispatch<string>
-  description: string
-  setDescription: React.Dispatch<string>
-  content: string
-  setContent: React.Dispatch<string>
-  selectedTechnologies: string[]
-  setSelectedTechnologies: React.Dispatch<string[]>
-  goBack: () => void
-  onSave: () => void
+  onSubmit: (data: SubmitFunctionData) => void
   loading: boolean
   error: string
 }
 
 const ProjectEditor = ({
   project,
-  imagesObjects,
-  setImagesToDelete,
-  setNewImages,
-  title,
-  setTitle,
-  description,
-  setDescription,
-  content,
-  setContent,
-  selectedTechnologies,
-  setSelectedTechnologies,
-  goBack,
-  onSave,
+  onSubmit,
   loading,
   error
 }: IProjectEditorProps) => {
+  const defaultTechnologies = project.technologies.map(({ name }) => name);
+
+  const initialState: State = {
+    newImages: [],
+    imagesIdsToDelete: [],
+    title: project.title,
+    description: project.description,
+    content: project.content,
+    technologies: defaultTechnologies
+  }
+
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const [validation, setValidation] = useState<{[key: string]: boolean}>({});
@@ -78,52 +75,52 @@ const ProjectEditor = ({
     return isValid;
   }
 
-  // const handleOnClick = () => {
-  //   if(!title.length) return document.getElementById("title-input").focus();
-  //   if(!description.length) return document.getElementById("description-textarea").focus();
-  //   if(!content.length) return document.getElementById("content-textarea").focus();
-
-  //   onSave();
-  // }
-
   const handleInputOnChange = (value: string, name: string) => {
     dispatch({ type: "set-input-value", payload: { value, name } });
   }
 
-  console.log(state);
 
-  const defaultTechnologies = project.technologies.map(({ name }) => name);
+  const handleOnClick = () => {
+    if(!validateForm()) return;
+    onSubmit(state);
+  }
+
+  const router = useRouter();
 
   return (
     <div className={styles.projectEditor}>
       <ImagesEditor
-        imagesObjects={imagesObjects}
+        imagesObjects={project.images}
         dispatch={dispatch}
       />
 
-      <Input
-        defaultValue={project.title}
-        inputProps={{
-          maxLength: 100,
-          required: true
-        }}
-        label="Title"
-        name="title"
-        notify={notify}
-        onChange={handleInputOnChange}
-      />
+      <div className={styles.inputContainer}>
+        <Input
+          defaultValue={project.title}
+          inputProps={{
+            maxLength: 100,
+            required: true
+          }}
+          label="Title"
+          name="title"
+          notify={notify}
+          onChange={handleInputOnChange}
+        />
+      </div>
 
-      <TextArea
-        defaultValue={project.description}
-        label="Description"
-        name="description"
-        notify={notify}
-        onChange={handleInputOnChange}
-        textareaProps={{
-          maxLength: 250,
-          required: true
-        }}
-      />
+      <div className={styles.inputContainer}>
+        <TextArea
+          defaultValue={project.description}
+          label="Description"
+          name="description"
+          notify={notify}
+          onChange={handleInputOnChange}
+          textareaProps={{
+            maxLength: 250,
+            required: true
+          }}
+        />
+      </div>
 
       <ContentEditor
         onChange={handleInputOnChange}
@@ -135,61 +132,33 @@ const ProjectEditor = ({
         defaultTechnologies={defaultTechnologies}
         dispatch={dispatch}
       />
+
+      { error.length > 0 &&
+      <p className={styles.errorMessage}>
+        { error }
+      </p>
+      }
+
+      { loading ?
+      <div className={styles.loaderContainer}>
+        <Loader/>
+
+        Loading...
+      </div>
+      :
+      <div className={styles.buttons}>
+        <button className={styles.button} onClick={handleOnClick}>Save Project</button>
+
+        <button
+          className={`${styles.button} ${styles.secondary}`}
+          onClick={() => router.push("/dashboard/")}
+        >
+          Cancel
+        </button>
+      </div>
+      }
     </div>
   );
-
-  // return (
-  //   <div className={styles.projectEditor}>
-  //     <Carousel
-  //       images={images}
-  //     />
-
-  //     <Input
-  //       label="Title"
-  //       prefix="title"
-  //       value={title}
-  //       setValue={setTitle}
-  //       maxLength={100}
-  //       validator={inputValidators.requiredInput("title")}
-  //     />
-
-  //     <TextArea
-  //       label="Description"
-  //       prefix="description"
-  //       value={description}
-  //       setValue={setDescription}
-  //       maxLength={250}
-  //       validator={inputValidators.requiredInput("description")}
-  //     />
-
-  //     <Content content={content} setContent={setContent} />
-
-  //     <Technologies selectedTechnologies={selectedTechnologies} setSelectedTechnologies={setSelectedTechnologies} />
-
-  //     { error &&
-  //     <p className={styles.errorMessage}>
-  //       <i className="fas fa-times-circle" aria-hidden="true"></i>
-  //       { error }
-  //     </p>
-  //     }
-
-  //     { loading ?
-  //       <div className={styles.loaderContainer}>
-  //         <Loader/>
-  //       </div>
-  //       :
-
-  //       <div className={styles.buttons}>
-  //         <button className={styles.button} onClick={handleOnClick}>Save Project</button>
-
-  //         <button className={`${styles.button} ${styles.secondary}`} onClick={goBack}>
-  //           Go Back
-  //         </button>
-  //       </div>
-
-  //     }
-  //   </div>
-  // );
 }
 
 export default ProjectEditor;

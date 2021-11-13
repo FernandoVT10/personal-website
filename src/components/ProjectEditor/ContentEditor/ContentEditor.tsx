@@ -27,7 +27,7 @@ const ContentEditor = ({ onChange, defaultValue, notify}: ContentEditorProps) =>
     setErrorMessage("");
 
     onChange(value, "content");
-    notify("content", content.length > 0);
+    notify("content", value.length > 0);
   }
 
   const handleTextAreaOnBlur = () => {

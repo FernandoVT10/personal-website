@@ -1,4 +1,5 @@
-export type { IProjectEditorProps } from "./ProjectEditor";
+export type { ImagesObjects } from "./ImagesEditor";
+export type { SubmitFunctionData } from "./ProjectEditor";
 
 import ProjectEditor from "./ProjectEditor";
 
