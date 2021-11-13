@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import MarkDown from "@/components/MarkDown";
 import Modal from "@/components/Modal";
@@ -19,6 +19,10 @@ const ContentEditor = ({ onChange, defaultValue, notify}: ContentEditorProps) =>
   const [errorMessage, setErrorMessage] = useState("");
 
   const editor = useRef<HTMLTextAreaElement>(undefined);
+
+  useEffect(() => {
+    notify("content", defaultValue.length > 0);
+  }, [])
 
   const handleTextAreaOnChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = e.target;

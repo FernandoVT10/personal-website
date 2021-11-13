@@ -43,20 +43,32 @@ const ProjectEditor = ({
   loading,
   error
 }: IProjectEditorProps) => {
+  if(!project) {
+    project = {
+      title: "",
+      images: [],
+      description: "",
+      content: "",
+      technologies: []
+    }
+  }
+
   const defaultTechnologies = project.technologies.map(({ name }) => name);
 
   const initialState: State = {
     newImages: [],
     imagesIdsToDelete: [],
-    title: project.title,
-    description: project.description,
-    content: project.content,
+    title: project?.title,
+    description: project?.description,
+    content: project?.content,
     technologies: defaultTechnologies
   }
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const [validation, setValidation] = useState<{[key: string]: boolean}>({});
+
+  const router = useRouter();
 
   const notify = (name: string, isValid: boolean) => {
     setValidation({ ...validation, [name]: isValid });
@@ -84,8 +96,8 @@ const ProjectEditor = ({
     if(!validateForm()) return;
     onSubmit(state);
   }
-
-  const router = useRouter();
+  
+  console.log(state);
 
   return (
     <div className={styles.projectEditor}>

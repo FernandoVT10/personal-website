@@ -4,8 +4,7 @@ import { useRouter } from "next/router";
 
 import { gql, useMutation } from "@apollo/client";
 
-import ProjectEditor from "@/components/ProjectEditor";
-import { INewImage } from "@/components/ProjectEditor/Carousel/ImageList";
+import ProjectEditor, { SubmitFunctionData } from "@/components/ProjectEditor";
 
 import withUser from "@/hocs/withUser";
 
@@ -25,38 +24,30 @@ interface ICreateProjectResult {
   }
 }
 
-const Create = () => {
+const CreateProject = () => {
   const [createProject, createProjectResult] = useMutation<ICreateProjectResult>(CREATE_PROJECT);
-
-  const [images, setImages] = useState<INewImage[]>([]);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [content, setContent] = useState("");
-  const [selectedTechnologies, setSelectedTechnologies] = useState<string[]>([]);
-
   const [errorMessage, setErrorMessage] = useState("");
 
   const router = useRouter();
 
-  const goBack = () => router.push("/dashboard/");
-
-  const onSave = async () => {
-    if(!images.length) {
-      return setErrorMessage("You need to add at least one image to the carousel");
+  const onSubmit = async (projectData: SubmitFunctionData) => {
+    if(!projectData.newImages.length) {
+      return setErrorMessage("You need to add at least one image");
     }
 
     setErrorMessage("");
 
     try {
+      const { title, content, description, technologies, newImages } = projectData;
+
       const result = await createProject({
         variables: {
           project: {
             title,
-            // here we're getting the files from the newImages array
-            images: images.map(newImage => newImage.file),
-            description,
             content,
-            technologies: selectedTechnologies
+            description,
+            technologies,
+            images: newImages
           }
         }
       });
@@ -70,13 +61,8 @@ const Create = () => {
   }
 
   const projectEditorProps = {
-    imagesObjects: [],
-    setNewImages: setImages,
-    title, setTitle,
-    description, setDescription,
-    content, setContent,
-    selectedTechnologies, setSelectedTechnologies,
-    goBack, onSave,
+    project: null,
+    onSubmit,
     loading: createProjectResult.loading,
     error: errorMessage
   }
@@ -88,4 +74,4 @@ const Create = () => {
   );
 }
 
-export default withUser(Create, true, "/dashboard/login");
+export default withUser(CreateProject, true, "/dashboard/login");

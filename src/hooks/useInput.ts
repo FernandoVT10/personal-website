@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface IUseInput {
   defaultValue: string
@@ -12,6 +12,10 @@ interface IUseInput {
 const useInput = ({ defaultValue, name, validator, notify, isRequired, handleOnChange }: IUseInput) => {
   const [value, setValue] = useState(defaultValue || "");
   const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    notify(name, isValueValid(defaultValue));
+  }, []);
 
   const isValueValid = (value: string): boolean => {
     if(validator) {
