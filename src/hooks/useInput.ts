@@ -4,7 +4,7 @@ interface IUseInput {
   defaultValue: string
   name: string
   validator: (value: string) => string
-  notify: (name: string, isValid: boolean) => void
+  notify?: (name: string, isValid: boolean) => void
   isRequired: boolean
   handleOnChange: (value: string, name: string) => void
 }
@@ -14,7 +14,7 @@ const useInput = ({ defaultValue, name, validator, notify, isRequired, handleOnC
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    notify(name, isValueValid(defaultValue || ""));
+    if(notify) notify(name, isValueValid(defaultValue || ""));
   }, []);
 
   const isValueValid = (value: string): boolean => {
@@ -30,7 +30,7 @@ const useInput = ({ defaultValue, name, validator, notify, isRequired, handleOnC
 
   const onChange = (newValue: string) => {
     const isValid = isValueValid(newValue);
-    notify(name, isValid);
+    if(notify) notify(name, isValid);
 
     if(isValid) setErrorMessage("");
 
