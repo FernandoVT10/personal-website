@@ -44,17 +44,21 @@ const Login = () => {
 
           <Input
             label="Username"
-            prefix="username"
-            value={username}
-            setValue={setUsername}
+            name="username"
+            onChange={value => setUsername(value)}
+            inputProps={{
+              required: true
+            }}
           />
 
           <Input
-            type="password"
             label="Password"
-            prefix="password"
-            value={password}
-            setValue={setPassword}
+            name="password"
+            onChange={value => setPassword(value)}
+            inputProps={{
+              type: "password",
+              required: true
+            }}
           />
 
           { error &&

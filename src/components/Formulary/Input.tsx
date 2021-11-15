@@ -21,7 +21,7 @@ interface InputProps {
   inputProps?: {[key: string]: any}
   label: string
   name: string
-  notify: (name: string, isValid: boolean) => void
+  notify?: (name: string, isValid: boolean) => void
   onChange: (value: string, name: string) => void
   validator?: (value: string) => string
 }
